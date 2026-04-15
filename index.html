@@ -25,6 +25,11 @@
            - Choice persisted in localStorage so reloads remember.
            - Dropped the v0.4.0 Q/T smoothing path — it produced
              the "loops back on itself" artifacts the user reported.
+           - 2-cycle breaker in buildDag: when the MCG has mutual
+             prereq entries (CF 6660S ↔ CF 6672F on 26A), keep the
+             direction whose 'from' is deeper (further from goal)
+             and drop the reverse. Without this, dagre's feedback-
+             arc-set reversal drew the other direction backward.
    0.4.0 - Feedback pass (issues.md v0.3.3):
            - Cache-first boot. Page no longer hangs on reload waiting
              for sheets_avail. Boot auto-loads the most-recently-cached
@@ -18636,7 +18641,30 @@ const render = (() => {
       }
     }
 
-    return { nodesByCode, edges, maxDepth };
+    // v0.4.1: break 2-cycles before dagre sees them. The MCG contains
+    // symmetric entries like CF 6660S ↔ CF 6672F (each lists the other
+    // as a prereq). Without this, dagre's FAS algorithm reverses one
+    // edge at layout time and draws it going backward, which showed up
+    // as "lines loop back" in v0.4.0. Keep the edge toward the deeper
+    // (further-from-goal) node; drop the other.
+    const edgeKeys = new Set(edges.map(e => `${e.from}→${e.to}`));
+    const droppedKeys = new Set();
+    for (const e of edges) {
+      const rev = `${e.to}→${e.from}`;
+      if (!edgeKeys.has(rev)) continue;
+      if (droppedKeys.has(`${e.from}→${e.to}`) || droppedKeys.has(rev)) continue;
+      const fromDepth = nodesByCode[e.from] ? nodesByCode[e.from].depth : 0;
+      const toDepth = nodesByCode[e.to] ? nodesByCode[e.to].depth : 0;
+      // Keep edge whose 'from' (prereq) is deeper than 'to' (target).
+      // That matches the canonical "upstream → downstream" direction.
+      if (fromDepth >= toDepth) {
+        droppedKeys.add(rev);
+      } else {
+        droppedKeys.add(`${e.from}→${e.to}`);
+      }
+    }
+    const filteredEdges = edges.filter(e => !droppedKeys.has(`${e.from}→${e.to}`));
+    return { nodesByCode, edges: filteredEdges, maxDepth };
   }
 
   // Walk MCG prereqs of `code`, skipping over off-board events, until we
