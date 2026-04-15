@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 780" font-family="-apple-system, 'Segoe UI', sans-serif">
+  <!--
+    Big Board Curriculum Status — UI Mockup v2
+    Derived from Layout-idea.jpg + issues.md (2026-04-14)
+    Key ideas:
+      - Single goal event picked via dropdown (top right)
+      - View toggle: Class | Student; Student dropdown only active in student mode
+      - Main canvas is a DAG; arrows flow left → right toward the chosen goal
+      - Off-board prereqs NOT shown (per issue feedback)
+      - Not-applicable events NOT shown for the chosen student
+      - Node color = completion status (class % or single-student state)
+      - Tick marks / dots on node edge show per-student status strip (class view)
+  -->
+  <style>
+    .box        { fill:#fff; stroke:#111; stroke-width:2; rx:6; ry:6; }
+    .box-goal   { fill:#fff; stroke:#111; stroke-width:3.5; }
+    .box-done   { fill:#e4f5dc; stroke:#3d8b29; stroke-width:2.5; }
+    .box-partial{ fill:#fff4cc; stroke:#b58700; stroke-width:2.5; }
+    .box-started{ fill:#fff; stroke:#b58700; stroke-width:2.5; stroke-dasharray:6 4; }
+    .box-none   { fill:#fff; stroke:#c62828; stroke-width:2.5; }
+    .box-off    { fill:#f3f3f3; stroke:#aaa; stroke-width:1.5; stroke-dasharray:3 3; }
+    .txt-code   { font-family:'JetBrains Mono','Consolas',monospace; font-weight:700; font-size:13px; fill:#111; }
+    .txt-title  { font-size:12px; fill:#333; }
+    .txt-pct    { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:22px; fill:#111; }
+    .txt-pct-sm { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; fill:#111; }
+    .txt-label  { font-size:10px; fill:#888; text-transform:uppercase; letter-spacing:0.5px; }
+    .txt-tiny   { font-family:'JetBrains Mono',monospace; font-size:10px; fill:#555; }
+    .arrow      { fill:none; stroke:#111; stroke-width:1.8; marker-end:url(#arrowhead); }
+    .arrow-done { stroke:#3d8b29; stroke-width:2.2; }
+    .arrow-none { stroke:#c62828; stroke-width:2.2; }
+    .chip       { fill:#111; }
+    .chip-done  { fill:#3d8b29; }
+    .chip-partial { fill:#b58700; }
+    .chip-none  { fill:#c62828; }
+    .chip-txt   { fill:#fff; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; }
+    .tick       { stroke:#111; stroke-width:1.5; }
+    .tick-done  { stroke:#3d8b29; }
+    .tick-none  { stroke:#c62828; }
+    .tick-part  { stroke:#b58700; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+    </marker>
+    <marker id="arrowhead-done" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3d8b29"/>
+    </marker>
+    <marker id="arrowhead-none" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c62828"/>
+    </marker>
+  </defs>
+
+  <!-- ============================================================
+       TOP BAR (controls)
+       ============================================================ -->
+  <rect x="0" y="0" width="1280" height="72" fill="#fafafa" stroke="#111" stroke-width="2"/>
+  <text x="20" y="30" font-size="15" font-weight="700" fill="#111">Big Board Curriculum Status</text>
+  <text x="20" y="50" class="txt-tiny">v0.3.0 · MCG 26A · 26A FTC Big Board</text>
+
+  <!-- View toggle slider: Class | Student -->
+  <text x="360" y="28" class="txt-label">View</text>
+  <rect x="360" y="36" width="160" height="26" rx="13" ry="13" fill="#eee" stroke="#111" stroke-width="1.5"/>
+  <rect x="362" y="38" width="78" height="22" rx="11" ry="11" fill="#111"/>
+  <text x="401" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Class</text>
+  <text x="480" y="54" text-anchor="middle" font-size="12" font-weight="600" fill="#666">Student</text>
+
+  <!-- Student dropdown (dimmed in Class view) -->
+  <text x="555" y="28" class="txt-label">Student</text>
+  <rect x="555" y="36" width="180" height="26" rx="3" ry="3" fill="#fff" stroke="#ccc" stroke-width="1.5"/>
+  <text x="565" y="54" font-family="'JetBrains Mono',monospace" font-size="12" fill="#bbb">— class view —</text>
+
+  <!-- Target event dropdown (prominent) -->
+  <text x="770" y="28" class="txt-label">Target Event</text>
+  <rect x="770" y="36" width="340" height="26" rx="3" ry="3" fill="#fff" stroke="#111" stroke-width="2"/>
+  <text x="780" y="54" font-family="'JetBrains Mono',monospace" font-size="12" fill="#111" font-weight="700">PF 8311F — C-12 Performance Practical ▾</text>
+
+  <!-- Legend button -->
+  <rect x="1150" y="36" width="80" height="26" rx="3" ry="3" fill="#fff" stroke="#111" stroke-width="1.5"/>
+  <text x="1190" y="54" text-anchor="middle" font-size="12" font-weight="600" fill="#111">Legend</text>
+
+  <!-- ============================================================
+       MAIN CANVAS  (Class view — the aggregate DAG)
+       Arrows flow left (upstream prereqs) → right (goal event)
+       ============================================================ -->
+
+  <!-- Sub-title -->
+  <text x="20" y="108" font-size="13" font-weight="700" fill="#111">Prerequisite flow (class aggregate)</text>
+  <text x="20" y="126" class="txt-tiny">3 applicable students (CSO/RPA) · 0 complete · 3 opted/scheduled</text>
+
+  <!-- ========= Tier 1 (deepest prereqs) ========= -->
+  <!-- PF 6121F T-38 Low L/D Flight — all 3 done (green) -->
+  <rect x="60" y="160" width="180" height="90" class="box-done"/>
+  <text x="72" y="182" class="txt-code">PF 6121F</text>
+  <text x="72" y="200" class="txt-title">T-38 Low L/D Flight</text>
+  <rect x="72" y="210" width="60" height="22" class="chip chip-done" rx="3"/>
+  <text x="102" y="226" text-anchor="middle" class="chip-txt">3/3 DONE</text>
+  <text x="72" y="244" class="txt-tiny">Pilot + CSO/RPA applicable</text>
+  <!-- per-student tick strip (right edge) -->
+  <line x1="234" y1="170" x2="234" y2="178" class="tick tick-done"/>
+  <line x1="234" y1="182" x2="234" y2="190" class="tick tick-done"/>
+  <line x1="234" y1="194" x2="234" y2="202" class="tick tick-done"/>
+
+  <!-- PF 7111C Tower Flyby Tower — 2/3 (partial) -->
+  <rect x="60" y="280" width="180" height="90" class="box-partial"/>
+  <text x="72" y="302" class="txt-code">PF 7111C</text>
+  <text x="72" y="320" class="txt-title">Tower Flyby Tower</text>
+  <rect x="72" y="330" width="60" height="22" class="chip chip-partial" rx="3"/>
+  <text x="102" y="346" text-anchor="middle" class="chip-txt">2/3 · 67%</text>
+  <text x="72" y="364" class="txt-tiny">1 pending: R POPE</text>
+  <line x1="234" y1="290" x2="234" y2="298" class="tick tick-done"/>
+  <line x1="234" y1="302" x2="234" y2="310" class="tick tick-done"/>
+  <line x1="234" y1="314" x2="234" y2="322" class="tick tick-none"/>
+
+  <!-- PF 8212F Data Group LA/Turn Perf — 0/3 none -->
+  <rect x="60" y="400" width="180" height="90" class="box-none"/>
+  <text x="72" y="422" class="txt-code">PF 8212F</text>
+  <text x="72" y="440" class="txt-title">Data Group LA/Turn Perf</text>
+  <rect x="72" y="450" width="60" height="22" class="chip chip-none" rx="3"/>
+  <text x="102" y="466" text-anchor="middle" class="chip-txt">0/3 · 0%</text>
+  <text x="72" y="484" class="txt-tiny">No students opted</text>
+  <line x1="234" y1="410" x2="234" y2="418" class="tick tick-none"/>
+  <line x1="234" y1="422" x2="234" y2="430" class="tick tick-none"/>
+  <line x1="234" y1="434" x2="234" y2="442" class="tick tick-none"/>
+
+  <!-- TP 6251F C-12 Intermediate Airborne Test Conduct — 3/3 done (green) -->
+  <rect x="60" y="520" width="180" height="90" class="box-done"/>
+  <text x="72" y="542" class="txt-code">TP 6251F</text>
+  <text x="72" y="558" class="txt-title">C-12 Intermediate Airborne</text>
+  <text x="72" y="574" class="txt-title">Test Conduct</text>
+  <rect x="72" y="582" width="60" height="22" class="chip chip-done" rx="3"/>
+  <text x="102" y="598" text-anchor="middle" class="chip-txt">3/3 DONE</text>
+
+  <!-- ========= Tier 2 (midstream) ========= -->
+  <!-- PF 8302F C-12 Autopilot Flight Control System Flight — partial -->
+  <rect x="490" y="310" width="210" height="120" class="box-partial"/>
+  <text x="502" y="334" class="txt-code">PF 8302F</text>
+  <text x="502" y="352" class="txt-title">C-12 Autopilot Flight</text>
+  <text x="502" y="368" class="txt-title">Control System Flight</text>
+  <rect x="502" y="378" width="70" height="26" class="chip chip-partial" rx="3"/>
+  <text x="537" y="397" text-anchor="middle" class="chip-txt" style="font-size:12px">2/3 · 67%</text>
+  <text x="502" y="420" class="txt-tiny">blocks PF 8311F</text>
+  <line x1="694" y1="320" x2="694" y2="330" class="tick tick-done"/>
+  <line x1="694" y1="334" x2="694" y2="344" class="tick tick-done"/>
+  <line x1="694" y1="348" x2="694" y2="358" class="tick tick-none"/>
+
+  <!-- ========= Tier 3 (goal) ========= -->
+  <!-- PF 8311F — the goal, shown thicker / bolder -->
+  <rect x="950" y="280" width="250" height="180" class="box-goal"/>
+  <rect x="950" y="280" width="250" height="38" fill="#111"/>
+  <text x="962" y="306" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#fff">PF 8311F — GOAL</text>
+  <text x="962" y="340" class="txt-code">C-12 Performance</text>
+  <text x="962" y="358" class="txt-code">Practical Flight</text>
+  <text x="962" y="378" class="txt-tiny">Applicability: CSO / RPA</text>
+  <text x="962" y="398" class="txt-tiny">Applicable students: 3</text>
+  <!-- Big percent -->
+  <text x="962" y="436" class="txt-pct">0 / 3</text>
+  <text x="1050" y="436" class="txt-pct" fill="#c62828">0%</text>
+  <text x="962" y="452" class="txt-tiny">0 complete · 3 opted · 0 scheduled</text>
+
+  <!-- ========= Arrows ========= -->
+  <!-- From tier 1 to tier 2 (PF 8302F) -->
+  <path class="arrow arrow-done" d="M 240 205 L 490 345" marker-end="url(#arrowhead-done)"/>
+  <path class="arrow" d="M 240 325 L 490 365"/>
+  <path class="arrow arrow-none" d="M 240 445 L 490 395" marker-end="url(#arrowhead-none)"/>
+  <path class="arrow arrow-done" d="M 240 565 L 490 420" marker-end="url(#arrowhead-done)"/>
+
+  <!-- From tier 2 to goal -->
+  <path class="arrow" d="M 700 370 L 950 370" stroke-width="2.5"/>
+
+  <!-- ============================================================
+       BOTTOM INFO STRIP
+       ============================================================ -->
+  <rect x="0" y="640" width="1280" height="140" fill="#fafafa" stroke="#ddd" stroke-width="1"/>
+
+  <!-- Legend -->
+  <text x="20" y="668" font-size="12" font-weight="700" fill="#111">Legend (node states)</text>
+
+  <rect x="20" y="680" width="130" height="40" class="box-done"/>
+  <text x="30" y="697" class="txt-tiny" font-weight="700">Complete</text>
+  <text x="30" y="712" class="txt-tiny">All applicable done</text>
+
+  <rect x="160" y="680" width="130" height="40" class="box-partial"/>
+  <text x="170" y="697" class="txt-tiny" font-weight="700">Partial / Started</text>
+  <text x="170" y="712" class="txt-tiny">Some complete</text>
+
+  <rect x="300" y="680" width="130" height="40" class="box-none"/>
+  <text x="310" y="697" class="txt-tiny" font-weight="700">Not Started</text>
+  <text x="310" y="712" class="txt-tiny">Nobody complete</text>
+
+  <rect x="440" y="680" width="130" height="40" class="box-started"/>
+  <text x="450" y="697" class="txt-tiny" font-weight="700">Scheduled</text>
+  <text x="450" y="712" class="txt-tiny">Future dates only</text>
+
+  <!-- Tick-strip explanation -->
+  <text x="620" y="670" font-size="12" font-weight="700" fill="#111">Tick strip (right edge of each node)</text>
+  <line x1="624" y1="682" x2="624" y2="690" class="tick tick-done"/>
+  <line x1="624" y1="694" x2="624" y2="702" class="tick tick-done"/>
+  <line x1="624" y1="706" x2="624" y2="714" class="tick tick-none"/>
+  <text x="640" y="698" class="txt-tiny">Per-student mini-status:</text>
+  <text x="640" y="714" class="txt-tiny">green = done, red = pending, yellow = scheduled</text>
+
+  <!-- Switching to Student view -->
+  <text x="900" y="670" font-size="12" font-weight="700" fill="#111">Student view (toggle above)</text>
+  <text x="900" y="690" class="txt-tiny">Same DAG. Colors recolor per-student.</text>
+  <text x="900" y="706" class="txt-tiny">Percent is binary (done / not done).</text>
+  <text x="900" y="722" class="txt-tiny">Not-applicable nodes hidden.</text>
+  <text x="900" y="738" class="txt-tiny">Off-board prereqs hidden (issue feedback).</text>
+
+  <text x="1140" y="760" class="txt-tiny" text-anchor="end">ui-mockup-v2.svg · 2026-04-14</text>
+</svg>
