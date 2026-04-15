@@ -3,10 +3,29 @@
 ============================================================
  File:       index.html
  Module:     big-board-curriculum-status / client
- Version:    0.4.1
+ Version:    0.4.2
  MCG Target: 26A
  Updated:    2026-04-15
  Changelog:
+   0.4.2 - Layout knobs panel:
+           - New "Layout…" button in the sub-bar opens a right-side
+             panel with every dagre parameter as a live input:
+               rankdir, ranker, align, ranksep, nodesep, edgesep,
+               marginx, marginy, minlen, goal-edge weight.
+           - Changes trigger re-layout with a 120ms debounce so
+             tuning feels responsive without thrashing on every
+             keystroke.
+           - Three presets (Compact / Normal / Spacious) bulk-set
+             the spacing values.
+           - "Reset to defaults" restores v0.4.1 values.
+           - Settings persist to localStorage (bbcs::layoutKnobs)
+             so tuning survives reloads.
+           - goal-edge weight multiplier: when > 1, every edge
+             pointing directly into the target event gets that
+             weight in dagre's cost function, making the final
+             chain draw straighter.
+           - minlen applies globally: force every edge to span at
+             least N ranks.
    0.4.1 - Line-rendering pass:
            - Orphan-node fix: nodes whose visible edges all got
              filtered out (e.g. CF 6605S on some goal views) are
@@ -360,6 +379,14 @@
   .legend-grid { display: grid; grid-template-columns: 24px 1fr; gap: 6px 10px; align-items: center; }
   .legend-swatch { width: 22px; height: 14px; border: 1.5px solid var(--line); border-radius: 2px; }
 
+  /* v0.4.2: layout knobs panel — label / input pairs */
+  .knob-grid { display: grid; grid-template-columns: 130px 1fr; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+  .knob-grid label { font-size: 11px; font-family: var(--mono); color: var(--ink-soft); }
+  .knob-grid input[type="number"],
+  .knob-grid select { width: 100%; padding: 3px 6px; font-size: 12px; font-family: var(--mono); border: 1px solid var(--line); border-radius: 3px; background: #fff; }
+  .knob-grid input[type="number"]:focus,
+  .knob-grid select:focus { outline: none; border-color: var(--accent); }
+
   .panel-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.2); z-index: 150; display: none; }
   .panel-backdrop.open { display: block; }
 
@@ -576,6 +603,7 @@
     </select>
   </div>
   <div class="hbar-spacer"></div>
+  <button class="btn" id="btn-knobs" title="Tune every dagre layout parameter">Layout…</button>
   <button class="btn" id="btn-legend">Legend</button>
   <button class="btn" id="btn-issues">Issues</button>
 </div>
@@ -18060,7 +18088,7 @@ const CONFIG = (() => {
   catch (e) { return { GAS_ENDPOINT: '', ENABLE_CACHE: true, DEBUG: false }; }
 })();
 
-const APP_VERSION = '0.4.1';
+const APP_VERSION = '0.4.2';
 const MCG_VERSION = '26A';
 
 /* --------------------------------------------------------
@@ -19209,16 +19237,20 @@ const render = (() => {
     const canvas = _lastCanvas;
     const nodeByCode = _lastNodeByCode;
     const edges = _lastEdges;
+    const settings = getLayoutSettings();
 
     const g = new dagre.graphlib.Graph({ compound: false });
-    g.setGraph({
-      rankdir: 'LR',      // prereq (source) on left → goal (sink) on right
-      ranksep: 80,        // horizontal gap between tiers
-      nodesep: 16,        // vertical gap between nodes in same tier
-      edgesep: 8,         // vertical gap between edges
-      marginx: 20,
-      marginy: 20,
-    });
+    const graphOpts = {
+      rankdir: settings.rankdir,
+      ranksep: settings.ranksep,
+      nodesep: settings.nodesep,
+      edgesep: settings.edgesep,
+      marginx: settings.marginx,
+      marginy: settings.marginy,
+      ranker: settings.ranker,
+    };
+    if (settings.align) graphOpts.align = settings.align;
+    g.setGraph(graphOpts);
     g.setDefaultEdgeLabel(() => ({}));
 
     // Measure each node (its CSS class already reflects collapsed/expanded state)
@@ -19227,9 +19259,18 @@ const render = (() => {
       const rect = el.getBoundingClientRect();
       g.setNode(code, { width: rect.width, height: rect.height });
     }
+
+    // Optional: boost weight on edges that point directly into the goal so
+    // dagre prefers to keep that final chain straight.
+    const goalCode = _lastGoalCode;
     for (const e of edges) {
       if (g.hasNode(e.from) && g.hasNode(e.to)) {
-        g.setEdge(e.from, e.to, { code_from: e.from, code_to: e.to, bridge: e.bridge || [] });
+        const attrs = { code_from: e.from, code_to: e.to, bridge: e.bridge || [] };
+        if (settings.goalEdgeWeight > 1 && e.to === goalCode) {
+          attrs.weight = settings.goalEdgeWeight;
+        }
+        if (settings.minlen > 1) attrs.minlen = settings.minlen;
+        g.setEdge(e.from, e.to, attrs);
       }
     }
 
@@ -19498,6 +19539,155 @@ const issues = (() => {
 })();
 
 /* --------------------------------------------------------
+ * Layout-knobs panel — exposes every dagre setting as a live
+ * input. Changes are debounced 120ms and trigger re-layout.
+ * Settings persist to localStorage.
+ * -------------------------------------------------------- */
+const LAYOUT_DEFAULTS = Object.freeze({
+  rankdir: 'LR',
+  ranksep: 80,
+  nodesep: 16,
+  edgesep: 8,
+  marginx: 20,
+  marginy: 20,
+  ranker: 'network-simplex',
+  align: '',            // '' = balanced (default); UL | UR | DL | DR
+  minlen: 1,
+  goalEdgeWeight: 1,    // multiplier for edges pointing into the goal
+});
+
+let _layoutSettings = null;
+function getLayoutSettings() {
+  if (_layoutSettings) return _layoutSettings;
+  let stored = {};
+  try { stored = JSON.parse(localStorage.getItem('bbcs::layoutKnobs') || '{}'); } catch (_) {}
+  _layoutSettings = Object.assign({}, LAYOUT_DEFAULTS, stored);
+  return _layoutSettings;
+}
+function setLayoutSetting(key, value) {
+  const s = getLayoutSettings();
+  s[key] = value;
+  try { localStorage.setItem('bbcs::layoutKnobs', JSON.stringify(s)); } catch (_) {}
+}
+function resetLayoutSettings() {
+  _layoutSettings = Object.assign({}, LAYOUT_DEFAULTS);
+  try { localStorage.removeItem('bbcs::layoutKnobs'); } catch (_) {}
+}
+
+function layoutPanel() {
+  const s = getLayoutSettings();
+  const html = `
+    <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px;">
+      Every knob dagre exposes. Changes re-layout immediately.
+    </p>
+
+    <h4>Direction + algorithm</h4>
+    <div class="knob-grid">
+      <label>rankdir</label>
+      <select data-knob="rankdir">
+        <option value="LR" ${s.rankdir === 'LR' ? 'selected' : ''}>LR — prereq ← left, goal → right</option>
+        <option value="RL" ${s.rankdir === 'RL' ? 'selected' : ''}>RL — flipped (goal on left)</option>
+        <option value="TB" ${s.rankdir === 'TB' ? 'selected' : ''}>TB — top to bottom</option>
+        <option value="BT" ${s.rankdir === 'BT' ? 'selected' : ''}>BT — bottom to top</option>
+      </select>
+      <label>ranker</label>
+      <select data-knob="ranker">
+        <option value="network-simplex" ${s.ranker === 'network-simplex' ? 'selected' : ''}>network-simplex (best quality, default)</option>
+        <option value="tight-tree" ${s.ranker === 'tight-tree' ? 'selected' : ''}>tight-tree (faster, more compact)</option>
+        <option value="longest-path" ${s.ranker === 'longest-path' ? 'selected' : ''}>longest-path (fastest, lower quality)</option>
+      </select>
+      <label>align</label>
+      <select data-knob="align">
+        <option value="" ${s.align === '' ? 'selected' : ''}>balanced (default)</option>
+        <option value="UL" ${s.align === 'UL' ? 'selected' : ''}>UL — upper-left</option>
+        <option value="UR" ${s.align === 'UR' ? 'selected' : ''}>UR — upper-right</option>
+        <option value="DL" ${s.align === 'DL' ? 'selected' : ''}>DL — lower-left</option>
+        <option value="DR" ${s.align === 'DR' ? 'selected' : ''}>DR — lower-right</option>
+      </select>
+    </div>
+
+    <h4>Spacing (pixels)</h4>
+    <div class="knob-grid">
+      <label title="Gap between ranks (horizontal for LR)">ranksep</label>
+      <input type="number" min="0" max="400" step="5" data-knob="ranksep" value="${s.ranksep}">
+      <label title="Gap between nodes in the same rank">nodesep</label>
+      <input type="number" min="0" max="200" step="2" data-knob="nodesep" value="${s.nodesep}">
+      <label title="Gap between parallel edges">edgesep</label>
+      <input type="number" min="0" max="100" step="1" data-knob="edgesep" value="${s.edgesep}">
+      <label title="Left/right canvas padding">marginx</label>
+      <input type="number" min="0" max="200" step="5" data-knob="marginx" value="${s.marginx}">
+      <label title="Top/bottom canvas padding">marginy</label>
+      <input type="number" min="0" max="200" step="5" data-knob="marginy" value="${s.marginy}">
+    </div>
+
+    <h4>Per-edge tuning</h4>
+    <div class="knob-grid">
+      <label title="Force every edge to span ≥ N ranks. Default 1.">minlen</label>
+      <input type="number" min="1" max="5" step="1" data-knob="minlen" value="${s.minlen}">
+      <label title="Weight multiplier for edges pointing directly into the goal. Higher = straighter.">goal-edge weight</label>
+      <input type="number" min="1" max="10" step="1" data-knob="goalEdgeWeight" value="${s.goalEdgeWeight}">
+    </div>
+
+    <div style="margin-top:14px; display:flex; gap:8px; flex-wrap: wrap;">
+      <button class="btn" id="knobs-reset">Reset to defaults</button>
+      <button class="btn" id="knobs-close">Close</button>
+    </div>
+
+    <h4 style="margin-top:18px;">Presets</h4>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="btn" data-preset="compact">Compact</button>
+      <button class="btn" data-preset="normal">Normal</button>
+      <button class="btn" data-preset="spacious">Spacious</button>
+    </div>
+  `;
+  openPanel('Layout knobs', html);
+
+  // Live-update handlers
+  const debounced = debounce(() => {
+    if (state && state.payload) renderCurrent();
+  }, 120);
+
+  $$('#panel-body [data-knob]').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const key = e.target.dataset.knob;
+      const raw = e.target.value;
+      const value = (e.target.type === 'number') ? (parseFloat(raw) || 0) : raw;
+      setLayoutSetting(key, value);
+      debounced();
+    });
+  });
+
+  $$('#panel-body [data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset;
+      const values = preset === 'compact'   ? { ranksep: 50, nodesep: 10, edgesep: 4, marginx: 10, marginy: 10 }
+                   : preset === 'spacious'  ? { ranksep: 140, nodesep: 30, edgesep: 14, marginx: 30, marginy: 30 }
+                   :                          { ranksep: 80, nodesep: 16, edgesep: 8, marginx: 20, marginy: 20 };
+      for (const [k, v] of Object.entries(values)) setLayoutSetting(k, v);
+      layoutPanel();  // re-render the panel to reflect new values
+      if (state && state.payload) renderCurrent();
+    });
+  });
+
+  $('#knobs-reset').addEventListener('click', () => {
+    resetLayoutSettings();
+    layoutPanel();  // reopen with defaults shown
+    if (state && state.payload) renderCurrent();
+  });
+  $('#knobs-close').addEventListener('click', closePanel);
+}
+
+// Generic debounce
+function debounce(fn, ms) {
+  let t = null;
+  return function () {
+    const args = arguments;
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
+/* --------------------------------------------------------
  * panel helpers
  * -------------------------------------------------------- */
 function openPanel(title, contentHtml) {
@@ -19694,6 +19884,7 @@ async function boot() {
 
   updateCacheFooter();
 
+  $('#btn-knobs').addEventListener('click', layoutPanel);
   $('#btn-legend').addEventListener('click', legendPanel);
   $('#btn-issues').addEventListener('click', () => issues.showPanel());
   $('#panel-close').addEventListener('click', closePanel);
