@@ -3,10 +3,28 @@
 ============================================================
  File:       index.html
  Module:     big-board-curriculum-status / client
- Version:    0.4.0
+ Version:    0.4.1
  MCG Target: 26A
  Updated:    2026-04-15
  Changelog:
+   0.4.1 - Line-rendering pass:
+           - Orphan-node fix: nodes whose visible edges all got
+             filtered out (e.g. CF 6605S on some goal views) are
+             now dropped from the canvas instead of shown as
+             floating islands. Goal itself is always kept.
+           - Endpoint clamping: every arrow visibly starts at the
+             right-center of its source node and ends at the left-
+             center of its target. Fixes the "lines emerge from the
+             centroid" artifact from v0.4.0.
+           - New "Lines" selector in the sub-bar with four styles:
+             Polyline (default, straight segments along dagre
+             waypoints), Smooth curve (cubic bezier with horizontal
+             tangents), Orthogonal (right-angle routing), and
+             Straight (direct line, ignores waypoints entirely —
+             useful for debugging).
+           - Choice persisted in localStorage so reloads remember.
+           - Dropped the v0.4.0 Q/T smoothing path — it produced
+             the "loops back on itself" artifacts the user reported.
    0.4.0 - Feedback pass (issues.md v0.3.3):
            - Cache-first boot. Page no longer hangs on reload waiting
              for sheets_avail. Boot auto-loads the most-recently-cached
@@ -542,6 +560,15 @@
   <div class="ctrl-group" id="expand-group" style="display:none;">
     <button class="btn" id="btn-expand-all" title="Expand all nodes">Expand all</button>
     <button class="btn" id="btn-collapse-all" title="Collapse all nodes to just code + status">Collapse all</button>
+  </div>
+  <div class="ctrl-group">
+    <label for="line-style">Lines</label>
+    <select id="line-style" title="How edges are drawn between nodes">
+      <option value="polyline" selected>Polyline</option>
+      <option value="smooth">Smooth curve</option>
+      <option value="orthogonal">Orthogonal (right-angle)</option>
+      <option value="straight">Straight</option>
+    </select>
   </div>
   <div class="hbar-spacer"></div>
   <button class="btn" id="btn-legend">Legend</button>
@@ -18028,7 +18055,7 @@ const CONFIG = (() => {
   catch (e) { return { GAS_ENDPOINT: '', ENABLE_CACHE: true, DEBUG: false }; }
 })();
 
-const APP_VERSION = '0.4.0';
+const APP_VERSION = '0.4.1';
 const MCG_VERSION = '26A';
 
 /* --------------------------------------------------------
@@ -18886,25 +18913,39 @@ const render = (() => {
     const tiers = [];
     for (let d = 0; d <= dag.maxDepth; d++) tiers.push([]);
 
-    const visible = new Set();
+    // Pass 1: applicability filter (class = zero goal-scope applicable,
+    // student = not applicable to this student).
+    const applicable = new Set();
     for (const code of Object.keys(dag.nodesByCode)) {
       if (mode === 'student' && student) {
         const info = computeNodeForStudent(code, payload, student);
         if (!info.applicable && dag.nodesByCode[code].depth !== 0) continue;
       } else {
-        // class view — use the goal-scope student set so we only count
-        // students who could ever attempt the goal. A node with zero
-        // goal-scope applicable students is dropped (issue #4 in v0.3.1).
         const boardEvent = payload.byCode[code];
         const mcgEvent = MCG_GRAPH.events[code];
         const perStudent = statusModule.computeEventStatus(boardEvent, scopeStudents, payload.classMeta);
         const agg = statusModule.aggregateEvent(boardEvent, mcgEvent, perStudent, scopeStudents);
         if (agg.applicable === 0 && dag.nodesByCode[code].depth !== 0) continue;
       }
-      visible.add(code);
+      applicable.add(code);
+    }
+
+    // Pass 2: edge filter — keep only edges whose both endpoints survived.
+    let edges = dag.edges.filter(e => applicable.has(e.from) && applicable.has(e.to));
+
+    // Pass 3: orphan filter — drop nodes that have no visible edge connection.
+    // Without this, CF 6605S and similar show up as floating islands with no
+    // lines (user feedback v0.4.0). Keep the goal itself unconditionally.
+    const goalCode = Object.keys(dag.nodesByCode).find(c => dag.nodesByCode[c].depth === 0);
+    const connected = new Set(goalCode ? [goalCode] : []);
+    for (const e of edges) { connected.add(e.from); connected.add(e.to); }
+    const visible = new Set([...applicable].filter(c => connected.has(c)));
+    edges = edges.filter(e => visible.has(e.from) && visible.has(e.to));
+
+    // Distribute into tier columns (only used by fallback layout)
+    for (const code of visible) {
       tiers[dag.nodesByCode[code].depth].push(code);
     }
-    const edges = dag.edges.filter(e => visible.has(e.from) && visible.has(e.to));
     for (const t of tiers) t.sort();
     return { tiers, edges };
   }
@@ -19260,19 +19301,52 @@ const render = (() => {
     }
     svg.appendChild(defs);
 
+    const lineStyle = window.bbcsLineStyle || 'polyline';
+
     dagreGraph.edges().forEach(e => {
       const edge = dagreGraph.edge(e);
       if (!edge.points || edge.points.length < 2) return;
-      // Build smoothed path through waypoints. Cubic-ish using quadratic
-      // mid-point trick: connect via quadratic through each inner point.
       const pts = edge.points;
-      let d = `M ${pts[0].x} ${pts[0].y}`;
-      for (let i = 1; i < pts.length - 1; i++) {
-        const mx = (pts[i].x + pts[i + 1].x) / 2;
-        const my = (pts[i].y + pts[i + 1].y) / 2;
-        d += ` Q ${pts[i].x} ${pts[i].y} ${mx} ${my}`;
+
+      // Clamp first and last points to the actual node edges so arrows
+      // visibly start/end at the container border instead of looking like
+      // they emerge from the centroid. Dagre places endpoints near the
+      // border but the exact point depends on internal rank offsets; for
+      // visual consistency we push them to the mid-height of the facing
+      // edge (right-center of source, left-center of target).
+      const srcNode = dagreGraph.node(e.v);
+      const tgtNode = dagreGraph.node(e.w);
+      if (srcNode) { pts[0] = { x: srcNode.x + srcNode.width / 2, y: srcNode.y }; }
+      if (tgtNode) { pts[pts.length - 1] = { x: tgtNode.x - tgtNode.width / 2, y: tgtNode.y }; }
+
+      let d;
+      if (lineStyle === 'straight') {
+        // Ignore waypoints entirely — direct line from source to target.
+        d = `M ${pts[0].x} ${pts[0].y} L ${pts[pts.length - 1].x} ${pts[pts.length - 1].y}`;
+      } else if (lineStyle === 'smooth') {
+        // Cubic bezier per segment with horizontal tangent control points.
+        d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i], b = pts[i + 1];
+          const dx = b.x - a.x;
+          const c1x = a.x + dx * 0.5, c1y = a.y;
+          const c2x = a.x + dx * 0.5, c2y = b.y;
+          d += ` C ${c1x} ${c1y} ${c2x} ${c2y} ${b.x} ${b.y}`;
+        }
+      } else if (lineStyle === 'orthogonal') {
+        // Right-angle routing: for each segment, go horizontally half-way,
+        // then vertically to the target y, then horizontally the rest.
+        d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i], b = pts[i + 1];
+          const midX = (a.x + b.x) / 2;
+          d += ` L ${midX} ${a.y} L ${midX} ${b.y} L ${b.x} ${b.y}`;
+        }
+      } else {
+        // Polyline — straight segments between dagre waypoints. Default.
+        d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x} ${pts[i].y}`;
       }
-      d += ` T ${pts[pts.length - 1].x} ${pts[pts.length - 1].y}`;
 
       // Arrow color = source node status
       let cls = 'a-none';
@@ -19654,6 +19728,21 @@ async function boot() {
   // Expand / Collapse all (class-view only)
   $('#btn-expand-all').addEventListener('click', () => render.setAllExpanded(true));
   $('#btn-collapse-all').addEventListener('click', () => render.setAllExpanded(false));
+
+  // Line style selector — polyline / smooth / straight.
+  // Persisted across reloads in localStorage.
+  const savedStyle = (() => { try { return localStorage.getItem('bbcs::lineStyle'); } catch (_) { return null; } })();
+  if (savedStyle) {
+    window.bbcsLineStyle = savedStyle;
+    $('#line-style').value = savedStyle;
+  } else {
+    window.bbcsLineStyle = 'polyline';
+  }
+  $('#line-style').addEventListener('change', (e) => {
+    window.bbcsLineStyle = e.target.value;
+    try { localStorage.setItem('bbcs::lineStyle', e.target.value); } catch (_) {}
+    renderCurrent();
+  });
 
   // Goal + student picker wiring
   $('#goal-picker').addEventListener('change', (e) => {
