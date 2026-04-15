@@ -470,10 +470,11 @@
   <div class="ctrl-group">
     <label for="sheet-picker">Board</label>
     <select id="sheet-picker" disabled>
-      <option>— loading sheets —</option>
+      <option>— cache-only mode —</option>
     </select>
-    <button class="btn primary" id="btn-load" disabled>Load</button>
-    <button class="btn" id="btn-refresh" disabled title="Force refresh, bypass cache">Refresh</button>
+    <button class="btn primary" id="btn-load" disabled title="Load selected board (cache-first)">Load</button>
+    <button class="btn" id="btn-refresh" disabled title="Force re-fetch selected board from GAS, bypass cache">Refresh</button>
+    <button class="btn" id="btn-refresh-list" title="Pull fresh list of tabs from GAS">⟳ Tabs</button>
   </div>
   <div class="hbar-spacer"></div>
 </header>
@@ -18037,6 +18038,7 @@ function log(...args) { if (CONFIG.DEBUG) console.log('[bbcs]', ...args); }
 const api = (() => {
   const KEY = 'bbcs::sheet::';
   const INDEX_KEY = 'bbcs::index::sheets';
+  const SHEET_LIST_KEY = 'bbcs::sheetlist';  // v0.4: cached sheets_avail response
 
   function readIndex() {
     try { return JSON.parse(localStorage.getItem(INDEX_KEY) || '[]'); } catch (_) { return []; }
@@ -18064,7 +18066,22 @@ const api = (() => {
 
   return {
     async health() { return call({ call: 'health' }); },
-    async sheetsAvail() { return call({ call: 'sheets_avail' }); },
+    async sheetsAvail() {
+      const body = await call({ call: 'sheets_avail' });
+      // v0.4: persist so boot can skip this round-trip next time
+      try { localStorage.setItem(SHEET_LIST_KEY, JSON.stringify({ cachedAt: new Date().toISOString(), sheets: body.sheets })); }
+      catch (e) { console.warn('[bbcs] sheet-list cache write failed', e); }
+      return body;
+    },
+
+    getSheetList() {
+      try {
+        const raw = localStorage.getItem(SHEET_LIST_KEY);
+        if (!raw) return null;
+        const env = JSON.parse(raw);
+        return env.sheets || null;
+      } catch (_) { return null; }
+    },
 
     async fetchSheet(name, { force = false } = {}) {
       const cacheKey = KEY + name;
@@ -19323,6 +19340,33 @@ async function boot() {
 
   $('#btn-load').addEventListener('click', () => loadCurrentSheet({ force: false }));
   $('#btn-refresh').addEventListener('click', () => loadCurrentSheet({ force: true }));
+  $('#btn-refresh-list').addEventListener('click', async () => {
+    // Manual GAS hit to pull fresh sheet-list. Updates the picker but doesn't load a sheet.
+    const btn = $('#btn-refresh-list');
+    btn.disabled = true; btn.textContent = '⟳ …';
+    try {
+      const list = await api.sheetsAvail();
+      const picker = $('#sheet-picker');
+      const current = picker.value;
+      picker.innerHTML = '';
+      const sorted = list.sheets.slice().sort((a, b) => {
+        const ap = /\d\d[AB]\s.*Big Board/i.test(a.name) ? 0 : 1;
+        const bp = /\d\d[AB]\s.*Big Board/i.test(b.name) ? 0 : 1;
+        if (ap !== bp) return ap - bp;
+        return a.name.localeCompare(b.name);
+      });
+      for (const s of sorted) {
+        picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
+      }
+      picker.disabled = false;
+      if (current && sorted.find(s => s.name === current)) picker.value = current;
+      banner(`Tab list refreshed — ${list.sheets.length} tabs.`);
+    } catch (e) {
+      banner('Could not list sheets: ' + e.message, true);
+    } finally {
+      btn.disabled = false; btn.textContent = '⟳ Tabs';
+    }
+  });
 
   $('#btn-clear-cache').addEventListener('click', () => {
     const info = api.cacheInfo();
@@ -19368,12 +19412,28 @@ async function boot() {
     return;
   }
 
-  try {
-    const list = await api.sheetsAvail();
-    const picker = $('#sheet-picker');
-    picker.innerHTML = '';
-    // Put the most recent "XXA/XXB Big Board" tabs on top
-    const sorted = list.sheets.slice().sort((a, b) => {
+  // v0.4: cache-first boot. DO NOT hit sheets_avail on page load — that's
+  // a 1-3s GAS round trip the user stares at every time. Instead:
+  //   1. If we have cached sheets + a cached sheet-list, use those.
+  //   2. If no cached sheet-list but cached payloads exist, build the
+  //      picker from cache entries.
+  //   3. If nothing cached, leave the picker empty and require the user
+  //      to click "Load sheet list" (which calls GAS).
+  // Auto-load the most recent cached sheet on boot so the DAG shows up
+  // with zero clicks.
+  await bootFromCache();
+}
+
+async function bootFromCache() {
+  const cachedList = api.getSheetList();      // v0.4 local storage of last sheets_avail result
+  const cachedSheets = api.cacheInfo();       // per-sheet payload cache
+
+  const picker = $('#sheet-picker');
+  picker.innerHTML = '';
+
+  if (cachedList && cachedList.length) {
+    // Use cached sheet list for the dropdown
+    const sorted = cachedList.slice().sort((a, b) => {
       const ap = /\d\d[AB]\s.*Big Board/i.test(a.name) ? 0 : 1;
       const bp = /\d\d[AB]\s.*Big Board/i.test(b.name) ? 0 : 1;
       if (ap !== bp) return ap - bp;
@@ -19383,20 +19443,37 @@ async function boot() {
       picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
     }
     picker.disabled = false;
-    $('#btn-load').disabled = false;
-    $('#btn-refresh').disabled = false;
-    // Auto-select the first "26A FTC Big Board"-ish entry
-    const preferred = sorted.find(s => /^26A FTC Big Board/i.test(s.name));
-    if (preferred) picker.value = preferred.name;
-  } catch (e) {
-    banner('Could not list sheets: ' + e.message, true);
+  } else if (cachedSheets.length) {
+    // Fallback: at least list sheets we've cached payloads for
+    for (const s of cachedSheets) {
+      picker.appendChild(el('option', { value: s.name }, `${s.name}  (cached)`));
+    }
+    picker.disabled = false;
+  } else {
+    picker.appendChild(el('option', { value: '' }, '— click Load sheet list —'));
+    picker.disabled = true;
+  }
+  $('#btn-load').disabled = false;
+  $('#btn-refresh').disabled = false;
+
+  // Auto-load a sensible default sheet if we have any cached payloads.
+  if (cachedSheets.length) {
+    // Prefer 26A FTC Big Board, else most-recently-cached
+    const preferred = cachedSheets.find(s => /^26A FTC Big Board/i.test(s.name));
+    const target = preferred
+      ? preferred.name
+      : cachedSheets.slice().sort((a, b) => (b.cachedAt || '').localeCompare(a.cachedAt || ''))[0].name;
+    picker.value = target;
+    await loadCurrentSheet({ force: false, source: 'auto' });
+  } else {
+    banner('No cached data yet. Pick a board and press Load (or Refresh sheet list to hit GAS).');
   }
 }
 
-async function loadCurrentSheet({ force }) {
+async function loadCurrentSheet({ force, source }) {
   const name = $('#sheet-picker').value;
   if (!name) return;
-  hideBanner();
+  if (source !== 'auto') hideBanner();
   $('#btn-load').disabled = true;
   $('#btn-load').textContent = 'Loading…';
   try {
