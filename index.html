@@ -20,9 +20,15 @@
            - Off-board bridge tooltip on edges (hover a line that goes
              through an off-board chain — it shows "via off-board:
              CODE → CODE").
-           - Scheduled-but-not-opted warning + hover tooltip on student
-             dots will come in 0.4.1. (Deferred to keep 0.4.0 focused
-             on the layout change.)
+           - Student-dot hover tooltips now show the actual completion
+             state + date, e.g. "R POPE — scheduled · 4/16". Replaces
+             the v0.3.2 misleading "always says Opted" tooltip.
+           - New WARN state: scheduled-but-not-opted. Fires when a
+             student has a future date on the board but their prereqs
+             aren't met (a planning red flag). Shown as:
+               * Class view — orange pulsing dot + ⚠ prefix on name
+               * Student view — orange header + "⚠ SCHEDULED · NOT
+                 OPTED" chip instead of the regular SCHEDULED.
    0.3.3 - Feedback pass (issues.md v0.3.2):
            - Off-board prereq bridge: buildDag now walks through
              off-board events transitively and flattens the chain
@@ -423,6 +429,8 @@
   .node.s-opted .node-head    { background: #d7e8f5; color: #0a3d62; }  /* light blue    = prereqs met, not yet done */
   .node.s-scheduled .node-head{ background: #fff4cc; color: #6b4b00; }  /* yellow        = future date on sheet */
   .node.s-notopted .node-head { background: #fdecea; color: #8a1c1c; }  /* red           = prereqs not met */
+  .node.s-warn .node-head     { background: #ff8c00; color: #fff; border-bottom-color: #c62828; }  /* orange = scheduled+not opted */
+  .node.s-warn { border-color: #c62828; border-width: 2.5px; }
 
   /* Progress bar (class view only) */
   .node-progress { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); }
@@ -448,6 +456,14 @@
   .role-col li .dot.pending   { background: #fff; border-color: var(--warn); }
   .role-col li .dot.notreq    { background: #bbb; }
   .role-col li .dot.paired    { background: var(--paired); }
+  /* v0.4: scheduled-but-not-opted warning — orange with pulsing border */
+  .role-col li .dot.warn      { background: #ff8c00; border: 2px solid #c62828; animation: warnPulse 1.6s ease-in-out infinite; }
+  .role-col li.warn-row       { color: #c62828; font-weight: 600; }
+  .role-col li.warn-row.dim-name { color: #c62828; }
+  @keyframes warnPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4); }
+    50%      { box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
+  }
 
   /* Student-view compact body (no role cols, just a chip) */
   .node-student-chip { padding: 10px 10px 12px; font-family: var(--mono); font-size: 11px; text-align: center; color: var(--ink); }
@@ -456,6 +472,7 @@
   .node.s-opted .chip-pill     { color: #0a3d62; background: #d7e8f5; border-color: #5c8dba; }
   .node.s-scheduled .chip-pill { color: #6b4b00; background: #fff4cc; border-color: #b58700; }
   .node.s-notopted .chip-pill  { color: #8a1c1c; background: #fdecea; border-color: #c62828; }
+  .node.s-warn .chip-pill      { color: #fff;    background: #ff8c00; border-color: #c62828; font-weight: 700; }
   .node-date {
     margin-top: 4px; font-family: var(--mono); font-size: 11px;
     color: var(--ink-soft); letter-spacing: 0.3px;
@@ -18762,9 +18779,6 @@ const render = (() => {
   }
 
   function renderRoleCol(label, students, perStudent, isSingle, optedByCol) {
-    // Single-column role cols render vertically; multi-column uses CSS
-    // `column-width` so tall lists wrap into 2+ columns automatically,
-    // fixing the "dead space under CF 6605S pilots" issue from v0.3.1.
     const useSingleColumn = students.length <= 5;
     const col = el('div', { class: 'role-col' + (isSingle ? ' single' : '') + (useSingleColumn ? ' one-col' : '') });
     col.appendChild(el('h5', null, label));
@@ -18773,14 +18787,36 @@ const render = (() => {
       const ps = perStudent[s.col];
       const opted = optedByCol ? optedByCol[s.col] : true;
       const isComplete = ps.completion === 'complete';
-      // Dim only students who are NOT opted and NOT already complete.
-      const dim = !opted && !isComplete;
+      const isScheduled = ps.completion === 'scheduled';
+      const dim = !opted && !isComplete && !isScheduled;
+
+      // v0.4: flag a warning when a student has a scheduled date but
+      // their prereqs are NOT met. That's a planning error (someone
+      // was put on the schedule without checking they're opted).
+      const isWarn = isScheduled && !opted;
+
+      // v0.4: per-dot hover tooltip shows the actual completion state
+      // for this student on this node, plus any date. Removes the
+      // v0.3.2 misleading "always says Opted" tooltip.
+      const stateText = (
+        ps.completion === 'complete' ? 'complete' :
+        ps.completion === 'scheduled' ? (opted ? 'scheduled' : 'scheduled (WARN: prereqs not met)') :
+        ps.completion === 'paired-opted' ? 'paired (partner incomplete)' :
+        ps.completion === 'notreq' ? 'not required' :
+        opted ? 'opted (prereqs met, not started)' : 'pending (prereqs not met)'
+      );
+      const dateSuffix = ps.dateText ? ` · ${ps.dateText}` : '';
+      const tooltip = `${s.name} — ${stateText}${dateSuffix}`;
+
+      let dotClass = 'dot ' + (ps.completion === 'paired-opted' ? 'paired' : ps.completion);
+      if (isWarn) dotClass += ' warn';
+
       const li = el('li', {
-        class: dim ? 'dim-name' : '',
-        title: dim ? 'Prereqs not met for this event' : (opted ? 'Opted' : ''),
+        class: (dim ? 'dim-name ' : '') + (isWarn ? 'warn-row' : ''),
+        title: tooltip,
       }, [
-        el('span', { class: 'dot ' + (ps.completion === 'paired-opted' ? 'paired' : ps.completion) }),
-        el('span', null, s.name),
+        el('span', { class: dotClass }),
+        el('span', null, (isWarn ? '⚠ ' : '') + s.name),
       ]);
       ul.appendChild(li);
     }
@@ -18803,6 +18839,10 @@ const render = (() => {
     let band = 'goal', label = 'TARGET';
     if (!isGoal) {
       if (info.isComplete) { band = 's-done'; label = 'DONE'; }
+      else if (info.completion === 'scheduled' && !info.opted) {
+        // v0.4: scheduled-but-not-opted is a planning error — flag it
+        band = 's-warn'; label = '⚠ SCHEDULED · NOT OPTED';
+      }
       else if (info.completion === 'scheduled') { band = 's-scheduled'; label = 'SCHEDULED'; }
       else if (info.opted) { band = 's-opted'; label = 'OPTED'; }
       else { band = 's-notopted'; label = 'NOT OPTED'; }
@@ -19239,6 +19279,7 @@ const render = (() => {
       if (mode === 'student' && student) {
         const info = computeNodeForStudent(e.v, payload, student);
         if (info.isComplete) cls = 'a-green';
+        else if (info.completion === 'scheduled' && !info.opted) cls = 'a-none';
         else if (info.completion === 'scheduled') cls = 'a-yellow';
         else if (info.opted) cls = 'a-green';
         else cls = 'a-none';
@@ -19389,10 +19430,11 @@ function legendPanel() {
 
     <h4>Node header (Student view)</h4>
     <div class="legend-grid">
-      <div class="legend-swatch" style="background:#c9e8b7;border-color:#3d8b29"></div><div><strong>DONE</strong> — student has completed this event</div>
-      <div class="legend-swatch" style="background:#e4f5dc;border-color:#3d8b29"></div><div><strong>OPTED</strong> — prereqs met, student can do this event</div>
+      <div class="legend-swatch" style="background:#2e7d32;border-color:#1f5313"></div><div><strong>DONE</strong> — student has completed this event</div>
+      <div class="legend-swatch" style="background:#d7e8f5;border-color:#5c8dba"></div><div><strong>OPTED</strong> — prereqs met, student can do this event</div>
       <div class="legend-swatch" style="background:#fff4cc;border-color:#b58700"></div><div><strong>SCHEDULED</strong> — future date listed on the sheet</div>
       <div class="legend-swatch" style="background:#fdecea;border-color:#c62828"></div><div><strong>NOT OPTED</strong> — at least one on-board prereq pending</div>
+      <div class="legend-swatch" style="background:#ff8c00;border-color:#c62828"></div><div><strong>⚠ SCHEDULED · NOT OPTED</strong> — planning error: student is on the schedule but prereqs aren't met</div>
     </div>
 
     <h4>Arrows</h4>
