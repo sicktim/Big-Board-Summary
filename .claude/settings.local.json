@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node tracker/serve.cjs)",
+      "Bash(python -m http.server:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

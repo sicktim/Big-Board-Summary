@@ -1,0 +1,1123 @@
+{
+  "phase": "TL",
+  "phaseName": "Test Leadership",
+  "sourceDocument": "MCG 26A",
+  "sourcePages": "163-170",
+  "events": {
+    "TL 5101A": {
+      "code": "TL 5101A",
+      "eventName": "Intro to Science and Technology (S&T)",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 5100",
+      "moduleName": "Strategic Context",
+      "parentCourse": "TL 5000 Strategic Context",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This section explores the ecosystem of defense innovation, focusing on the critical transition of technology from the laboratory to the warfighter (\"crossing the Valley of Death\"). Students will examine the specific roles and missions of key S&T organizations, such as the Air Force Research Lab (AFRL) and the Defense Advanced Research Projects Agency (DARPA). The course also investigates the impact of disruptive emerging technologies—such as Collaborative Combat Aircraft (CCAs) and Long Range Kill Chains (LRKC)—on future test ranges and methodologies.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 5102A": {
+      "code": "TL 5102A",
+      "eventName": "Combatant Command Perspectives",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 5100",
+      "moduleName": "Strategic Context",
+      "parentCourse": "TL 5000 Strategic Context",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This block provides a comparative analysis of the strategic environments facing major geographic and functional Combatant Commands, with specific focus on EUCOM, INDOPACOM, SPACECOM, and CYBERCOM. Students will investigate how the unique geopolitical landscapes, physical environments, and adversary capabilities within each Area of Responsibility (AOR) drive specific requirements for system performance and test evaluation.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 5103A": {
+      "code": "TL 5103A",
+      "eventName": "Intro to Acquisition",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 5100",
+      "moduleName": "Strategic Context",
+      "parentCourse": "TL 5000 Strategic Context",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This course section provides a foundational understanding of the Department of Defense acquisition framework. It covers the interaction between the Joint Capabilities Integration and Development System (JCIDS), the Defense Acquisition System, and the Planning, Programming, Budgeting, and Execution (PPBE) process. Special emphasis is placed on the \"V-model\" of systems engineering and the Tester's role in influencing requirements early in the lifecycle to ensure programs are structurally sound for eventual fielding.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 5104A": {
+      "code": "TL 5104A",
+      "eventName": "Intelligence Briefs",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 5100",
+      "moduleName": "Strategic Context",
+      "parentCourse": "TL 5000 Strategic Context",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This module addresses the critical intersection of intelligence, security, and test execution. Students will receive necessary security indoctrination and gain insight into the capabilities of national intelligence assets. This will include briefs to cover technological capabilities and limitations of US and adversary forces.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 5105A": {
+      "code": "TL 5105A",
+      "eventName": "Special Access Program (SAP) Briefs",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 5100",
+      "moduleName": "Strategic Context",
+      "parentCourse": "TL 5000 Strategic Context",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This section includes the formal indoctrination to the TPS Special Access Program (SAP) student baseline. Students will complete mandatory security training and receive detailed overviews of each program within the baseline to ensure full compliance and situational awareness for subsequent secure curriculum events.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 5110A": {
+      "code": "TL 5110A",
+      "eventName": "Introduction to Operational Test",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 5100",
+      "moduleName": "Strategic Context",
+      "parentCourse": "TL 5000 Strategic Context",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This block introduces students to formal Operational Test (OT) in the context of fielding new capabilities. An overview of the US laws governing OT and independent operational assessments will be presented. OT objectives and test considerations will be compared with those of Developmental Test (DT). Key OT terminology such as Effectiveness and Suitability will be presented, in addition to the different OT organizations and considerations for integrated testing will be discussed.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 6101A": {
+      "code": "TL 6101A",
+      "eventName": "Negotiation, Persuasion, & Communication (NPC) Course",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 6100",
+      "moduleName": "Negotiation, Persuasion, & Communication (NPC)",
+      "parentCourse": "TL 6000 Negotiation, Persuasion, & Communication (NPC)",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 6102Y under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This is a week-long block taught by instructors outside of TPS. Through a combination of lectures, discussions, and exercises, students will develop the skills and confidence needed to negotiate and communicate effectively with stakeholders, including program offices, contractors, and military personnel.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 6102Y": {
+      "code": "TL 6102Y",
+      "eventName": "Oral Report",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 6100",
+      "moduleName": "Negotiation, Persuasion, & Communication (NPC)",
+      "parentCourse": "TL 6000 Negotiation, Persuasion, & Communication (NPC)",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 6101A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This is a week-long block taught by instructors outside of TPS. Through a combination of lectures, discussions, and exercises, students will develop the skills and confidence needed to negotiate and communicate effectively with stakeholders, including program offices, contractors, and military personnel.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 7101A": {
+      "code": "TL 7101A",
+      "eventName": "Innovation Course",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 7100",
+      "moduleName": "Innovation",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 7102Y and TL 7103Y under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This is a week-long innovation block taught by instructors out of TPS. Through a combination of lectures, discussions, and exercises, students will develop the skills and knowledge needed to apply innovation principles and practices to real-world test and evaluation challenges.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 7102Y": {
+      "code": "TL 7102Y",
+      "eventName": "Student Team Presentations in Class",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 7100",
+      "moduleName": "Innovation",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 7101A and TL 7103Y under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This is a week-long innovation block taught by instructors out of TPS. Through a combination of lectures, discussions, and exercises, students will develop the skills and knowledge needed to apply innovation principles and practices to real-world test and evaluation challenges.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 7103Y": {
+      "code": "TL 7103Y",
+      "eventName": "Pitch Day Presentation",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 7100",
+      "moduleName": "Innovation",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 7101A and TL 7102Y under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This is a week-long innovation block taught by instructors out of TPS. Through a combination of lectures, discussions, and exercises, students will develop the skills and knowledge needed to apply innovation principles and practices to real-world test and evaluation challenges.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 7201B": {
+      "code": "TL 7201B",
+      "eventName": "Intro to Computer Science",
+      "eventType": "B",
+      "eventTypeName": "Asynchronous content",
+      "phase": "TL",
+      "moduleCode": "TL 7200",
+      "moduleName": "Data-Driven Test Introduction",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Prereq listed in MCG as 'TPS Enrollment' (not an event code) — captured in description note rather than as a structured prereq.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This block provides some basic computer programming skills required for the rest of the curriculum. These prerequisite courses will introduce you to the basics of coding in Python including basic arithmetic, data types, functions, logic, loops and working with popular external libraires. Learning these basics will enable you to complete hands on assignments in robotic perception, planning, and control. This block will also provide a foundation to understand the software driving modern air and space technologies.",
+      "prerequisites": []
+    },
+    "TL 7210A": {
+      "code": "TL 7210A",
+      "eventName": "Data Driven Test Primer",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 7200",
+      "moduleName": "Data-Driven Test Introduction",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This block provides an overview of data-driven testing methods and outlines the journey to academia during the AI & Emerging Technology Trip.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TL 7201B",
+          "name": "Intro to Computer Science",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 7220A": {
+      "code": "TL 7220A",
+      "eventName": "AI & Emerging Technology Trip",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 7200",
+      "moduleName": "Data-Driven Test Introduction",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 7220Y under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The students will participate in a 2-week trip to MIT or Standford which will provide a detailed overview of Data-Driven Test techniques and visits to industry.  This immersive trip, a collaboration between the USAF Test Pilot School and a leading academic institution like MIT or Stanford, provides students with a comprehensive introduction to Artificial Intelligence (AI) and Machine Learning (ML) for test and evaluation. The trip consists of academic instruction from university faculty on core topics, including AI fundamentals, data management, compute infrastructure, multimodal AI, and cybersecurity. A significant portion of the trip is dedicated to hands-on application through lab work, culminating in a capstone challenge. The experience is further enhanced by immersing students in the practical application of AI through tours of local technology companies and defense-focused labs, reinforcing the real-world relevance of the concepts learned. The overall goal is to equip future test professionals with the foundational knowledge and practical skills to design, evaluate, and implement AI/ML systems in complex operational environments.",
+      "prerequisites": [
+        {
+          "code": "TL 7210A",
+          "name": "Data-Driven Test Primer",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 7220Y": {
+      "code": "TL 7220Y",
+      "eventName": "AI & Emerging Technology Trip Summary Presentation",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 7200",
+      "moduleName": "Data-Driven Test Introduction",
+      "parentCourse": "TL 7000 Innovation",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 7220A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The students will participate in a 2-week trip to MIT or Standford which will provide a detailed overview of Data-Driven Test techniques and visits to industry.  This immersive trip, a collaboration between the USAF Test Pilot School and a leading academic institution like MIT or Stanford, provides students with a comprehensive introduction to Artificial Intelligence (AI) and Machine Learning (ML) for test and evaluation. The trip consists of academic instruction from university faculty on core topics, including AI fundamentals, data management, compute infrastructure, multimodal AI, and cybersecurity. A significant portion of the trip is dedicated to hands-on application through lab work, culminating in a capstone challenge. The experience is further enhanced by immersing students in the practical application of AI through tours of local technology companies and defense-focused labs, reinforcing the real-world relevance of the concepts learned. The overall goal is to equip future test professionals with the foundational knowledge and practical skills to design, evaluate, and implement AI/ML systems in complex operational environments.",
+      "prerequisites": [
+        {
+          "code": "TL 7210A",
+          "name": "Data-Driven Test Primer",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8101A": {
+      "code": "TL 8101A",
+      "eventName": "Case Study Seminar 1",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8102Y, TL 8110-70A range, and TL 8111-71Y range under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8102Y": {
+      "code": "TL 8102Y",
+      "eventName": "Case Study Report 1",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8110-70A range, and TL 8111-71Y range under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8110A": {
+      "code": "TL 8110A",
+      "eventName": "Case Study Seminar 2",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review; interpreted as 7 events (TL 8110A, TL 8120A, TL 8130A, TL 8140A, TL 8150A, TL 8160A, TL 8170A) matching 'Seminar 2-8'.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 1,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8120A": {
+      "code": "TL 8120A",
+      "eventName": "Case Study Seminar 3",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 2,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8130A": {
+      "code": "TL 8130A",
+      "eventName": "Case Study Seminar 4",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 3,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8140A": {
+      "code": "TL 8140A",
+      "eventName": "Case Study Seminar 5",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 4,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8150A": {
+      "code": "TL 8150A",
+      "eventName": "Case Study Seminar 6",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 5,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8160A": {
+      "code": "TL 8160A",
+      "eventName": "Case Study Seminar 7",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 6,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8170A": {
+      "code": "TL 8170A",
+      "eventName": "Case Study Seminar 8",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8111-71Y range under a shared description block. MCG uses non-standard range notation 'TL 8110-70A Case Study Seminar 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8110-70A",
+        "seriesPosition": 7,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8111Y": {
+      "code": "TL 8111Y",
+      "eventName": "Case Study Report 2",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review; interpreted as 7 events (TL 8111Y, TL 8121Y, TL 8131Y, TL 8141Y, TL 8151Y, TL 8161Y, TL 8171Y) matching 'Report 2-8'.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 1,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8121Y": {
+      "code": "TL 8121Y",
+      "eventName": "Case Study Report 3",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 2,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8131Y": {
+      "code": "TL 8131Y",
+      "eventName": "Case Study Report 4",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 3,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8141Y": {
+      "code": "TL 8141Y",
+      "eventName": "Case Study Report 5",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 4,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8151Y": {
+      "code": "TL 8151Y",
+      "eventName": "Case Study Report 6",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 5,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8161Y": {
+      "code": "TL 8161Y",
+      "eventName": "Case Study Report 7",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 6,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "TL 8171Y": {
+      "code": "TL 8171Y",
+      "eventName": "Case Study Report 8",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "TL",
+      "moduleCode": "TL 8100",
+      "moduleName": "Case Studies",
+      "parentCourse": "TL 8000 Case Studies",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with TL 8101A, TL 8102Y, and TL 8110-70A range under a shared description block. MCG uses non-standard range notation 'TL 8111-71Y Case Study Report 2-8' stepping by 10 (not by 1) — flagged for human review.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "TL 8111-71Y",
+        "seriesPosition": 7,
+        "seriesLength": 7
+      },
+      "description": "Eight full day Case Study Seminars occur at a rate of about once a month. Students will develop the skills and knowledge needed to apply the lessons learned from these case studies to real-world test and evaluation challenges, including the ability to analyze complex problems, identify key issues and opportunities, and develop effective solutions.",
+      "prerequisites": [
+        {
+          "code": "AN 5190A",
+          "name": "Test Leadership Phase Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    }
+  }
+}

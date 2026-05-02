@@ -1,0 +1,16 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# Local dev artifacts
+tracker/JSON-outputs/*.json
+!tracker/JSON-outputs/fetch_sheet.json
+
+# Backup files
+*.backup.html
+*.bak
+
+# Editor state
+.vscode/
+.idea/

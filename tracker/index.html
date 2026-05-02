@@ -1,0 +1,3949 @@
+<!DOCTYPE html>
+<!--
+============================================================
+ File:       index.html
+ Module:     big-board-curriculum-status / client
+ Version:    0.5.2a
+ MCG Target: 26A
+ Updated:    2026-04-23
+ Changelog:
+   0.5.2a - Settings panel + display toggles + missing-from-BB
+            + duplicate detection (2026-04-23):
+           - New Settings side-panel (⚙ button in sub-bar). Three
+             sections:
+               (1) Display toggles — show MIBs (M), show async (B),
+                   show exams (E, off by default), show ground school
+                   (G, off by default), show missing-from-BB warnings,
+                   show untracked off-board. Persisted to localStorage.
+                   Turning a type off bridges those events silently
+                   — works even for on-BB events of that type.
+               (2) Duplicate handling — lists every BB-duplicate code
+                   with per-code mode selector (any / all / one) and
+                   row-checkboxes. v0.5.2a records the intent; the
+                   resolution is wired in v0.5.2b.
+               (3) Validation summary — duplicate count, BB-only-codes
+                   count, missing-from-BB count for the current goal.
+           - Missing-from-BB warning nodes: MCG events whose event type
+             is tracked by the board (F/C/L/S/E/G/H/M/B/I) but have no
+             BB row render as dashed-orange nodes with a ⚠ badge. The
+             rest (A/R/Y/Z/W/O — lectures, reports, debriefs, etc.)
+             continue to bridge silently.
+           - Duplicate detection: parse.indexPayload now keeps every
+             row in payload.rowsByCode and flags payload.duplicates.
+             Board load shows a banner "N duplicate codes — Open
+             Settings" with a click-through CTA.
+           - MIB visibility toggle: existing M-type events (PF 8102M
+             etc.) stay visible by default, can be hidden via Settings.
+   0.5.1 - issues.md v0.5.0 feedback (2026-04-22):
+           - MCG-as-authority for applicability (reverses v0.4.3 D7).
+             aggregateEvent + computeNodeForStudent + goalScopeStudents
+             now require student type ∈ MCG applicabilityDetail.standardMapping
+             before counting/showing them. Dark-grey board cell still
+             overrides as "not required." Fixes CF 6370F (T-38 ABM/CSO/FTE)
+             showing pilots in the roster just because the board left
+             white placeholder cells.
+           - Crew-solo / non-crew-solo MCG events now also gate per-pilot
+             DG: F-16 pilot doesn't show under CF 6681F (non-crew-solo F-16,
+             which is for non-F-16 pilots only).
+           - Student view NOT OPTED / ⚠ SCHEDULED·NOT OPTED nodes now list
+             which board-visible prereqs are missing (under the chip).
+             Caps at 8 codes with "+N more"; full list available via
+             buildChainForStudent in the console.
+           - Click-to-focus: click any node body to highlight it + its
+             direct upstream prereqs and dim everything else. Click again
+             or click empty canvas to clear. The +/- expand button is
+             stop-propagated so toggling doesn't trigger focus.
+   0.5.0 - MCG re-extraction rewrite (2026-04-21):
+           - Schema: switched from embedded v1 MCG graph to the structured
+             v2 handoff JSON. Loader fetches `./mcg-26a.json` at boot
+             (1.4 MB, GitHub-Pages-compatible). Removed the 18,406-line
+             embedded block; index.html is now 3,000 lines.
+           - Requires a local HTTP server for file:// dev (Python or Node
+             one-liner; banner tells the user when fetch is blocked).
+           - DAG rewrite: buildDag is viewer-aware. Applies KB Rule A
+             (applicability ∩ nameTag), Rule D/E (crew-solo / non-crew-solo
+             = pilot-only DG filter), Rule G (tight-serial collapse via
+             seriesInfo), Rule I (off-board hide-but-traverse with
+             transitive bridge metadata), `datagroup` condition,
+             `forDownstream` condition (2-pass reach check; self-target is
+             tautology), and `oneOf` groups (virtual "pick one of" node
+             only when >1 alternative passes per-viewer filter).
+           - Class view = union of per-student DAGs over goal-scope
+             students, not a single walk. Every DG/crew-solo/role-specific
+             branch surfaces for any student who uses it.
+           - Validated against KB §13.1 (Root C-12 P→PF 8332F), §13.2
+             (RPA LJ→PF 8311F), §13.3 (F-16 FTE→PF 8332F) — all match.
+           - Removed `resolveToOnBoardPrereqs` (old bridge resolver) and
+             the separate applicability filter pass in layoutDag. Pruning
+             now happens inside buildDag; layoutDag only does orphan
+             cleanup + tier distribution.
+   0.4.3 - Board-data-driven applicability (issues.md v0.4.2):
+           - Architecture: board cell colors are now the sole source of
+             truth for applicability. MCG applicability codes (FTC, STC,
+             "select P", etc.) are informational metadata only — the
+             scheduler already encoded who-needs-what via dark-grey
+             cells on the big board.
+           - aggregateEvent: replaced `appByType && appByCell` with
+             `appByCell` only (dark-grey = not required).
+           - computeNodeForStudent: removed MCG isStudentApplicable
+             gate; board cell drives visibility.
+           - goalScopeStudents: filters by goal event cell color, not
+             MCG applicability array.
+           - isOpted: board-data check replaces MCG code check.
+           - "Not Applicable" screen: checks dark-grey cell, not MCG.
+           - layoutDag class filter: agg.applicable === 0 now means
+             "every scoped student has a dark-grey cell" — reliable
+             regardless of non-standard MCG codes.
+           - Fixes: TF 6251F (FTC) now visible in PF 8332F view;
+             CF 6403F/CF 6503S (CSO/RPA only) correctly hidden when
+             goal scope is ABM/FTE/P.
+   0.4.2 - Layout knobs panel:
+           - New "Layout…" button in the sub-bar opens a right-side
+             panel with every dagre parameter as a live input:
+               rankdir, ranker, align, ranksep, nodesep, edgesep,
+               marginx, marginy, minlen, goal-edge weight.
+           - Changes trigger re-layout with a 120ms debounce so
+             tuning feels responsive without thrashing on every
+             keystroke.
+           - Three presets (Compact / Normal / Spacious) bulk-set
+             the spacing values.
+           - "Reset to defaults" restores v0.4.1 values.
+           - Settings persist to localStorage (bbcs::layoutKnobs)
+             so tuning survives reloads.
+           - goal-edge weight multiplier: when > 1, every edge
+             pointing directly into the target event gets that
+             weight in dagre's cost function, making the final
+             chain draw straighter.
+           - minlen applies globally: force every edge to span at
+             least N ranks.
+   0.4.1 - Line-rendering pass:
+           - Orphan-node fix: nodes whose visible edges all got
+             filtered out (e.g. CF 6605S on some goal views) are
+             now dropped from the canvas instead of shown as
+             floating islands. Goal itself is always kept.
+           - Endpoint clamping: every arrow visibly starts at the
+             right-center of its source node and ends at the left-
+             center of its target. Fixes the "lines emerge from the
+             centroid" artifact from v0.4.0.
+           - New "Lines" selector in the sub-bar with four styles:
+             Polyline (default, straight segments along dagre
+             waypoints), Smooth curve (cubic bezier with horizontal
+             tangents), Orthogonal (right-angle routing), and
+             Straight (direct line, ignores waypoints entirely —
+             useful for debugging).
+           - Choice persisted in localStorage so reloads remember.
+           - Dropped the v0.4.0 Q/T smoothing path — it produced
+             the "loops back on itself" artifacts the user reported.
+           - 2-cycle breaker in buildDag: when the MCG has mutual
+             prereq entries (CF 6660S ↔ CF 6672F on 26A), keep the
+             direction whose 'from' is deeper (further from goal)
+             and drop the reverse. Without this, dagre's feedback-
+             arc-set reversal drew the other direction backward.
+   0.4.0 - Feedback pass (issues.md v0.3.3):
+           - Cache-first boot. Page no longer hangs on reload waiting
+             for sheets_avail. Boot auto-loads the most-recently-cached
+             sheet (prefers 26A FTC Big Board). New ⟳ Tabs button to
+             manually refresh the tab list.
+           - Dagre layered layout replaces the hand-rolled flex columns.
+             Fixes line crossings + lines cutting through nodes. Edge
+             waypoints are computed to route around nodes.
+           - Fallback path: if dagre.min.js isn't loaded, app still
+             works using the old column layout with a banner warning.
+           - Off-board bridge tooltip on edges (hover a line that goes
+             through an off-board chain — it shows "via off-board:
+             CODE → CODE").
+           - Student-dot hover tooltips now show the actual completion
+             state + date, e.g. "R POPE — scheduled · 4/16". Replaces
+             the v0.3.2 misleading "always says Opted" tooltip.
+           - New WARN state: scheduled-but-not-opted. Fires when a
+             student has a future date on the board but their prereqs
+             aren't met (a planning red flag). Shown as:
+               * Class view — orange pulsing dot + ⚠ prefix on name
+               * Student view — orange header + "⚠ SCHEDULED · NOT
+                 OPTED" chip instead of the regular SCHEDULED.
+   0.3.3 - Feedback pass (issues.md v0.3.2):
+           - Off-board prereq bridge: buildDag now walks through
+             off-board events transitively and flattens the chain
+             to on-board edges. Fixes FQ 9511F showing as a one-
+             node DAG when its on-board ancestors (through the
+             FQ 8210Y oral report bridge) were being hidden.
+           - Today's date now counts as SCHEDULED, not past-dated
+             pending. Day-precision comparison (was: timestamp
+             comparison that flipped by mid-afternoon).
+           - Date from cell.value threaded through to the student-
+             view node and shown under the chip, regardless of
+             whether the chip is OPTED or SCHEDULED (so "OPTED
+             4/14" reads as "prereqs met AND scheduled on 4/14").
+           - OPTED recolored to blue (#d7e8f5 / #0a3d62) so it's
+             distinct from DONE's solid green at a glance.
+           - Collapsed nodes now show a 2-line clamped title, not
+             just the event code. Minimum width bumped to 180px.
+           - Arrow drift on toggle fixed: removed the 150ms width
+             transition that caused SVG to be drawn during the
+             anim; redraw uses double-RAF and a ResizeObserver on
+             the canvas so window resize also works.
+           - Cache diagnostics:
+             * Every fetchSheet logs cache HIT/MISS/WRITE/FAIL
+               to console (unconditional, not behind DEBUG).
+             * Boot-time canary detects if localStorage persists
+               across reloads; banner warns if it doesn't.
+             * Write failures surface in the banner with the
+               specific error (QuotaExceeded, etc.).
+   0.3.2 - Feedback pass (issues.md v0.3.1):
+           - Student view now has 4 distinct states: DONE (dark
+             green), OPTED (light green), SCHEDULED (yellow),
+             NOT OPTED (red). Renamed from v0.3.1 "BLOCKED".
+           - Class view nodes default to COLLAPSED. Each node has
+             a (+)/(−) button that expands to the full progress+
+             roster view. Arrows redraw when width changes.
+           - Added Expand all / Collapse all buttons in the sub-bar
+             (class view only).
+           - Dense roster lists wrap into multiple CSS columns
+             (column-width: 90px) so nodes like CF 6605S with 11
+             pilots no longer leave dead space.
+           - Node rosters are now pre-filtered by GOAL applicability
+             — a PF 8332F (ABM/FTE/P) view never shows CSO/RPA
+             anywhere, even on prereq nodes they'd technically
+             qualify for. Aggregates also restrict to goal scope.
+           - Class view dims (light grey) student names when they
+             aren't opted for that specific node's event (prereqs
+             not met). Still visible, just faded so you can see at
+             a glance who's ready vs who's blocked.
+           - Student view: if the selected student isn't applicable
+             to the chosen goal, shows a Not Applicable screen
+             instead of trying to render a DAG.
+   0.3.1 - Blocker fix found in pre-flight DAG harness:
+           buildDag had no visited-set guard, so MCG cycles (notably
+           CF 6660S ↔ CF 6672F on 26A) caused an infinite BFS loop
+           that would hang the tab for 6 of the 10 goal events
+           (PF 8311F, PF 8332F, SY 7503F, SY 7511F, SY 7512C,
+           TF 9111E). Added seen-set; first-visit-wins gives tier
+           depth = shortest-path-from-goal, which is fine for layout.
+   0.3.0 - UI rewrite per user's example-class-overview.png:
+           - Replaced card-dashboard with a DAG flow chart rooted on
+             one user-chosen goal event (Target Event dropdown).
+           - Added View toggle: Class (aggregate %) vs Student (binary
+             opted/not-opted for one picked student).
+           - Nodes show header code+title (colored by status), a
+             progress bar+percentage, and two role columns
+             (ABM/FTE | Pilots) with per-student dots.
+           - Off-board prereqs NO LONGER SHOWN anywhere. Issue #1.
+           - Not-applicable events hidden (for class: nodes with zero
+             applicable students; for student: nodes where this
+             student isn't applicable).
+           - Color bands: 0% red · 1-74% yellow · 75%+ green · goal
+             node grey-dashed.
+           - Arrow color follows source node's status.
+           - Auto-layout by depth with horizontal scroll if wide.
+           - Dropped TRACKS config + renderMissingCard + the old
+             legend's "cell format" section (cell formats still
+             matter under the hood but shouldn't clutter the UI).
+   0.2.1 - Cache upgrade (tooling for UI iteration, no schema change):
+           - Switched from sessionStorage to localStorage so cached
+             fetches survive tab close / reload. Heavy fetch_sheet
+             calls only happen when the user explicitly hits Refresh
+             or Clear Cache.
+           - Cache entries now stored as {cachedAt, payload} envelope
+             so we know when each was pulled.
+           - Footer shows cache status (sheet count · total KB · time
+             of newest entry). Hover for per-sheet breakdown.
+           - New "Clear cache" button at bottom-right of the footer
+             wipes all bbcs:: keys (with a confirm prompt).
+           - Banner on Load now says whether data came from cache or
+             a live fetch, with timestamp.
+   0.2.0 - Bug fixes from review-harness pass:
+           BUG-1 (blocker): TRACKS filter accepted MCG-only goals →
+             renderCard dereferenced undefined boardEvent. Tighten
+             filter to require payload.byCode[g]; missing goals now
+             always route through renderMissingCard.
+           BUG-2 (major): paired-opted cells bumped state to Started,
+             bypassing prereq refinement. Now counted separately as
+             pairedOpted and do NOT trigger the Started branch.
+           BUG-3 (major): duplicate event codes (multi-mission events
+             like TF 7201M) silently dropped. Now collected in
+             payload.duplicates[] and console.warn'd.
+           BUG-4 (minor): parseCellDate picked a year silently when a
+             date fit neither end of a cross-year class window. Now
+             returns null on ambiguous-year cells.
+           BUG-5 (minor): white-cell with strikethrough was ignored.
+             Now console.warn'd so sheet drift is visible.
+           BUG-6 (cosmetic): "try STC tab?" hint hardcoded on every
+             missing card. Now only shown for SY 7521O specifically.
+           Also removed orphaned $('#empty-state').style access after
+             main.innerHTML='' in renderAll (was throwing on load).
+   0.1.0 - Initial UI: sheet picker, goal-event cards grouped by
+           track, per-student drilldown with prereq chain, issue-log
+           panel, status legend. Embedded MCG graph between
+           MCG-GRAPH fences (regenerate via build-prereq-graph.cjs).
+============================================================
+ How to use:
+   1. Edit CONFIG.GAS_ENDPOINT below with your deployed Web App /exec URL.
+   2. v0.5 requires an HTTP server (the MCG graph is fetched from
+      `./mcg-26a.json` at boot, which browsers block over file://):
+        python -m http.server 8080
+      or, if no Python:
+        npx http-server -p 8080
+      then open http://localhost:8080/index.html
+   3. For GitHub Pages: push the folder to a repo with Pages enabled —
+      `index.html`, `mcg-26a.json`, and `dagre.min.js` all serve as
+      static assets. Same-origin fetch works out of the box.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Board Curriculum Status — MCG 26A</title>
+
+<!-- =========================================================
+     STYLES
+     White / bold-line / elegant theme. Subtle card shading,
+     strong 1-2px borders, type-chip accents.
+     ========================================================= -->
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #555;
+    --ink-faint: #888;
+    --line: #1a1a1a;
+    --line-soft: #d0d0d0;
+    --card: #fdfdfd;
+    --card-head: #f5f5f5;
+    --accent: #0059a6;
+    --accent-soft: #e8f0f8;
+    --complete: #2e7d32;
+    --partial: #6a9e36;
+    --started: #b88600;
+    --notstarted: #757575;
+    --prereqs-met: #0062b1;
+    --prereqs-partial: #6b44a8;
+    --prereqs-not: #c62828;
+    --warn: #c62828;
+    --paired: #8a56d6;
+    --mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.45; }
+  button { font-family: inherit; cursor: pointer; }
+  code, .mono { font-family: var(--mono); }
+
+  /* --- top header bar --- */
+  header.app-header {
+    border-bottom: 2px solid var(--line);
+    padding: 10px 20px;
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+    position: sticky; top: 0; background: var(--bg); z-index: 50;
+  }
+  .app-title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+  .app-title small { color: var(--ink-faint); font-weight: 400; font-size: 11px; margin-left: 6px; font-family: var(--mono); }
+  .hbar-spacer { flex: 1; }
+  .ctrl-group { display: flex; align-items: center; gap: 6px; }
+  .ctrl-group label { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  select, input[type="text"], input[type="url"] {
+    border: 1.5px solid var(--line); background: #fff; padding: 5px 9px; font-size: 13px; font-family: var(--mono);
+    border-radius: 3px; outline: none; min-width: 180px;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+  button.btn {
+    border: 1.5px solid var(--line); background: #fff; padding: 5px 14px; font-size: 13px; font-weight: 600;
+    border-radius: 3px; transition: all 0.12s;
+  }
+  button.btn:hover { background: var(--ink); color: #fff; }
+  button.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.btn.primary:hover { background: #003d72; border-color: #003d72; }
+  button.btn.icon { padding: 5px 8px; }
+  button.btn[disabled] { opacity: 0.4; cursor: not-allowed; background: #fff !important; color: var(--ink) !important; }
+
+  /* --- sub header / class meta --- */
+  .class-meta {
+    padding: 8px 20px; border-bottom: 1px solid var(--line-soft); font-size: 12px; color: var(--ink-soft);
+    display: flex; flex-wrap: wrap; gap: 16px; font-family: var(--mono);
+  }
+  .class-meta .stat strong { color: var(--ink); }
+
+  /* --- content layout --- */
+  main { padding: 16px 20px 60px; max-width: 1400px; margin: 0 auto; }
+  .empty-state { padding: 80px 20px; text-align: center; color: var(--ink-faint); }
+  .empty-state h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; color: var(--ink); }
+  .empty-state code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+
+  /* --- track sections --- */
+  .track { margin-bottom: 28px; }
+  .track-header {
+    display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--line);
+    padding: 6px 0; margin-bottom: 14px;
+  }
+  .track-header h2 { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .track-header .count { color: var(--ink-faint); font-size: 12px; font-family: var(--mono); }
+
+  /* --- goal event cards --- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+  .card { border: 1.5px solid var(--line); border-radius: 5px; background: var(--card); overflow: hidden; }
+  .card.expanded { grid-column: 1 / -1; }
+  .card-head {
+    padding: 10px 14px; background: var(--card-head); border-bottom: 1px solid var(--line-soft);
+    cursor: pointer; user-select: none;
+  }
+  .card-head:hover { background: #ebebeb; }
+  .card-head-row { display: flex; align-items: center; gap: 10px; }
+  .card-code { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: 0.3px; }
+  .card-title { flex: 1; font-size: 13px; font-weight: 600; }
+  .card-chevron { color: var(--ink-faint); font-size: 14px; }
+  .card-sub { margin-top: 4px; font-size: 11px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 10px; }
+  .card-sub .mono { font-size: 11px; }
+
+  .status-pill {
+    display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase; border: 1.5px solid var(--line);
+  }
+  .status-Complete          { background: var(--complete); color: #fff; border-color: var(--complete); }
+  .status-PartiallyComplete { background: var(--partial); color: #fff; border-color: var(--partial); }
+  .status-Started           { background: var(--started); color: #fff; border-color: var(--started); }
+  .status-NotStarted        { background: #f0f0f0; color: var(--notstarted); border-color: var(--line-soft); }
+  .status-PrereqsMet        { background: var(--prereqs-met); color: #fff; border-color: var(--prereqs-met); }
+  .status-PrereqsPartiallyMet { background: var(--prereqs-partial); color: #fff; border-color: var(--prereqs-partial); }
+  .status-PrereqsNotMet     { background: #fdecea; color: var(--prereqs-not); border-color: var(--prereqs-not); }
+  .status-Unknown           { background: #fff; color: var(--ink-faint); border-color: var(--line-soft); }
+
+  .progress-wrap { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); }
+  .progress-bar-bg { background: #f0f0f0; border: 1px solid var(--line-soft); border-radius: 2px; height: 14px; position: relative; overflow: hidden; }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(to right, var(--complete), var(--partial));
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 4px;
+    font-size: 10px; color: #fff; font-weight: 600; font-family: var(--mono);
+  }
+  .progress-summary { margin-top: 4px; font-size: 11px; color: var(--ink-soft); font-family: var(--mono); }
+
+  /* --- expanded body --- */
+  .card-body { padding: 12px 14px 16px; }
+  .students-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .students-header h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .students-header .hint { font-size: 11px; color: var(--ink-faint); font-style: italic; }
+  .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; }
+  .student-row {
+    display: flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid var(--line-soft);
+    border-radius: 3px; font-size: 12px; background: #fff; cursor: pointer; transition: all 0.1s;
+  }
+  .student-row:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .student-dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--line); flex-shrink: 0; }
+  .student-dot.complete { background: var(--complete); border-color: var(--complete); }
+  .student-dot.scheduled { background: var(--started); border-color: var(--started); }
+  .student-dot.pending { background: #fff; }
+  .student-dot.notreq { background: var(--notstarted); border-color: var(--notstarted); }
+  .student-dot.paired-opted { background: var(--paired); border-color: var(--paired); }
+  .student-row.not-applicable { opacity: 0.35; }
+  .student-name { font-family: var(--mono); font-size: 11px; font-weight: 600; }
+  .student-meta { color: var(--ink-faint); font-size: 10px; margin-left: auto; font-family: var(--mono); }
+
+  /* --- chain drilldown --- */
+  .chain-panel {
+    margin-top: 12px; padding: 10px; background: #fafafa; border: 1px solid var(--line-soft); border-radius: 3px;
+  }
+  .chain-header { font-size: 12px; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .chain-header button { border: none; background: transparent; color: var(--ink-faint); font-size: 16px; line-height: 1; }
+  .chain-list { list-style: none; }
+  .chain-item {
+    display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; border-bottom: 1px dashed var(--line-soft);
+  }
+  .chain-item:last-child { border-bottom: none; }
+  .chain-depth { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); width: 28px; flex-shrink: 0; text-align: right; }
+  .chain-code { font-family: var(--mono); font-size: 11px; font-weight: 600; width: 88px; flex-shrink: 0; }
+  .chain-title { font-size: 11px; flex: 1; color: var(--ink); }
+  .chain-status { font-size: 10px; font-family: var(--mono); font-weight: 600; text-transform: uppercase; padding: 1px 6px; border-radius: 2px; white-space: nowrap; }
+  .chain-status.c-complete { background: #e0f2e1; color: var(--complete); }
+  .chain-status.c-scheduled { background: #fff4d6; color: #8a6700; }
+  .chain-status.c-pending { background: #fbe8e8; color: var(--prereqs-not); }
+  .chain-status.c-notreq { background: #eee; color: var(--notstarted); }
+  .chain-status.c-offboard { background: #eef; color: var(--prereqs-met); font-style: italic; }
+  .chain-item.offboard { opacity: 0.65; }
+
+  /* --- panel (issues + legend) --- */
+  .panel {
+    position: fixed; top: 0; right: -440px; width: 440px; max-width: 96vw; height: 100vh;
+    background: #fff; border-left: 2px solid var(--line); overflow-y: auto; z-index: 200;
+    transition: right 0.2s ease; box-shadow: -4px 0 14px rgba(0,0,0,0.1);
+  }
+  .panel.open { right: 0; }
+  .panel-header { padding: 12px 18px; border-bottom: 2px solid var(--line); display: flex; align-items: center; justify-content: space-between; background: var(--card-head); }
+  .panel-header h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .panel-body { padding: 16px 18px; font-size: 13px; }
+  .panel-body h4 { font-size: 12px; font-weight: 700; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .panel-body pre { background: #f5f5f5; padding: 8px 10px; border: 1px solid var(--line-soft); border-radius: 3px; font-size: 11px; white-space: pre-wrap; word-break: break-word; }
+  .legend-grid { display: grid; grid-template-columns: 24px 1fr; gap: 6px 10px; align-items: center; }
+  .legend-swatch { width: 22px; height: 14px; border: 1.5px solid var(--line); border-radius: 2px; }
+
+  /* v0.4.2: layout knobs panel — label / input pairs */
+  .knob-grid { display: grid; grid-template-columns: 130px 1fr; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+  .knob-grid label { font-size: 11px; font-family: var(--mono); color: var(--ink-soft); }
+  .knob-grid input[type="number"],
+  .knob-grid select { width: 100%; padding: 3px 6px; font-size: 12px; font-family: var(--mono); border: 1px solid var(--line); border-radius: 3px; background: #fff; }
+  .knob-grid input[type="number"]:focus,
+  .knob-grid select:focus { outline: none; border-color: var(--accent); }
+
+  .panel-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.2); z-index: 150; display: none; }
+  .panel-backdrop.open { display: block; }
+
+  /* --- issue log list --- */
+  .issue-entry { border-left: 3px solid var(--line-soft); padding: 6px 0 6px 10px; margin: 8px 0; font-size: 12px; }
+  .issue-entry.blocker  { border-left-color: var(--warn); }
+  .issue-entry.major    { border-left-color: var(--started); }
+  .issue-entry.minor    { border-left-color: var(--prereqs-met); }
+  .issue-entry.cosmetic { border-left-color: var(--line-soft); }
+  .issue-entry .meta { color: var(--ink-faint); font-size: 11px; font-family: var(--mono); }
+
+  /* --- debug tables (Students / Events tabs) --- */
+  .debug-table-wrap { padding: 16px 20px; overflow-x: auto; }
+  .debug-table-wrap h2 { font-size: 15px; margin: 0 0 4px; }
+  .debug-table-wrap p.subtitle { font-size: 12px; color: var(--ink-faint); margin: 0 0 12px; }
+  .debug-table {
+    border-collapse: collapse; font-size: 11px; font-family: var(--mono);
+    width: 100%; white-space: nowrap;
+  }
+  .debug-table th, .debug-table td {
+    border: 1px solid var(--line-soft); padding: 3px 6px; text-align: left;
+  }
+  .debug-table th {
+    background: var(--card-head); font-weight: 700; position: sticky; top: 0; z-index: 5;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .debug-table tr:hover { background: #f5f8ff; }
+  .debug-table .cell-dg { background: #bbb; color: #fff; text-align: center; }
+  .debug-table .cell-wh { background: #fff; text-align: center; }
+  .debug-table .cell-lg { background: #d9ead3; text-align: center; }
+  .debug-table .cell-pa { background: #c9daf8; text-align: center; }
+  .debug-table .cell-na { background: #f4f4f4; color: #999; text-align: center; }
+  .debug-table .prereq-list { font-size: 10px; max-width: 300px; white-space: normal; line-height: 1.4; }
+  .debug-table .app-list { font-size: 10px; }
+  .debug-table .flag { color: var(--warn); font-weight: 700; }
+  .debug-filter { margin-bottom: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .debug-filter input, .debug-filter select { font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 3px; }
+  .debug-filter input { width: 200px; }
+  .debug-back-btn { margin-bottom: 10px; }
+
+  /* --- toast / error banner --- */
+  .banner { margin: 10px 20px; padding: 10px 14px; border: 1.5px solid var(--warn); background: #fdecea; color: var(--warn); font-size: 13px; border-radius: 4px; display: none; }
+  .banner.show { display: block; }
+  .banner .banner-cta {
+    margin-left: 8px; padding: 3px 10px; border: 1px solid var(--warn);
+    background: #fff; color: var(--warn); font-weight: 700; font-size: 12px;
+    border-radius: 3px; cursor: pointer;
+  }
+  .banner .banner-cta:hover { background: var(--warn); color: #fff; }
+
+  /* --- footer --- */
+  footer.app-footer { border-top: 1px solid var(--line-soft); padding: 12px 20px; font-size: 11px; color: var(--ink-faint); font-family: var(--mono); display: flex; gap: 16px; flex-wrap: wrap; }
+
+  /* --- mismatch badge --- */
+  .mismatch { color: var(--warn); font-weight: 700; font-size: 10px; margin-left: 4px; }
+
+  /* ===========================================================
+     v0.3.0 — DAG flow chart styles
+     =========================================================== */
+  .view-bar {
+    padding: 8px 20px; border-bottom: 1px solid var(--line-soft);
+    background: #fafafa; display: flex; flex-wrap: wrap; gap: 14px;
+    align-items: center; position: sticky; top: 57px; z-index: 40;
+  }
+  .view-toggle { display: inline-flex; border: 1.5px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .view-opt {
+    border: none; background: #fff; padding: 5px 14px; font-size: 12px; font-weight: 600;
+    color: var(--ink); cursor: pointer; font-family: var(--sans);
+  }
+  .view-opt + .view-opt { border-left: 1.5px solid var(--line); }
+  .view-opt.active { background: var(--ink); color: #fff; }
+  .view-opt:hover:not(.active) { background: #f0f0f0; }
+
+  /* DAG canvas — v0.4 uses dagre for layered layout; nodes are
+     absolutely positioned based on dagre's reported coordinates. Canvas
+     sizes itself to the full graph bounding box so the whole DAG scrolls
+     horizontally + vertically. Fallback (no dagre) uses the old flex
+     columns via the `.dag-canvas.fallback` class. */
+  main.dag-main { padding: 14px 0 60px; max-width: none; margin: 0; overflow: auto; }
+  .dag-canvas { position: relative; padding: 14px 24px 24px; }
+  .dag-canvas .node { position: absolute; }
+  /* Fallback layout (pre-dagre) */
+  .dag-canvas.fallback { display: inline-flex; flex-direction: row-reverse; align-items: flex-start; gap: 60px; padding: 18px 28px 30px; min-width: 100%; }
+  .dag-canvas.fallback .node { position: static; }
+  .dag-col { display: flex; flex-direction: column; gap: 14px; min-width: 240px; }
+  .dag-col-label { font-size: 10px; font-family: var(--mono); color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.5px; text-align: center; margin-bottom: 4px; }
+
+  /* node — v0.3.3: dropped the width transition. It caused arrows to be
+     drawn against intermediate widths during the 150ms anim, giving the
+     "arrows drift off the container edge" bug. Snap instead. */
+  .node { border: 1.5px solid var(--line); border-radius: 5px; background: #fff; position: relative; z-index: 2; width: 240px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .node.goal { border-width: 2.5px; border-style: dashed; border-color: #999; background: #fafafa; }
+  .node.collapsed { width: 180px; }
+  .node.collapsed .node-progress,
+  .node.collapsed .node-roles,
+  .node.collapsed .node-student-chip { display: none; }
+  .node.collapsed .node-head { border-bottom: none; border-radius: 3px; }
+  /* v0.3.3: keep a shortened title visible when collapsed so users can
+     scan without expanding everything. */
+  .node.collapsed .node-head-title {
+    font-size: 10px; line-height: 1.2; margin-top: 2px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; text-overflow: ellipsis; padding-right: 18px;
+  }
+  .node-head { padding: 8px 10px; border-bottom: 1px solid var(--line); border-radius: 3px 3px 0 0; position: relative; }
+  .node-head-code { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .node-head-title { font-size: 11px; margin-top: 2px; line-height: 1.3; padding-right: 18px; }
+  .node-toggle {
+    position: absolute; top: 4px; right: 4px; width: 18px; height: 18px;
+    border: 1px solid rgba(0,0,0,0.2); background: rgba(255,255,255,0.6);
+    border-radius: 3px; font-size: 12px; font-weight: 700; line-height: 1; color: inherit;
+    cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;
+  }
+  .node-toggle:hover { background: rgba(255,255,255,0.95); }
+
+  /* Header status colors (class view — aggregate) */
+  .node.s-none .node-head   { background: #fdecea; color: #8a1c1c; }
+  .node.s-yellow .node-head { background: #fff4cc; color: #6b4b00; }
+  .node.s-green .node-head  { background: #e4f5dc; color: #1f5313; }
+  .node.goal .node-head     { background: #f0f0f0; color: #666; }
+
+  /* Header status colors (student view — 4 states, v0.3.3: shifted OPTED
+     to a blue hue so it reads as distinctly different from DONE green). */
+  .node.s-done .node-head     { background: #2e7d32; color: #fff;    }  /* solid green   = complete */
+  .node.s-opted .node-head    { background: #d7e8f5; color: #0a3d62; }  /* light blue    = prereqs met, not yet done */
+  .node.s-scheduled .node-head{ background: #fff4cc; color: #6b4b00; }  /* yellow        = future date on sheet */
+  .node.s-notopted .node-head { background: #fdecea; color: #8a1c1c; }  /* red           = prereqs not met */
+  .node.s-warn .node-head     { background: #ff8c00; color: #fff; border-bottom-color: #c62828; }  /* orange = scheduled+not opted */
+  .node.s-warn { border-color: #c62828; border-width: 2.5px; }
+
+  /* v0.5.1: click-to-focus — clicked node + direct prereqs stay sharp,
+     everything else dims. Click the canvas (or the same node again) to clear. */
+  .dag-canvas .node { transition: opacity 0.12s ease; cursor: pointer; }
+  .dag-canvas.has-focus .node.dimmed { opacity: 0.18; pointer-events: none; }
+  .dag-canvas.has-focus .node.focused {
+    box-shadow: 0 0 0 3px var(--accent), 0 2px 6px rgba(0,0,0,0.18);
+    z-index: 5;
+  }
+  .dag-canvas.has-focus .node.focus-prereq {
+    box-shadow: 0 0 0 2px var(--accent-soft), 0 1px 4px rgba(0,0,0,0.10);
+    z-index: 4;
+  }
+  .dag-arrows path { transition: opacity 0.12s ease; }
+  .dag-arrows path.dim-edge { opacity: 0.12; }
+  .dag-arrows path.focus-edge { opacity: 1; stroke-width: 2.5px; }
+
+  /* v0.5.1: missing-prereqs block inside NOT OPTED / s-warn student nodes */
+  .node-missing { padding: 6px 10px 8px; border-top: 1px dashed var(--line-soft); font-size: 10px; }
+  .node-missing-label { font-weight: 700; margin-bottom: 3px; color: var(--ink-soft); }
+  .node-missing ul { list-style: none; padding: 0; margin: 0; }
+  .node-missing li { font-family: var(--mono); font-size: 10px; line-height: 1.5; color: #8a1c1c; }
+  .node-missing li.more { font-family: var(--sans); font-style: italic; color: var(--ink-faint); }
+
+  /* v0.5.2a: Settings panel internals */
+  .settings-section { border-top: 1px solid var(--line-soft); padding-top: 12px; margin-top: 14px; }
+  .settings-section:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .settings-section h4 { font-size: 12px; margin-bottom: 6px; }
+  .toggle-list label { display: block; padding: 6px 0; line-height: 1.4; cursor: pointer; }
+  .toggle-list input { margin-right: 6px; vertical-align: middle; }
+  .toggle-list .muted { color: var(--ink-faint); font-size: 11px; }
+  .small { font-size: 11px; }
+  .muted { color: var(--ink-soft); }
+  .dup-block { border: 1px solid var(--line-soft); border-radius: 4px; padding: 8px 10px; margin-bottom: 8px; background: #fafafa; }
+  .dup-head { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; margin-bottom: 6px; }
+  .dup-head .muted { font-weight: 400; font-size: 11px; }
+  .dup-modes label { display: block; padding: 3px 0; font-size: 12px; cursor: pointer; }
+  .dup-modes input { margin-right: 4px; }
+  .dup-rows { border-top: 1px dashed var(--line-soft); padding-top: 6px; margin-top: 6px; }
+  .dup-row { display: block; padding: 2px 0; font-size: 11px; cursor: pointer; }
+  .dup-row input { margin-right: 4px; }
+  .dup-row .mono { background: #eef; padding: 1px 4px; border-radius: 3px; }
+  .badge-count { display: inline-block; background: #c62828; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
+
+  /* v0.5.2a: MCG-required but missing from Big Board */
+  .node.missing-node { border-style: dashed; border-color: #c97a0f; background: #fff6e8; }
+  .node.missing-node .node-head { background: #ffe6c0; color: #7a4500; border-bottom-color: #c97a0f; }
+  .node.missing-node .node-head-code { color: #c62828; }
+  .node-missing-banner {
+    padding: 4px 10px; font-size: 10px; font-weight: 700;
+    color: #7a4500; background: #fff1db; border-bottom: 1px dashed #c97a0f;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+
+  /* v0.5: virtual "pick one of" group node for MCG oneOf prereqs */
+  .node.group-node { width: 200px; border-style: dashed; border-color: #8a56d6; background: #f6f1ff; }
+  .node.group-node .node-head { background: #ece0ff; color: #3c1e6b; border-bottom-color: #8a56d6; }
+  .node.group-node .node-head-code { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .node.group-node .node-head-title { font-family: var(--mono); font-size: 10px; word-break: break-word; }
+
+  /* Progress bar (class view only) */
+  .node-progress { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); }
+  .node-bar-bg { background: #f2f2f2; border: 1px solid var(--line-soft); border-radius: 2px; height: 10px; position: relative; overflow: hidden; }
+  .node-bar-fill { height: 100%; background: var(--partial); }
+  .node.s-green .node-bar-fill { background: var(--complete); }
+  .node.s-yellow .node-bar-fill { background: var(--started); }
+  .node.s-none .node-bar-fill { background: var(--warn); }
+  .node-pct { text-align: center; font-family: var(--mono); font-size: 14px; font-weight: 700; margin-top: 3px; }
+
+  /* Role columns inside a node */
+  .node-roles { display: flex; padding: 6px 8px 8px; gap: 8px; }
+  .role-col { flex: 1; min-width: 0; }
+  .role-col h5 { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--ink-faint); letter-spacing: 0.5px; text-align: center; padding-bottom: 3px; border-bottom: 1px solid var(--line-soft); margin-bottom: 4px; }
+  .role-col.single { text-align: center; }
+  .role-col ul { list-style: none; padding: 0; margin: 0; column-width: 90px; column-gap: 6px; }
+  .role-col.one-col ul { column-count: 1; column-width: auto; }
+  .role-col li { display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: var(--mono); padding: 1px 0; break-inside: avoid; }
+  .role-col li.dim-name { color: #aaa; }
+  .role-col li .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
+  .role-col li .dot.complete  { background: var(--complete); }
+  .role-col li .dot.scheduled { background: var(--started); }
+  .role-col li .dot.pending   { background: #fff; border-color: var(--warn); }
+  .role-col li .dot.notreq    { background: #bbb; }
+  .role-col li .dot.paired    { background: var(--paired); }
+  /* v0.4: scheduled-but-not-opted warning — orange with pulsing border */
+  .role-col li .dot.warn      { background: #ff8c00; border: 2px solid #c62828; animation: warnPulse 1.6s ease-in-out infinite; }
+  .role-col li.warn-row       { color: #c62828; font-weight: 600; }
+  .role-col li.warn-row.dim-name { color: #c62828; }
+  @keyframes warnPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4); }
+    50%      { box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1); }
+  }
+
+  /* Student-view compact body (no role cols, just a chip) */
+  .node-student-chip { padding: 10px 10px 12px; font-family: var(--mono); font-size: 11px; text-align: center; color: var(--ink); }
+  .node-student-chip .chip-pill { display: inline-block; padding: 3px 10px; border: 1.5px solid currentColor; border-radius: 12px; font-weight: 700; letter-spacing: 0.3px; }
+  .node.s-done .chip-pill      { color: #fff;    background: #2e7d32; border-color: #1f5313; }
+  .node.s-opted .chip-pill     { color: #0a3d62; background: #d7e8f5; border-color: #5c8dba; }
+  .node.s-scheduled .chip-pill { color: #6b4b00; background: #fff4cc; border-color: #b58700; }
+  .node.s-notopted .chip-pill  { color: #8a1c1c; background: #fdecea; border-color: #c62828; }
+  .node.s-warn .chip-pill      { color: #fff;    background: #ff8c00; border-color: #c62828; font-weight: 700; }
+  .node-date {
+    margin-top: 4px; font-family: var(--mono); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.3px;
+  }
+
+  /* SVG arrow overlay */
+  .dag-arrows { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 1; }
+  .dag-arrows path { fill: none; stroke-width: 2; }
+  .dag-arrows path.a-green  { stroke: var(--complete); }
+  .dag-arrows path.a-yellow { stroke: var(--started); }
+  .dag-arrows path.a-none   { stroke: var(--warn); }
+  .dag-arrows path.a-goal   { stroke: #999; }
+
+  /* Empty/help states inside main */
+  .dag-empty { padding: 80px 40px; text-align: center; color: var(--ink-faint); }
+  .dag-empty h2 { color: var(--ink); font-size: 16px; margin-bottom: 6px; }
+
+  /* Info strip under the canvas */
+  .goal-summary {
+    padding: 10px 28px; border-top: 1px solid var(--line-soft); background: #fafafa;
+    font-size: 12px; font-family: var(--mono); color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 16px;
+  }
+  .goal-summary strong { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+<header class="app-header">
+  <div class="app-title">
+    Big Board Curriculum Status
+    <small id="app-version">v0.1.0 · MCG 26A</small>
+  </div>
+  <div class="ctrl-group">
+    <label for="sheet-picker">Board</label>
+    <select id="sheet-picker" disabled>
+      <option>— cache-only mode —</option>
+    </select>
+    <button class="btn primary" id="btn-load" disabled title="Load selected board (cache-first)">Load</button>
+    <button class="btn" id="btn-refresh" disabled title="Force re-fetch selected board from GAS, bypass cache">Refresh</button>
+    <button class="btn" id="btn-refresh-list" title="Pull fresh list of tabs from GAS">⟳ Tabs</button>
+  </div>
+  <div class="hbar-spacer"></div>
+</header>
+<div class="view-bar" id="view-bar" style="display:none;">
+  <div class="ctrl-group">
+    <label>View</label>
+    <div class="view-toggle" id="view-toggle" role="tablist">
+      <button class="view-opt active" data-mode="class" role="tab">Class</button>
+      <button class="view-opt" data-mode="student" role="tab">Student</button>
+    </div>
+  </div>
+  <div class="ctrl-group">
+    <label for="student-picker">Student</label>
+    <select id="student-picker" disabled>
+      <option value="">— class view —</option>
+    </select>
+  </div>
+  <div class="ctrl-group">
+    <label for="goal-picker">Target Event</label>
+    <select id="goal-picker" disabled>
+      <option value="">— load a board first —</option>
+    </select>
+  </div>
+  <div class="ctrl-group" id="expand-group" style="display:none;">
+    <button class="btn" id="btn-expand-all" title="Expand all nodes">Expand all</button>
+    <button class="btn" id="btn-collapse-all" title="Collapse all nodes to just code + status">Collapse all</button>
+  </div>
+  <div class="ctrl-group">
+    <label for="line-style">Lines</label>
+    <select id="line-style" title="How edges are drawn between nodes">
+      <option value="polyline" selected>Polyline</option>
+      <option value="smooth">Smooth curve</option>
+      <option value="orthogonal">Orthogonal (right-angle)</option>
+      <option value="straight">Straight</option>
+    </select>
+  </div>
+  <div class="hbar-spacer"></div>
+  <button class="btn" id="btn-knobs" title="Tune every dagre layout parameter">Layout…</button>
+  <button class="btn" id="btn-settings" title="Display toggles + BB-duplicate handling">⚙ Settings</button>
+  <button class="btn" id="btn-legend">Legend</button>
+  <button class="btn" id="btn-issues">Issues</button>
+  <button class="btn" id="btn-debug-students" title="Student properties table">Students</button>
+  <button class="btn" id="btn-debug-events" title="Event properties table">Events</button>
+</div>
+
+<div id="banner" class="banner"></div>
+
+<!-- =========================================================
+     MAIN — DAG canvas
+     ========================================================= -->
+<main id="main" class="dag-main">
+  <div class="dag-empty" id="empty-state">
+    <h2>No board loaded</h2>
+    <p>Pick a board above and press <strong>Load</strong>.</p>
+    <p style="margin-top:8px; font-size:12px;">
+      First run? Open this file and set <code>CONFIG.GAS_ENDPOINT</code> to your deployed Apps Script Web App /exec URL.
+    </p>
+  </div>
+</main>
+<div id="goal-summary" class="goal-summary" style="display:none;"></div>
+
+<footer class="app-footer">
+  <span>v<span id="foot-version"></span></span>
+  <span>MCG <span id="foot-mcg"></span></span>
+  <span id="foot-endpoint"></span>
+  <span class="foot-spacer" style="flex:1"></span>
+  <span id="foot-cache" title="Cached sheets — data stays local until you clear it or hit Refresh"></span>
+  <button class="btn" id="btn-clear-cache" style="padding:3px 10px;font-size:11px">Clear cache</button>
+</footer>
+
+<!-- =========================================================
+     SIDE PANEL (Issues / Legend)
+     ========================================================= -->
+<div class="panel-backdrop" id="panel-backdrop"></div>
+<aside class="panel" id="panel">
+  <div class="panel-header">
+    <h3 id="panel-title">Panel</h3>
+    <button class="btn icon" id="panel-close">×</button>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+</aside>
+
+<!-- =========================================================
+     CONFIG  — edit GAS_ENDPOINT for your deployment.
+     ========================================================= -->
+<script id="config" type="application/json">
+{
+  "GAS_ENDPOINT": "https://script.google.com/macros/s/AKfycbyU4XfKl5ct6SMzl1nh7e4yZOR6U_wqD9_4HbUNBUOm7fgUaJIPTUIH95CVEGsIfVmiUw/exec",
+  "ENABLE_CACHE": true,
+  "DEBUG": false
+}
+</script>
+
+<!-- =========================================================
+     DAGRE — layered graph layout engine (v0.4).
+     Small sibling file (~280KB). Loads synchronously so `dagre` is on
+     window before the main app script runs below. If the file is
+     missing, the app falls back to the old flex-column layout and
+     reports it in a banner.
+     ========================================================= -->
+<script src="./dagre.min.js"></script>
+
+<!-- MCG graph is loaded at runtime from ./mcg-26a.json (see loadMcgGraph in the script below). -->
+
+<!-- =========================================================
+     APP LOGIC
+     Layered modules, all inline. Order:
+       CONFIG → helpers → api → parse → status → render → issues → boot
+     ========================================================= -->
+<script>
+'use strict';
+
+/* --------------------------------------------------------
+ * CONFIG  (from <script id="config">; user-editable above)
+ * -------------------------------------------------------- */
+const CONFIG = (() => {
+  try { return JSON.parse(document.getElementById('config').textContent); }
+  catch (e) { return { GAS_ENDPOINT: '', ENABLE_CACHE: true, DEBUG: false }; }
+})();
+
+const APP_VERSION = '0.5.2a';
+const MCG_VERSION = '26A';
+const MCG_JSON_URL = './mcg-26a.json';
+
+/* --------------------------------------------------------
+ * MCG graph — fetched at boot from ./mcg-26a.json (static
+ * file next to index.html). GitHub-Pages-compatible: Pages
+ * serves static JSON as same-origin, so no CORS issues. For
+ * `file://` viewing, serve locally (`python -m http.server`)
+ * — the browser blocks fetch from file://.
+ * -------------------------------------------------------- */
+let MCG_GRAPH = { goalEvents: [], events: {}, _loaded: false };
+
+async function loadMcgGraph() {
+  try {
+    const r = await fetch(MCG_JSON_URL, { cache: 'no-cache' });
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText}`);
+    const g = await r.json();
+    if (!g || !g.events || !g.goalEvents) throw new Error('Malformed MCG JSON (missing events/goalEvents)');
+    g._loaded = true;
+    MCG_GRAPH = g;
+    console.log(`[bbcs] MCG loaded: ${Object.keys(g.events).length} events · ${g.goalEvents.length} goals · generated ${g.generatedDate || '?'}`);
+    return g;
+  } catch (e) {
+    console.error('[bbcs] MCG load failed:', e);
+    banner('Could not load mcg-26a.json (' + (e.message || e) + '). If you opened this via file://, run `python -m http.server 8080` and browse to http://localhost:8080/index.html instead.', true);
+    throw e;
+  }
+}
+
+/* --------------------------------------------------------
+ * helpers
+ * -------------------------------------------------------- */
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
+function el(tag, attrs, children) {
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    if (k === 'class') e.className = attrs[k];
+    else if (k === 'style') e.style.cssText = attrs[k];
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  if (children) (Array.isArray(children) ? children : [children]).forEach(c => {
+    if (c == null) return;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+function banner(msg, isError) {
+  const b = $('#banner');
+  b.textContent = msg;
+  b.className = 'banner show';
+  b.onclick = null;
+  if (!isError) setTimeout(() => b.classList.remove('show'), 3500);
+}
+// v0.5.2a: banner variant with a clickable CTA button.
+function bannerWithAction(msg, ctaLabel, ctaHandler, isError) {
+  const b = $('#banner');
+  b.innerHTML = '';
+  b.appendChild(document.createTextNode(msg + '  '));
+  const btn = document.createElement('button');
+  btn.className = 'banner-cta';
+  btn.textContent = ctaLabel;
+  btn.addEventListener('click', e => { e.stopPropagation(); ctaHandler(); });
+  b.appendChild(btn);
+  b.className = 'banner show';
+  b.onclick = null;  // no passive auto-hide on click
+}
+function hideBanner() { $('#banner').classList.remove('show'); }
+function log(...args) { if (CONFIG.DEBUG) console.log('[bbcs]', ...args); }
+
+/* --------------------------------------------------------
+ * api.js — GAS fetch + localStorage cache
+ *
+ * v0.2.1 switched from sessionStorage to localStorage so cached
+ * payloads survive tab close / reload. The fetch_sheet call is the
+ * expensive one (~3-8 s round trip with full formatting), so we
+ * want the UI work loop to pull once and stay on that snapshot
+ * until the user explicitly hits Refresh or Clear Cache.
+ *
+ * Cache keys:
+ *   bbcs::sheet::<tabName>          stored JSON { cachedAt, payload }
+ *   bbcs::index::sheets             list of cached tab names
+ * -------------------------------------------------------- */
+const api = (() => {
+  const KEY = 'bbcs::sheet::';
+  const INDEX_KEY = 'bbcs::index::sheets';
+  const SHEET_LIST_KEY = 'bbcs::sheetlist';  // v0.4: cached sheets_avail response
+
+  function readIndex() {
+    try { return JSON.parse(localStorage.getItem(INDEX_KEY) || '[]'); } catch (_) { return []; }
+  }
+  function writeIndex(list) {
+    try { localStorage.setItem(INDEX_KEY, JSON.stringify(list)); } catch (_) {}
+  }
+  function addToIndex(name) {
+    const list = readIndex();
+    if (!list.includes(name)) { list.push(name); writeIndex(list); }
+  }
+  function removeFromIndex(name) {
+    writeIndex(readIndex().filter(n => n !== name));
+  }
+
+  async function call(params, { force = false } = {}) {
+    if (!CONFIG.GAS_ENDPOINT) throw new Error('CONFIG.GAS_ENDPOINT is empty. Set it near the top of index.html.');
+    const url = CONFIG.GAS_ENDPOINT + '?' + new URLSearchParams(params).toString();
+    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+    if (!res.ok) throw new Error(`GAS ${res.status}: ${res.statusText}`);
+    const body = await res.json();
+    if (!body.ok) throw new Error(body.error || 'GAS reported not-ok');
+    return body;
+  }
+
+  return {
+    async health() { return call({ call: 'health' }); },
+    async sheetsAvail() {
+      const body = await call({ call: 'sheets_avail' });
+      // v0.4: persist so boot can skip this round-trip next time
+      try { localStorage.setItem(SHEET_LIST_KEY, JSON.stringify({ cachedAt: new Date().toISOString(), sheets: body.sheets })); }
+      catch (e) { console.warn('[bbcs] sheet-list cache write failed', e); }
+      return body;
+    },
+
+    getSheetList() {
+      try {
+        const raw = localStorage.getItem(SHEET_LIST_KEY);
+        if (!raw) return null;
+        const env = JSON.parse(raw);
+        return env.sheets || null;
+      } catch (_) { return null; }
+    },
+
+    async fetchSheet(name, { force = false } = {}) {
+      const cacheKey = KEY + name;
+      if (CONFIG.ENABLE_CACHE && !force) {
+        let raw = null;
+        try { raw = localStorage.getItem(cacheKey); }
+        catch (e) { console.warn('[bbcs] cache READ threw:', e); }
+        if (raw) {
+          try {
+            const env = JSON.parse(raw);
+            console.log('[bbcs] cache HIT for', name, '— cachedAt=', env.cachedAt,
+              '— size=', (raw.length / 1024).toFixed(1) + 'KB');
+            return env.payload;
+          } catch (e) {
+            console.warn('[bbcs] cache PARSE failed for', name, e, '— evicting');
+            try { localStorage.removeItem(cacheKey); } catch (_) {}
+          }
+        } else {
+          console.log('[bbcs] cache MISS for', name, '— fetching from GAS');
+        }
+      } else if (force) {
+        console.log('[bbcs] force refresh requested for', name);
+      }
+      const body = await call({ call: 'fetch_sheet', sheet: name });
+      if (CONFIG.ENABLE_CACHE) {
+        try {
+          const envelope = { cachedAt: new Date().toISOString(), payload: body };
+          const serialized = JSON.stringify(envelope);
+          localStorage.setItem(cacheKey, serialized);
+          addToIndex(name);
+          console.log('[bbcs] cache WROTE', name, '—', (serialized.length / 1024).toFixed(1) + 'KB');
+        } catch (e) {
+          // QuotaExceededError is the most common cause — serialized payload
+          // is ~1-2MB per sheet and localStorage caps vary. Report loudly.
+          console.error('[bbcs] cache WRITE FAILED for', name, '—', e.name || '', e.message || e);
+          banner('Warning: failed to cache "' + name + '" — ' + (e.message || e) + ' (next reload will re-fetch)', true);
+        }
+      }
+      return body;
+    },
+
+    // What's cached right now? Returns [{name, cachedAt, sizeKB}]
+    cacheInfo() {
+      const out = [];
+      for (const name of readIndex()) {
+        try {
+          const raw = localStorage.getItem(KEY + name);
+          if (!raw) { removeFromIndex(name); continue; }
+          const env = JSON.parse(raw);
+          out.push({ name, cachedAt: env.cachedAt || null, sizeKB: Math.round(raw.length / 1024) });
+        } catch (_) { removeFromIndex(name); }
+      }
+      return out;
+    },
+
+    // Remove a single sheet's cache entry
+    clearSheet(name) {
+      try { localStorage.removeItem(KEY + name); } catch (_) {}
+      removeFromIndex(name);
+    },
+
+    // Nuke everything this app has stored
+    clearAll() {
+      const list = readIndex();
+      for (const name of list) { try { localStorage.removeItem(KEY + name); } catch (_) {} }
+      try { localStorage.removeItem(INDEX_KEY); } catch (_) {}
+      // Best-effort sweep of any stray bbcs:: keys the index missed
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('bbcs::')) { try { localStorage.removeItem(k); } catch (_) {} }
+      }
+      return list.length;
+    },
+  };
+})();
+
+/* --------------------------------------------------------
+ * parse.js — normalize sheet payload + index by event code
+ * -------------------------------------------------------- */
+const parse = (() => {
+  function normalizeCode(raw) {
+    if (!raw) return '';
+    const s = String(raw).trim().replace(/\s+/g, ' ');
+    const m = s.match(/^([A-Z]{2})[\s\-]?(\d.*)$/);
+    return m ? (m[1] + ' ' + m[2]).trim() : s;
+  }
+
+  // Map student.type → set of applicability codes the MCG uses.
+  // MCG applicability values observed: ABM, CSO, RPA, FTE, P.
+  // Student types on the board: ABM, CSO, RPA, FTE, Pilot-F, Pilot-M, Pilot-B.
+  function expandStudentTypeToMcg(type) {
+    if (!type) return [];
+    if (/^Pilot/i.test(type)) return ['P'];
+    return [type.toUpperCase()];
+  }
+
+  function isStudentApplicable(student, eventApplicability) {
+    if (!eventApplicability || !eventApplicability.length) return true; // unrestricted
+    const mcgCodes = expandStudentTypeToMcg(student.type);
+    return mcgCodes.some(c => eventApplicability.indexOf(c) !== -1);
+  }
+
+  function indexPayload(payload) {
+    // v0.5.2: collect ALL rows per code into rowsByCode so the settings-driven
+    // duplicate-resolution step (parse.resolveDuplicates) can pick the effective
+    // row or merge cells. `byCode` still returns one row per code for backward
+    // compatibility; `duplicates` lists codes with >1 row.
+    const rowsByCode = {};
+    for (const evt of payload.events) {
+      const code = normalizeCode(evt.eventNo);
+      if (!code) continue;
+      (rowsByCode[code] = rowsByCode[code] || []).push(evt);
+    }
+    const byCode = {};
+    const duplicates = [];
+    for (const [code, rows] of Object.entries(rowsByCode)) {
+      byCode[code] = rows[0];  // first-row-wins default; resolveDuplicates may replace
+      if (rows.length > 1) {
+        byCode[code].duplicated = true;
+        duplicates.push({ code, rows: rows.map(r => ({ row: r.row, title: r.title })) });
+      }
+    }
+    if (duplicates.length) {
+      console.warn('[bbcs] duplicate event codes on board:',
+        duplicates.map(d => d.code + ' (' + d.rows.map(r => 'row ' + r.row).join(', ') + ')').join('; '));
+    }
+    return { ...payload, byCode, rowsByCode, duplicates };
+  }
+
+  return { normalizeCode, isStudentApplicable, expandStudentTypeToMcg, indexPayload };
+})();
+
+/* --------------------------------------------------------
+ * status.js — 7-state logic per event / per student
+ *   Primitives:
+ *     cell.rgbFamily: white | lightGrey | darkGrey | paired
+ *     cell.value:     date string or blank
+ *     cell.strikethrough: bool (paired events only)
+ *
+ *   Per-student completion for an event:
+ *     lightGrey              → complete
+ *     paired & strike        → complete
+ *     darkGrey               → not required (drops from applicable set)
+ *     white & future-date    → scheduled
+ *     white & past-date      → pending (+ flag for issue log)
+ *     white & blank          → pending
+ *     paired & !strike       → pending
+ * -------------------------------------------------------- */
+const statusModule = (() => {
+  const STATES = {
+    COMPLETE: 'Complete',
+    PARTIAL: 'PartiallyComplete',
+    STARTED: 'Started',
+    NOT_STARTED: 'NotStarted',
+    PREREQS_MET: 'PrereqsMet',
+    PREREQS_PARTIAL: 'PrereqsPartiallyMet',
+    PREREQS_NOT: 'PrereqsNotMet',
+    UNKNOWN: 'Unknown'
+  };
+
+  function parseCellDate(value, classStart, classEnd) {
+    if (!value) return null;
+    // Try m/d or m/d/yy or yyyy-mm-dd
+    let m = String(value).match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
+    if (m) {
+      let year;
+      if (m[3]) year = m[3].length === 2 ? (2000 + parseInt(m[3], 10)) : parseInt(m[3], 10);
+      else {
+        // Pick the year from class window that makes the date valid.
+        const monthI = parseInt(m[1], 10) - 1;
+        const dayI = parseInt(m[2], 10);
+        const cs = classStart ? new Date(classStart) : null;
+        const ce = classEnd ? new Date(classEnd) : null;
+        if (cs && ce && cs.getFullYear() !== ce.getFullYear()) {
+          const d1 = new Date(cs.getFullYear(), monthI, dayI);
+          const d2 = new Date(ce.getFullYear(), monthI, dayI);
+          const d1In = d1 >= cs && d1 <= ce;
+          const d2In = d2 >= cs && d2 <= ce;
+          // If neither year makes the date land inside the class window, the
+          // cell is ambiguous — return null rather than silently picking
+          // one year and letting the UI lie about "scheduled / past-dated."
+          if (!d1In && !d2In) return null;
+          year = d1In ? cs.getFullYear() : ce.getFullYear();
+        } else {
+          year = (cs || ce || new Date()).getFullYear();
+        }
+      }
+      return new Date(year, parseInt(m[1], 10) - 1, parseInt(m[2], 10));
+    }
+    m = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+    return null;
+  }
+
+  function classifyCell(cell, classMeta, now) {
+    // v0.3.3: surface the parsed date (`dateText`) on the result so UI can
+    // show "SCHEDULED 4/14" regardless of which status wins the chip.
+    // Also compare at day precision — a cell dated today should be
+    // "scheduled" not "past-date-unchecked" (was bug: C RYAN PF 6121F
+    // "4/14" showed OPTED instead of SCHEDULED because `d > now` was false
+    // by mid-afternoon).
+    const result = { completion: 'pending', scheduled: false, flag: null, dateText: null };
+    if (!cell) return result;
+    if (cell.rgbFamily === 'darkGrey') { result.completion = 'notreq'; return result; }
+    if (cell.rgbFamily === 'lightGrey') {
+      result.completion = 'complete';
+      if (cell.value) result.dateText = String(cell.value);
+      return result;
+    }
+    if (cell.rgbFamily === 'paired') {
+      result.completion = cell.strikethrough ? 'complete' : 'paired-opted';
+      if (cell.value) result.dateText = String(cell.value);
+      return result;
+    }
+    // white
+    if (cell.strikethrough) {
+      console.warn('[bbcs] white cell with strikethrough', cell);
+    }
+    const d = parseCellDate(cell.value, classMeta.startDate, classMeta.endDate);
+    if (d) {
+      result.dateText = String(cell.value);
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      if (d >= today) { result.completion = 'scheduled'; result.scheduled = true; }
+      else { result.completion = 'pending'; result.flag = 'past-date-unchecked'; }
+    }
+    return result;
+  }
+
+  // v0.5.1: MCG-authority applicability check. Maps board student type
+  // (Pilot-F/M/B → P) and DG (LJ-25 → Learjet) to MCG codes, then:
+  //   - If MCG has no applicability list (truly universal event) → true
+  //   - Otherwise student type must be in standardMapping
+  //   - For crew-solo aircraft events (role=crew-solo + aircraft set):
+  //     pilot DG must match the aircraft
+  //   - For non-crew-solo aircraft events: pilot DG must NOT match
+  //   - role=select P / select STC / optional → respect the underlying
+  //     audience without further DG narrowing (manual selection by sched)
+  function isStudentApplicablePerMcg(mcgEvent, student) {
+    if (!mcgEvent) return true;  // unknown to MCG — defer to board
+    const sType = /^Pilot/i.test(student.type) ? 'P' : student.type;
+    const sDG = student.dataGroup === 'LJ-25' ? 'Learjet' : student.dataGroup;
+    const det = mcgEvent.applicabilityDetail || {};
+    const map = (det.standardMapping && det.standardMapping.length)
+      ? det.standardMapping
+      : (mcgEvent.applicability || []);
+    if (!map.length) return true;  // truly universal
+    if (!map.includes(sType)) return false;
+    // Pilot DG narrowing
+    if (sType === 'P' && det.aircraft) {
+      if (det.role === 'crew-solo' && sDG !== det.aircraft) return false;
+      if (det.role === 'non-crew-solo' && sDG === det.aircraft) return false;
+    }
+    return true;
+  }
+
+  function computeEventStatus(evt, students, classMeta, prereqStatusByStudent) {
+    const now = new Date();
+    const perStudent = {};
+    for (const s of students) {
+      const cell = evt.cells ? evt.cells.find(c => c.col === s.col) : null;
+      const classified = classifyCell(cell, classMeta, now);
+      perStudent[s.col] = {
+        col: s.col,
+        name: s.name,
+        type: s.type,
+        applicable: undefined,  // filled below
+        cell: cell,
+        completion: classified.completion,
+        flag: classified.flag,
+        dateText: classified.dateText,
+      };
+    }
+    return perStudent;
+  }
+
+  function aggregateEvent(evt, mcgEvent, perStudent, students) {
+    // v0.5.1 reversal-of-D7: MCG is the authority on WHO an event applies
+    // to (per user feedback v0.5.0 #1: pilots showing under CF 6370F because
+    // the board left placeholder white cells). Board cell color is the
+    // authority on WHETHER they've done it / are scheduled / are excluded
+    // (dark-grey override).
+    //
+    // Applicability rule:
+    //   1. If MCG defines applicability for this event, student type must
+    //      be in mcgEvent.applicabilityDetail.standardMapping.
+    //   2. Crew-solo / non-crew-solo MCG events further narrow pilots to
+    //      DG-matched (or DG-not-matched).
+    //   3. Dark-grey cell overrides → not applicable regardless of MCG.
+    const apps = [];
+    for (const s of students) {
+      const ps = perStudent[s.col];
+      const mcgOk = isStudentApplicablePerMcg(mcgEvent, s);
+      const boardSaysNotReq = ps.completion === 'notreq';
+      ps.applicable = mcgOk && !boardSaysNotReq;
+      if (ps.applicable) apps.push(ps);
+    }
+
+    // Semantic note (BUG-2 fix):
+    // `scheduled` means a white cell with a future date — real progress.
+    // `paired-opted` means a colored pair cell with no strikethrough — the
+    // student's partner hasn't finished either, so this is NOT evidence of
+    // progress; it only tells us the scheduler has assigned a pair. We used
+    // to lump both into `scheduledOrStarted` which bumped state to Started
+    // and skipped the prereq-refinement branch in renderCard. Now:
+    //   - `scheduled` → counts toward Started
+    //   - `paired-opted` → tracked separately for the progress summary, but
+    //     does NOT move the event past NotStarted on its own.
+    let completes = 0, scheduled = 0, pairedOpted = 0;
+    for (const ps of apps) {
+      if (ps.completion === 'complete') completes++;
+      else if (ps.completion === 'scheduled') scheduled++;
+      else if (ps.completion === 'paired-opted') pairedOpted++;
+    }
+    const total = apps.length;
+    let state = 'Unknown';
+    if (total === 0) {
+      state = 'PrereqsMet';  // no applicable students — benign
+    } else if (completes === total) state = 'Complete';
+    else if (completes / total >= 0.5) state = 'PartiallyComplete';
+    else if (completes > 0 || scheduled > 0) state = 'Started';
+    else state = 'NotStarted';
+
+    return {
+      state,
+      applicable: apps.length,
+      completes,
+      scheduled,
+      pairedOpted,
+      // kept for backwards-compat with any callers expecting the old field
+      scheduledOrStarted: scheduled + pairedOpted,
+      pctComplete: total ? Math.round((completes / total) * 100) : 0,
+    };
+  }
+
+  return { STATES, classifyCell, parseCellDate, computeEventStatus, aggregateEvent, isStudentApplicablePerMcg };
+})();
+
+/* --------------------------------------------------------
+ * chain.js — transitive prereq chain for a goal event,
+ * filtered to only events that appear on the big board.
+ *   Each chain item: { code, title, onBoard, depth, status }
+ * -------------------------------------------------------- */
+const chain = (() => {
+  function buildChainForStudent(goalCode, payload, student) {
+    const mcgEvents = MCG_GRAPH.events || {};
+    const now = new Date();
+    const seen = new Set();
+    const out = [];
+    const stack = [{ code: goalCode, depth: 0 }];
+    while (stack.length) {
+      const node = stack.shift();
+      if (seen.has(node.code)) continue;
+      seen.add(node.code);
+      const mcg = mcgEvents[node.code];
+      const onBoardEvt = payload.byCode[node.code];
+      const onBoard = !!onBoardEvt;
+      let status = 'offboard';
+      if (onBoard) {
+        const cell = onBoardEvt.cells.find(c => c.col === student.col);
+        const classified = statusModule.classifyCell(cell, payload.classMeta, now);
+        status = classified.completion;
+      }
+      if (node.code !== goalCode) {
+        out.push({
+          code: node.code,
+          title: (mcg && mcg.eventName) || (onBoardEvt && onBoardEvt.title) || '?',
+          onBoard,
+          status,
+          depth: node.depth,
+        });
+      }
+      const prereqs = (mcg && mcg.prerequisites) || [];
+      for (const p of prereqs) {
+        if (p.code && !seen.has(p.code)) stack.push({ code: p.code, depth: node.depth + 1 });
+      }
+    }
+    // Sort: onBoard incomplete first, then onBoard complete, then offboard.
+    out.sort((a, b) => {
+      const ra = a.onBoard ? (a.status === 'complete' ? 2 : 1) : 3;
+      const rb = b.onBoard ? (b.status === 'complete' ? 2 : 1) : 3;
+      if (ra !== rb) return ra - rb;
+      return a.depth - b.depth;
+    });
+    return out;
+  }
+
+  // Is student opted for goalCode? They are if every board-visible prereq is
+  // marked complete for them. Off-board prereqs are assumed met (D10).
+  function isOpted(goalCode, payload, student, mcgEvent) {
+    // Board data check: if the student's cell for the goal is dark-grey,
+    // they aren't required to do it → not opted.
+    const goalEvt = payload.byCode[goalCode];
+    if (goalEvt) {
+      const goalCell = goalEvt.cells.find(c => c.col === student.col);
+      if (goalCell && goalCell.rgbFamily === 'darkGrey') return false;
+    }
+    const items = buildChainForStudent(goalCode, payload, student);
+    for (const it of items) {
+      if (it.onBoard && it.status !== 'complete' && it.status !== 'notreq') return false;
+    }
+    return true;
+  }
+
+  // v0.5.1: list the on-board prereqs that aren't complete for this student.
+  // Returns an array of { code, title, status } for the user warning detail.
+  function missingPrereqs(goalCode, payload, student) {
+    const items = buildChainForStudent(goalCode, payload, student);
+    return items.filter(it => it.onBoard && it.status !== 'complete' && it.status !== 'notreq');
+  }
+
+  return { buildChainForStudent, isOpted, missingPrereqs };
+})();
+
+/* --------------------------------------------------------
+ * render.js — the UI
+ * -------------------------------------------------------- */
+const render = (() => {
+
+  // v0.3.2: collapse state persists per-goal, keyed by code. Default state
+  // is "all collapsed" — the user asked for condensed nodes by default. Flip
+  // by clicking the node's (+)/(−) toggle or the Expand/Collapse All buttons.
+  let expanded = new Set();
+
+  // Module-scoped refs so the toggle handler can redraw arrows after a
+  // node changes width.
+  let _lastCanvas = null;
+  let _lastPayload = null;
+  let _lastEdges = null;
+  let _lastMode = 'class';
+  let _lastStudent = null;
+  let _lastGoalCode = null;
+  let _resizeObserver = null;
+  let _lastVisibleCodes = null;
+  let _lastNodeByCode = null;
+  let _focusedCode = null;  // v0.5.1: click-to-focus state
+
+  // Goal-scope filter: students who SHOULD do the goal event.
+  //   v0.5.1: MCG applicability is the authority. Board dark-grey is an
+  //   additional override (scheduler explicitly excluded the student).
+  //   Per-student goal cells with white/lightGrey colors but a student type
+  //   not in the MCG applicability list are NOT in scope (CF 6370F bug).
+  function goalScopeStudents(payload, goalCode) {
+    const goalEvt = payload.byCode[goalCode];
+    const mcgGoal = MCG_GRAPH.events[goalCode];
+    return payload.students.filter(s => {
+      if (!statusModule.isStudentApplicablePerMcg(mcgGoal, s)) return false;
+      if (!goalEvt) return true;
+      const cell = goalEvt.cells.find(c => c.col === s.col);
+      return !cell || cell.rgbFamily !== 'darkGrey';
+    });
+  }
+
+  // Role grouping for the two student columns inside each node.
+  // PRIMARY = ABM + FTE + CSO + RPA (crew / ground); SECONDARY = pilots.
+  // If applicability allows only one side, render that as a single column.
+  function roleBucket(studentType) {
+    if (!studentType) return null;
+    if (/^Pilot/i.test(studentType)) return 'pilot';
+    if (['ABM','FTE','CSO','RPA'].indexOf(studentType) !== -1) return 'crew';
+    return 'crew';
+  }
+
+  // Label the "crew" column based on which roles are actually applicable.
+  function crewColumnLabel(applicableTypes) {
+    const have = new Set(applicableTypes.map(t => t.toUpperCase()));
+    const order = ['ABM','FTE','CSO','RPA'];
+    const present = order.filter(r => have.has(r));
+    return present.length ? present.join('/') : 'Crew';
+  }
+
+  // Classify an aggregate percentage into a CSS status class for headers/bars.
+  function bandForPct(pct, applicable) {
+    if (applicable === 0) return 's-none';  // nothing applicable — treat as not-started
+    if (pct >= 75) return 's-green';
+    if (pct > 0)   return 's-yellow';
+    return 's-none';
+  }
+  function arrowClassForBand(band) {
+    if (band === 's-green') return 'a-green';
+    if (band === 's-yellow') return 'a-yellow';
+    return 'a-none';
+  }
+
+  // ============================================================
+  // v0.5 DAG builder (new MCG schema — mcg-handoff-2026-04-21)
+  //
+  // Walks MCG prereqs backward from a goal and produces a DAG tuned
+  // to the viewer. Keeps v0.4.3's output shape `{ nodesByCode, edges,
+  // maxDepth }` so the rest of the render pipeline is unchanged.
+  //
+  // Rules applied (see mcg-handoff-2026-04-21/mcg-knowledge-base.md):
+  //   Rule A  — viewer ∈ (mainEvent.applicability ∩ prereq.nameTag)
+  //              (otherwise PRUNE the edge and its subtree)
+  //   Rule C/J — universal aircraft events applied via applicability
+  //              array already (data handles it)
+  //   Rule D/E — crew-solo / non-crew-solo: prereq.nameTagRole +
+  //              prereq.nameTagAircraft narrow pilots by DG
+  //   Rule G  — tight-serial collapse when seriesInfo.inSeries AND
+  //              position > 1: effective prereqs of pos-N are JUST
+  //              {pos N-1}, not the full foundational list
+  //   Rule I  — on-board = show; off-board = hide but traverse
+  //              (post-walk collapse of off-board nodes, preserving
+  //              bridge metadata for edge tooltips)
+  //   oneOf   — prereq.group.id collapses alternatives. If the viewer
+  //              has only one surviving alternative, edge is drawn
+  //              direct; if multiple survive, a virtual "pick-one"
+  //              group node merges them visually
+  // Conditions applied:
+  //   datagroup   — keep edge only if viewerDG ∈ condition.values
+  //   forDownstream — keep edge only if condition.target is reached
+  //                   in the viewer's DAG (2-pass; self-target is
+  //                   treated as unconditional)
+  //
+  // CALLING CONVENTION:
+  //   buildDag(goalCode, payload)  — dispatches by mode:
+  //     mode 'class' (default) → union of per-applicable-student DAGs
+  //     mode 'student' → single viewer DAG
+  //   The render pipeline passes `mode` and `student` in via
+  //   _lastMode / _lastStudent, but buildDag is also called from
+  //   debug panels without mode — fall back to class-union.
+  //
+  // Returns { nodesByCode, edges, maxDepth }
+  //   nodesByCode[code] = { code, depth, isGroup?, members?, groupDesc?, appliesTo: Set<studentType> }
+  //   edges = [{ from, to, bridge: [offBoardCodes], groupId?, condition? }]
+  // ============================================================
+
+  // Map board student-type to MCG applicability code.
+  function viewerTypeOf(student) {
+    if (!student || !student.type) return null;
+    if (/^Pilot/i.test(student.type)) return 'P';
+    return student.type;  // CSO, RPA, FTE, ABM
+  }
+  // Map board dataGroup to MCG datagroup value.
+  function viewerDGOf(student) {
+    if (!student || !student.dataGroup) return null;
+    const dg = student.dataGroup;
+    if (dg === 'LJ-25') return 'Learjet';
+    return dg;  // C-12, F-16, T-38
+  }
+  // Goal-scope students: MCG applicability ∩ (no board dark-grey override).
+  // v0.5.1: matches the higher-level goalScopeStudents() rule. The two used
+  // to differ; now both use MCG-as-authority.
+  function goalScopeStudentsRaw(payload, goalCode) {
+    const goalEvt = payload.byCode[goalCode];
+    const mcgGoal = MCG_GRAPH.events[goalCode];
+    return payload.students.filter(s => {
+      if (!statusModule.isStudentApplicablePerMcg(mcgGoal, s)) return false;
+      if (!goalEvt) return true;
+      const cell = goalEvt.cells.find(c => c.col === s.col);
+      return !cell || cell.rgbFamily !== 'darkGrey';
+    });
+  }
+
+  // Rule A + Rule D/E + datagroup check. Does NOT check forDownstream
+  // (that needs a 2-pass reach analysis — applied later).
+  function edgePassesForViewer(mainEvent, prereq, viewerType, viewerDG) {
+    // Rule A: viewer must be in main event's applicability (use standardMapping
+    // if present, which expands FTC → [ABM,CSO,FTE,P,RPA]).
+    const mainMap = (mainEvent.applicabilityDetail && mainEvent.applicabilityDetail.standardMapping)
+      || mainEvent.applicability || [];
+    if (mainMap.length && !mainMap.includes(viewerType)) return false;
+
+    // Rule A: prereq's nameTag must also include the viewer (if set).
+    if (prereq.nameTag && prereq.nameTag.length && !prereq.nameTag.includes(viewerType)) return false;
+
+    // Rule D/E: crew-solo / non-crew-solo are pilot-only distinctions.
+    // For non-pilot viewers the role is a no-op — they may still take the
+    // event if they're in the nameTag. (nameTag-only pilot restriction is
+    // already handled above by the nameTag.includes check.)
+    if (viewerType === 'P' && prereq.nameTagRole === 'crew-solo' && prereq.nameTagAircraft) {
+      if (viewerDG !== prereq.nameTagAircraft) return false;
+    }
+    if (viewerType === 'P' && prereq.nameTagRole === 'non-crew-solo' && prereq.nameTagAircraft) {
+      if (viewerDG === prereq.nameTagAircraft) return false;
+    }
+
+    // datagroup condition: student's DG must be in the values list.
+    if (prereq.condition && prereq.condition.type === 'datagroup') {
+      if (!viewerDG) return false;
+      if (!prereq.condition.values.includes(viewerDG)) return false;
+    }
+
+    return true;
+  }
+
+  // Rule G: tight-serial series collapse. If event is position N > 1 in a
+  // ranged series (like CF 6540-2F), its effective sole prereq is position
+  // N-1. Replaces the full foundational list (preserved on position 1).
+  // Returns null if the event isn't a non-first series position or if the
+  // previous-position member can't be located.
+  function seriesPrevPrereq(event) {
+    const si = event && event.seriesInfo;
+    if (!si || !si.inSeries || !si.seriesId || si.seriesPosition == null || si.seriesPosition <= 1) return null;
+    const prevPos = si.seriesPosition - 1;
+    for (const [code, ev] of Object.entries(MCG_GRAPH.events || {})) {
+      if (ev && ev.seriesInfo && ev.seriesInfo.seriesId === si.seriesId && ev.seriesInfo.seriesPosition === prevPos) {
+        return { code, nameTag: null, nameTagRole: null, nameTagAircraft: null, condition: null, group: null, _seriesCollapse: true };
+      }
+    }
+    return null;
+  }
+
+  // Build single-viewer DAG including off-board nodes; conditions/applicability
+  // pruning applied on edges. forDownstream filtering happens AFTER walk.
+  function buildDagForViewer(goalCode, payload, viewerType, viewerDG) {
+    const nodesByCode = {};
+    const edges = [];
+    const seenEdges = new Set();
+    if (!MCG_GRAPH.events[goalCode] && !payload.byCode[goalCode]) {
+      return { nodesByCode, edges, maxDepth: 0 };
+    }
+
+    function addEdge(from, to, meta) {
+      const k = `${from}→${to}`;
+      if (seenEdges.has(k)) return;
+      seenEdges.add(k);
+      edges.push(Object.assign({ from, to, bridge: [] }, meta));
+    }
+
+    const queue = [{ code: goalCode, depth: 0 }];
+    const seen = new Set();
+    let maxDepth = 0;
+
+    while (queue.length) {
+      const { code, depth } = queue.shift();
+      if (seen.has(code)) continue;
+      seen.add(code);
+      if (!nodesByCode[code]) nodesByCode[code] = { code, depth };
+      else nodesByCode[code].depth = Math.max(nodesByCode[code].depth, depth);
+      maxDepth = Math.max(maxDepth, depth);
+
+      const event = MCG_GRAPH.events[code];
+      if (!event) continue;  // dangling prereq (e.g. TF 5301A). Render node; stop walk.
+
+      // Rule G: collapse tight series. Pos > 1 keeps ONLY the pos-N-1 link.
+      const serialPrev = seriesPrevPrereq(event);
+      const rawPrereqs = serialPrev ? [serialPrev] : (event.prerequisites || []);
+
+      // Partition prereqs into oneOf groups vs direct.
+      const byGroup = {};
+      const direct = [];
+      for (const p of rawPrereqs) {
+        if (!p || !p.code) continue;
+        if (p.group && p.group.id) {
+          (byGroup[p.group.id] = byGroup[p.group.id] || []).push(p);
+        } else {
+          direct.push(p);
+        }
+      }
+
+      // Direct prereqs — filter by Rule A + DG, then add edge.
+      for (const p of direct) {
+        if (!edgePassesForViewer(event, p, viewerType, viewerDG)) continue;
+        addEdge(p.code, code, { condition: p.condition || null });
+        if (!seen.has(p.code)) queue.push({ code: p.code, depth: depth + 1 });
+      }
+
+      // oneOf groups — filter members, then either direct-edge (1 member) or
+      // virtual group node (multiple members).
+      for (const gid of Object.keys(byGroup)) {
+        const members = byGroup[gid];
+        const kept = members.filter(p => edgePassesForViewer(event, p, viewerType, viewerDG));
+        if (kept.length === 0) continue;
+        if (kept.length === 1) {
+          const p = kept[0];
+          addEdge(p.code, code, { condition: p.condition || null, groupId: gid });
+          if (!seen.has(p.code)) queue.push({ code: p.code, depth: depth + 1 });
+        } else {
+          const groupCode = 'GROUP:' + gid;
+          if (!nodesByCode[groupCode]) {
+            nodesByCode[groupCode] = {
+              code: groupCode,
+              depth: depth + 1,
+              isGroup: true,
+              groupId: gid,
+              members: kept.map(p => p.code),
+              groupDesc: (members[0].group && members[0].group.description) || 'Pick one of the alternatives',
+            };
+          }
+          addEdge(groupCode, code, { groupId: gid });
+          for (const p of kept) {
+            addEdge(p.code, groupCode, { groupId: gid });
+            if (!seen.has(p.code)) queue.push({ code: p.code, depth: depth + 1 });
+          }
+        }
+      }
+    }
+
+    // Pass 2: forDownstream filter. Drop edges whose target event didn't
+    // end up in the walker's reach set (and isn't the edge's own to-node).
+    // Self-target is a tautology (common extraction artifact) → keep.
+    // Non-code targets (sentinels like "all", "P", descriptive phrases)
+    // → keep as unconditional (KB open question; conservative behavior).
+    function dropForDownstream() {
+      const reachNodes = new Set(Object.keys(nodesByCode));
+      const removedKeys = new Set();
+      for (const e of edges) {
+        const c = e.condition;
+        if (!c || c.type !== 'forDownstream' || !c.target) continue;
+        const target = c.target;
+        if (target === e.to) continue;                  // tautology — keep
+        if (!/^[A-Z]{2} \d{4}[A-Z]?$/.test(target)) continue;  // sentinel — keep
+        if (!reachNodes.has(target)) removedKeys.add(e.from + '→' + e.to);
+      }
+      if (!removedKeys.size) return false;
+      for (let i = edges.length - 1; i >= 0; i--) {
+        if (removedKeys.has(edges[i].from + '→' + edges[i].to)) edges.splice(i, 1);
+      }
+      return true;
+    }
+    // Iterate until stable (target may have been reached through a dropped edge).
+    let guard = 8;
+    while (dropForDownstream() && guard-- > 0) { /* re-evaluate */ }
+
+    return { nodesByCode, edges, maxDepth };
+  }
+
+  // Collapse off-board nodes. Any node not on the board (except the goal
+  // itself and virtual group nodes) is removed; its in/out edges are
+  // bridged, and the traversed off-board code is appended to the bridge
+  // metadata for edge tooltips. Iterates until only on-board nodes remain.
+  // v0.5.2a: classify each node for off-board handling.
+  //   'on-board'   → kept as-is (has a BB row AND type is not hidden)
+  //   'virtual'    → kept (virtual oneOf group node)
+  //   'missing'    → MCG needs it, type is BB-tracked, no BB row → render as
+  //                  a MISSING warning node so the user sees the gap
+  //   'collapse'   → untracked or user-hidden type → bridge & drop
+  //
+  // Order matters: if the user disables a type (e.g. Exams), we bridge ALL
+  // events of that type — including ones that ARE on the board — so the
+  // "hide" toggle is intuitive.
+  function classifyNode(code, payload, goalCode) {
+    if (code === goalCode) return 'on-board';
+    if (typeof code === 'string' && code.startsWith('GROUP:')) return 'virtual';
+
+    const mcg = (typeof MCG_GRAPH !== 'undefined' && MCG_GRAPH.events) ? MCG_GRAPH.events[code] : null;
+    const settings = getAppSettings();
+    const tracked = effectiveTrackedTypes();
+    const onBoard = !!payload.byCode[code];
+    const eventType = mcg && mcg.eventType;
+
+    // Known type the user has hidden → always bridge through.
+    if (eventType && !tracked.has(eventType)) return 'collapse';
+
+    // On board AND type is visible → on-board.
+    if (onBoard) return 'on-board';
+
+    // Not on board; type is tracked → missing warning (if user wants those).
+    if (eventType && tracked.has(eventType)) {
+      return settings.showMissingFromBB ? 'missing' : 'collapse';
+    }
+
+    // Unknown-to-MCG dangling reference (e.g. TF 5301A) — only show if the
+    // "untracked off-board" escape-hatch is on.
+    if (settings.showUntrackedOffBoard && mcg) return 'missing';
+    return 'collapse';
+  }
+
+  function collapseOffBoard(dag, payload, goalCode) {
+    let changed = true;
+    let guard = 64;
+    while (changed && guard-- > 0) {
+      changed = false;
+      // Only collapse nodes whose classification is 'collapse'. Keep 'missing'
+      // (tracked type, no BB row) visible so the user sees the gap.
+      const collapseCodes = Object.keys(dag.nodesByCode).filter(c =>
+        classifyNode(c, payload, goalCode) === 'collapse'
+      );
+      if (!collapseCodes.length) break;
+      const code = collapseCodes[0];
+      const ins = dag.edges.filter(e => e.to === code);
+      const outs = dag.edges.filter(e => e.from === code);
+      const newEdges = [];
+      const seenNew = new Set();
+      for (const inE of ins) {
+        for (const outE of outs) {
+          if (inE.from === outE.to) continue;
+          const bridge = (inE.bridge || []).concat([code], (outE.bridge || []));
+          const key = inE.from + '→' + outE.to;
+          if (seenNew.has(key)) continue;
+          seenNew.add(key);
+          newEdges.push({ from: inE.from, to: outE.to, bridge, condition: null });
+        }
+      }
+      dag.edges = dag.edges.filter(e => e.from !== code && e.to !== code);
+      for (const ne of newEdges) {
+        const existing = dag.edges.find(e => e.from === ne.from && e.to === ne.to);
+        if (!existing) dag.edges.push(ne);
+        else if ((existing.bridge || []).length > ne.bridge.length) existing.bridge = ne.bridge;
+      }
+      delete dag.nodesByCode[code];
+      changed = true;
+    }
+
+    // Tag any remaining off-board (i.e. 'missing') nodes so renderers can
+    // pick up the flag without re-classifying.
+    for (const c of Object.keys(dag.nodesByCode)) {
+      const klass = classifyNode(c, payload, goalCode);
+      if (klass === 'missing') {
+        dag.nodesByCode[c].isMissing = true;
+      }
+    }
+
+    // Refresh maxDepth after structure changes.
+    dag.maxDepth = 0;
+    for (const c of Object.keys(dag.nodesByCode)) {
+      const d = dag.nodesByCode[c].depth || 0;
+      if (d > dag.maxDepth) dag.maxDepth = d;
+    }
+  }
+
+  // Break 2-cycles before dagre layout. Symmetric MCG entries (e.g. CF 6660S ↔
+  // CF 6672F) cause dagre's FAS to reverse one edge at layout time, which
+  // drew as "lines loop back" in v0.4.0. Keep upstream-deeper direction.
+  function break2Cycles(dag) {
+    const keys = new Set(dag.edges.map(e => e.from + '→' + e.to));
+    const drop = new Set();
+    for (const e of dag.edges) {
+      const rev = e.to + '→' + e.from;
+      const fwd = e.from + '→' + e.to;
+      if (!keys.has(rev)) continue;
+      if (drop.has(fwd) || drop.has(rev)) continue;
+      const fd = (dag.nodesByCode[e.from] && dag.nodesByCode[e.from].depth) || 0;
+      const td = (dag.nodesByCode[e.to]   && dag.nodesByCode[e.to].depth)   || 0;
+      if (fd >= td) drop.add(rev);
+      else drop.add(fwd);
+    }
+    dag.edges = dag.edges.filter(e => !drop.has(e.from + '→' + e.to));
+  }
+
+  // Union multiple per-student DAGs into one class-view DAG. Each node is
+  // annotated with `appliesTo` = set of student types that include it; depth
+  // is the max across students (longest path wins).
+  function unionDags(dags, studentTypeByDag) {
+    const nodesByCode = {};
+    const edgeMap = {};
+    let maxDepth = 0;
+    for (let i = 0; i < dags.length; i++) {
+      const dag = dags[i];
+      const stype = studentTypeByDag[i];
+      for (const [code, n] of Object.entries(dag.nodesByCode)) {
+        if (!nodesByCode[code]) {
+          nodesByCode[code] = Object.assign({}, n, { appliesTo: new Set() });
+        }
+        if (stype) nodesByCode[code].appliesTo.add(stype);
+        nodesByCode[code].depth = Math.max(nodesByCode[code].depth || 0, n.depth || 0);
+        if (n.isGroup) {
+          nodesByCode[code].isGroup = true;
+          nodesByCode[code].groupId = n.groupId;
+          nodesByCode[code].members = n.members;
+          nodesByCode[code].groupDesc = n.groupDesc;
+        }
+      }
+      for (const e of dag.edges) {
+        const k = e.from + '→' + e.to;
+        if (!edgeMap[k]) {
+          edgeMap[k] = Object.assign({}, e, { bridge: (e.bridge || []).slice() });
+        } else if ((edgeMap[k].bridge || []).length > (e.bridge || []).length) {
+          edgeMap[k].bridge = (e.bridge || []).slice();
+        }
+      }
+      if (dag.maxDepth > maxDepth) maxDepth = dag.maxDepth;
+    }
+    return { nodesByCode, edges: Object.values(edgeMap), maxDepth };
+  }
+
+  // Public entry point. Mode = 'student' with `student` → single viewer DAG;
+  // mode = 'class' (default) → union of DAGs for every goal-scope student.
+  function buildDag(goalCode, payload, opts) {
+    opts = opts || {};
+    const mode = opts.mode || 'class';
+
+    if (mode === 'student' && opts.student) {
+      const s = opts.student;
+      const viewerType = viewerTypeOf(s);
+      const viewerDG = viewerDGOf(s);
+      const dag = buildDagForViewer(goalCode, payload, viewerType, viewerDG);
+      collapseOffBoard(dag, payload, goalCode);
+      break2Cycles(dag);
+      // Annotate appliesTo (single-student case)
+      for (const c of Object.keys(dag.nodesByCode)) {
+        dag.nodesByCode[c].appliesTo = new Set([s.type]);
+      }
+      return dag;
+    }
+
+    // Class view: union of per-student DAGs over goal-scope students.
+    const scope = goalScopeStudentsRaw(payload, goalCode);
+    if (!scope.length) {
+      // No one is scoped — still return a goal-only DAG so the picker works.
+      return { nodesByCode: { [goalCode]: { code: goalCode, depth: 0, appliesTo: new Set() } }, edges: [], maxDepth: 0 };
+    }
+    const dags = [];
+    const types = [];
+    for (const s of scope) {
+      dags.push(buildDagForViewer(goalCode, payload, viewerTypeOf(s), viewerDGOf(s)));
+      types.push(s.type);
+    }
+    // Collapse each per-student DAG individually so bridges are correct per viewer.
+    for (const d of dags) collapseOffBoard(d, payload, goalCode);
+    const merged = unionDags(dags, types);
+    break2Cycles(merged);
+    return merged;
+  }
+
+  // ------------------------------------------------------------
+  // Per-node aggregate (class view) — reuses statusModule.
+  // ------------------------------------------------------------
+  function computeNodeAggregate(code, payload) {
+    const boardEvent = payload.byCode[code];
+    const mcgEvent = MCG_GRAPH.events[code];
+    const perStudent = statusModule.computeEventStatus(boardEvent, payload.students, payload.classMeta);
+    const agg = statusModule.aggregateEvent(boardEvent, mcgEvent, perStudent, payload.students);
+    return { boardEvent, mcgEvent, perStudent, agg };
+  }
+
+  // ------------------------------------------------------------
+  // Per-node student status (student view) — opted/complete/blocked.
+  // ------------------------------------------------------------
+  function computeNodeForStudent(code, payload, student) {
+    const boardEvent = payload.byCode[code];
+    const mcgEvent = MCG_GRAPH.events[code];
+    if (!boardEvent) return { applicable: false };
+
+    // v0.5.1: MCG is authority on applicability; dark-grey cell still
+    // overrides as "not required" for this specific student.
+    if (!statusModule.isStudentApplicablePerMcg(mcgEvent, student)) {
+      return { applicable: false };
+    }
+    const cell = boardEvent.cells.find(c => c.col === student.col);
+    const classified = statusModule.classifyCell(cell, payload.classMeta, new Date());
+    if (classified.completion === 'notreq') return { applicable: false };
+    const isComplete = classified.completion === 'complete';
+    const opted = chain.isOpted(code, payload, student, mcgEvent);
+    return {
+      applicable: true,
+      completion: classified.completion,
+      isComplete,
+      opted,
+      dateText: classified.dateText,
+    };
+  }
+
+  // ------------------------------------------------------------
+  // Node renderer: oneOf virtual group node ("pick one of")
+  // Shown as a dashed-border compact card listing the alternatives.
+  // Member on-board events are rendered separately (as their own
+  // prereq nodes); the group just signals "one of these satisfies
+  // the downstream event."
+  // ------------------------------------------------------------
+  function renderNodeGroup(code, meta, payload, student, mode) {
+    const node = el('div', {
+      class: 'node group-node',
+      'data-code': code,
+      title: meta.groupDesc || 'Pick one of the alternatives',
+    });
+    node.appendChild(el('div', { class: 'node-head' }, [
+      el('div', { class: 'node-head-code' }, 'Any 1 of'),
+      el('div', { class: 'node-head-title' }, (meta.members || []).join(' / ')),
+    ]));
+    if (meta.groupDesc) {
+      node.appendChild(el('div', {
+        style: 'padding:4px 10px 8px;font-size:10px;color:var(--ink-soft);line-height:1.3',
+      }, meta.groupDesc));
+    }
+    return node;
+  }
+
+  // ------------------------------------------------------------
+  // v0.5.2a: Node renderer: MCG-required-but-missing-from-BB.
+  // Dashed orange border + ⚠ badge. No cells / no roster — there's no
+  // BB row to aggregate. Clicking opens Settings.
+  // ------------------------------------------------------------
+  function renderNodeMissing(code, meta, payload) {
+    const mcg = MCG_GRAPH.events[code] || {};
+    const ttype = mcg.eventType || '?';
+    const tname = mcg.eventTypeName || 'event';
+    const node = el('div', {
+      class: 'node missing-node',
+      'data-code': code,
+      title: `MCG requires this ${tname} but no Big Board row exists for "${code}". Add it to the board or drop it from the MCG chain.`,
+    });
+    node.appendChild(el('div', { class: 'node-head' }, [
+      el('div', { class: 'node-head-code' }, '⚠ ' + code),
+      el('div', { class: 'node-head-title' }, mcg.eventName || '(no MCG name)'),
+    ]));
+    node.appendChild(el('div', { class: 'node-missing-banner' },
+      `Missing from Big Board · type ${ttype}`));
+    const apps = (mcg.applicabilityDetail && mcg.applicabilityDetail.standardMapping) || mcg.applicability || [];
+    if (apps.length) {
+      node.appendChild(el('div', {
+        style: 'padding:4px 10px 8px;font-size:10px;color:var(--ink-soft)',
+      }, 'Applies to: ' + apps.join(', ')));
+    }
+    return node;
+  }
+
+  // ------------------------------------------------------------
+  // Node renderer: class view
+  // ------------------------------------------------------------
+  // scopeStudents = goal-applicability-filtered student list. Aggregation
+  // and roster display are restricted to this set, so PF 8332F (ABM/FTE/P)
+  // view never mentions CSO/RPA even on shared prereq nodes.
+  function renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal) {
+    const boardEvent = payload.byCode[code];
+    const mcgEvent = MCG_GRAPH.events[code];
+    // aggregateEvent uses the (students) argument to decide applicable set
+    const perStudent = statusModule.computeEventStatus(boardEvent, scopeStudents, payload.classMeta);
+    const agg = statusModule.aggregateEvent(boardEvent, mcgEvent, perStudent, scopeStudents);
+
+    const band = isGoal ? 'goal' : bandForPct(agg.pctComplete, agg.applicable);
+    const applicableStudents = scopeStudents.filter(s => perStudent[s.col].applicable);
+
+    const crew = applicableStudents.filter(s => roleBucket(s.type) === 'crew');
+    const pilots = applicableStudents.filter(s => roleBucket(s.type) === 'pilot');
+    const crewLabel = crewColumnLabel(crew.map(s => s.type));
+
+    const isExpanded = expanded.has(code);
+    const node = el('div', {
+      class: 'node' + (isGoal ? ' goal' : ' ' + band) + (isExpanded ? '' : ' collapsed'),
+      'data-code': code,
+    });
+
+    // Header with toggle
+    const head = el('div', { class: 'node-head' }, [
+      el('div', { class: 'node-head-code' }, code),
+      el('div', { class: 'node-head-title' }, (mcgEvent && mcgEvent.eventName) || boardEvent.title),
+    ]);
+    if (!isGoal) {
+      const toggle = el('button', {
+        class: 'node-toggle',
+        title: isExpanded ? 'Collapse' : 'Expand',
+        onClick: (e) => {
+          e.stopPropagation();
+          if (expanded.has(code)) expanded.delete(code);
+          else expanded.add(code);
+          node.classList.toggle('collapsed');
+          toggle.textContent = expanded.has(code) ? '−' : '+';
+          toggle.title = expanded.has(code) ? 'Collapse' : 'Expand';
+          redrawArrowsSoon();
+        },
+      }, isExpanded ? '−' : '+');
+      head.appendChild(toggle);
+    }
+    node.appendChild(head);
+
+    if (isGoal) {
+      node.appendChild(el('div', { class: 'node-progress' }, [
+        el('div', { class: 'node-pct', style: 'font-size:12px;font-weight:600;color:#777' },
+          `TARGET · ${applicableStudents.length} applicable`),
+      ]));
+      return node;
+    }
+
+    // Progress bar
+    node.appendChild(el('div', { class: 'node-progress' }, [
+      el('div', { class: 'node-bar-bg' }, [
+        el('div', { class: 'node-bar-fill', style: `width:${agg.pctComplete}%` }),
+      ]),
+      el('div', { class: 'node-pct' },
+        agg.applicable ? `${agg.pctComplete}%` : '—'),
+    ]));
+
+    // Role columns — also need to know who's opted for dimming
+    const optedByCol = computeOptedMap(code, payload, applicableStudents, mcgEvent);
+    const rolesWrap = el('div', { class: 'node-roles' });
+    const bothPresent = crew.length && pilots.length;
+
+    if (crew.length) {
+      rolesWrap.appendChild(renderRoleCol(crewLabel, crew, perStudent, !bothPresent, optedByCol));
+    }
+    if (pilots.length) {
+      rolesWrap.appendChild(renderRoleCol('Pilots', pilots, perStudent, !bothPresent, optedByCol));
+    }
+    if (!crew.length && !pilots.length) {
+      rolesWrap.appendChild(el('div', { class: 'role-col single', style: 'color:var(--ink-faint);font-size:10px' },
+        '(no applicable students)'));
+    }
+    node.appendChild(rolesWrap);
+    return node;
+  }
+
+  // Per-node opt map: which of the applicable students has all board-visible
+  // prereqs satisfied? Students who aren't opted get dimmed in the roster
+  // (they show up for awareness but you can see at a glance they're blocked).
+  function computeOptedMap(code, payload, students, mcgEvent) {
+    const map = {};
+    for (const s of students) {
+      map[s.col] = chain.isOpted(code, payload, s, mcgEvent);
+    }
+    return map;
+  }
+
+  function renderRoleCol(label, students, perStudent, isSingle, optedByCol) {
+    const useSingleColumn = students.length <= 5;
+    const col = el('div', { class: 'role-col' + (isSingle ? ' single' : '') + (useSingleColumn ? ' one-col' : '') });
+    col.appendChild(el('h5', null, label));
+    const ul = el('ul');
+    for (const s of students) {
+      const ps = perStudent[s.col];
+      const opted = optedByCol ? optedByCol[s.col] : true;
+      const isComplete = ps.completion === 'complete';
+      const isScheduled = ps.completion === 'scheduled';
+      const dim = !opted && !isComplete && !isScheduled;
+
+      // v0.4: flag a warning when a student has a scheduled date but
+      // their prereqs are NOT met. That's a planning error (someone
+      // was put on the schedule without checking they're opted).
+      const isWarn = isScheduled && !opted;
+
+      // v0.4: per-dot hover tooltip shows the actual completion state
+      // for this student on this node, plus any date. Removes the
+      // v0.3.2 misleading "always says Opted" tooltip.
+      const stateText = (
+        ps.completion === 'complete' ? 'complete' :
+        ps.completion === 'scheduled' ? (opted ? 'scheduled' : 'scheduled (WARN: prereqs not met)') :
+        ps.completion === 'paired-opted' ? 'paired (partner incomplete)' :
+        ps.completion === 'notreq' ? 'not required' :
+        opted ? 'opted (prereqs met, not started)' : 'pending (prereqs not met)'
+      );
+      const dateSuffix = ps.dateText ? ` · ${ps.dateText}` : '';
+      const tooltip = `${s.name} — ${stateText}${dateSuffix}`;
+
+      let dotClass = 'dot ' + (ps.completion === 'paired-opted' ? 'paired' : ps.completion);
+      if (isWarn) dotClass += ' warn';
+
+      const li = el('li', {
+        class: (dim ? 'dim-name ' : '') + (isWarn ? 'warn-row' : ''),
+        title: tooltip,
+      }, [
+        el('span', { class: dotClass }),
+        el('span', null, (isWarn ? '⚠ ' : '') + s.name),
+      ]);
+      ul.appendChild(li);
+    }
+    col.appendChild(ul);
+    return col;
+  }
+
+  // ------------------------------------------------------------
+  // Node renderer: student view — 4 states per v0.3.2 feedback
+  //   DONE      (dark green)  — student has completed the event
+  //   OPTED     (light green) — prereqs met but not yet done
+  //   SCHEDULED (yellow)      — student has a future date on the sheet
+  //   NOT OPTED (red)         — at least one board-visible prereq pending
+  // Renamed from v0.3.1 "BLOCKED" per user feedback.
+  // ------------------------------------------------------------
+  function renderNodeStudent(code, payload, student, isGoal) {
+    const boardEvent = payload.byCode[code];
+    const mcgEvent = MCG_GRAPH.events[code];
+    const info = computeNodeForStudent(code, payload, student);
+    let band = 'goal', label = 'TARGET';
+    if (!isGoal) {
+      if (info.isComplete) { band = 's-done'; label = 'DONE'; }
+      else if (info.completion === 'scheduled' && !info.opted) {
+        // v0.4: scheduled-but-not-opted is a planning error — flag it
+        band = 's-warn'; label = '⚠ SCHEDULED · NOT OPTED';
+      }
+      else if (info.completion === 'scheduled') { band = 's-scheduled'; label = 'SCHEDULED'; }
+      else if (info.opted) { band = 's-opted'; label = 'OPTED'; }
+      else { band = 's-notopted'; label = 'NOT OPTED'; }
+    }
+    const node = el('div', {
+      class: 'node' + (isGoal ? ' goal' : ' ' + band),
+      'data-code': code,
+    });
+    node.appendChild(el('div', { class: 'node-head' }, [
+      el('div', { class: 'node-head-code' }, code),
+      el('div', { class: 'node-head-title' }, (mcgEvent && mcgEvent.eventName) || boardEvent.title),
+    ]));
+    if (isGoal) {
+      node.appendChild(el('div', { class: 'node-student-chip' },
+        el('span', { class: 'chip-pill' }, `TARGET · ${student.name}`)));
+    } else {
+      // Chip + optional date sub-line. If there's a date on the cell, show it
+      // even when the primary state is OPTED or NOT OPTED — per user feedback
+      // "should also show 'Scheduled 4/14' in addition to Opted".
+      const chipWrap = el('div', { class: 'node-student-chip' });
+      chipWrap.appendChild(el('span', { class: 'chip-pill' }, label));
+      if (info.dateText && !info.isComplete) {
+        chipWrap.appendChild(el('div', {
+          class: 'node-date',
+          title: 'Date recorded on the big board for this student',
+        }, info.dateText));
+      }
+      node.appendChild(chipWrap);
+
+      // v0.5.1: when NOT OPTED (or scheduled-but-not-opted), surface the
+      // specific board-visible prereqs that aren't satisfied yet. Helps the
+      // user understand why the warning fired.
+      if ((band === 's-notopted' || band === 's-warn') && !info.isComplete) {
+        const missing = chain.missingPrereqs(code, payload, student);
+        if (missing.length) {
+          const list = el('div', { class: 'node-missing' });
+          list.appendChild(el('div', { class: 'node-missing-label' },
+            `Missing prereq${missing.length > 1 ? 's' : ''} (${missing.length}):`));
+          const ul = el('ul');
+          for (const m of missing.slice(0, 8)) {
+            const status = m.status === 'scheduled' ? ' (scheduled)' : '';
+            ul.appendChild(el('li', { title: m.title || m.code }, m.code + status));
+          }
+          if (missing.length > 8) ul.appendChild(el('li', { class: 'more' }, '+ ' + (missing.length - 8) + ' more'));
+          list.appendChild(ul);
+          node.appendChild(list);
+        }
+      }
+    }
+    return node;
+  }
+
+  // ------------------------------------------------------------
+  // Layout: put nodes into tiers (columns) by depth.
+  // Filters:
+  //   class view  — drop nodes where every goal-scoped student has a
+  //                 dark-grey cell (board says "not required"). This uses
+  //                 board data as the sole source of truth, not MCG
+  //                 applicability codes.
+  //   student view — drop nodes where the student's cell is dark-grey
+  //                  or the student isn't applicable.
+  // Returns { tiers: [[code, ...], ...] } where tier[0] = goal.
+  // ------------------------------------------------------------
+  function layoutDag(dag, payload, { mode, student, scopeStudents }) {
+    // v0.5: applicability pruning now happens inside buildDag (per-viewer
+    // walks are already filtered). layoutDag only handles:
+    //   (a) orphan filter — drop isolated nodes (except the goal),
+    //   (b) tier distribution for fallback layout,
+    //   (c) pass-through for group-virtual nodes.
+    const tiers = [];
+    for (let d = 0; d <= Math.ceil(dag.maxDepth); d++) tiers.push([]);
+
+    const allCodes = new Set(Object.keys(dag.nodesByCode));
+    let edges = dag.edges.filter(e => allCodes.has(e.from) && allCodes.has(e.to));
+
+    const goalCode = Object.keys(dag.nodesByCode).find(c => (dag.nodesByCode[c].depth || 0) === 0);
+    const connected = new Set(goalCode ? [goalCode] : []);
+    for (const e of edges) { connected.add(e.from); connected.add(e.to); }
+    const visible = new Set([...allCodes].filter(c => connected.has(c)));
+    edges = edges.filter(e => visible.has(e.from) && visible.has(e.to));
+
+    for (const code of visible) {
+      const d = Math.max(0, Math.floor(dag.nodesByCode[code].depth || 0));
+      if (!tiers[d]) tiers[d] = [];
+      tiers[d].push(code);
+    }
+    for (const t of tiers) t.sort();
+    return { tiers, edges };
+  }
+
+  // ------------------------------------------------------------
+  // Arrow renderer: single SVG overlaying the canvas, drawing a
+  // cubic bezier from right-edge of source to left-edge of target.
+  // Called after nodes are attached so getBoundingClientRect works.
+  // Source-node status determines arrow color.
+  // ------------------------------------------------------------
+  function drawArrows(canvas, edges, payload, { mode, student }) {
+    // Remove old SVG if present
+    const existing = canvas.querySelector('svg.dag-arrows');
+    if (existing) existing.remove();
+    if (!edges.length) return;
+
+    const canvasRect = canvas.getBoundingClientRect();
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'dag-arrows');
+    svg.setAttribute('width', canvas.scrollWidth);
+    svg.setAttribute('height', canvas.scrollHeight);
+
+    // Arrowhead markers (one per color)
+    const defs = document.createElementNS(svgNS, 'defs');
+    for (const cls of ['a-green', 'a-yellow', 'a-none', 'a-goal']) {
+      const m = document.createElementNS(svgNS, 'marker');
+      m.setAttribute('id', 'mk-' + cls);
+      m.setAttribute('viewBox', '0 0 10 10');
+      m.setAttribute('refX', '8'); m.setAttribute('refY', '5');
+      m.setAttribute('markerWidth', '7'); m.setAttribute('markerHeight', '7');
+      m.setAttribute('orient', 'auto-start-reverse');
+      const p = document.createElementNS(svgNS, 'path');
+      p.setAttribute('d', 'M0,0 L10,5 L0,10 z');
+      p.setAttribute('fill',
+        cls === 'a-green' ? '#2e7d32' :
+        cls === 'a-yellow' ? '#b88600' :
+        cls === 'a-none' ? '#c62828' : '#999');
+      m.appendChild(p); defs.appendChild(m);
+    }
+    svg.appendChild(defs);
+
+    for (const e of edges) {
+      const fromNode = canvas.querySelector(`.node[data-code="${cssEsc(e.from)}"]`);
+      const toNode = canvas.querySelector(`.node[data-code="${cssEsc(e.to)}"]`);
+      if (!fromNode || !toNode) continue;
+      const fr = fromNode.getBoundingClientRect();
+      const tr = toNode.getBoundingClientRect();
+      // Source right edge → target left edge (canvas-relative)
+      const x1 = fr.right - canvasRect.left;
+      const y1 = fr.top - canvasRect.top + fr.height / 2;
+      const x2 = tr.left - canvasRect.left;
+      const y2 = tr.top - canvasRect.top + tr.height / 2;
+      const dx = Math.max(30, (x2 - x1) * 0.4);
+      const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+
+      // Arrow color = source node status. Virtual group source → neutral.
+      let cls = 'a-none';
+      const srcIsGroup = typeof e.from === 'string' && e.from.startsWith('GROUP:');
+      if (srcIsGroup) {
+        cls = 'a-goal';
+      } else if (mode === 'student' && student) {
+        const info = computeNodeForStudent(e.from, payload, student);
+        if (!info.applicable) cls = 'a-goal';
+        else if (info.isComplete) cls = 'a-green';
+        else if (info.completion === 'scheduled') cls = 'a-yellow';
+        else if (info.opted) cls = 'a-green';
+        else cls = 'a-none';
+      } else if (payload.byCode[e.from]) {
+        const scope = goalScopeStudents(payload, _lastGoalCode || e.to);
+        const boardEvent = payload.byCode[e.from];
+        const mcgEvent = MCG_GRAPH.events[e.from];
+        const perStudent = statusModule.computeEventStatus(boardEvent, scope, payload.classMeta);
+        const agg = statusModule.aggregateEvent(boardEvent, mcgEvent, perStudent, scope);
+        cls = arrowClassForBand(bandForPct(agg.pctComplete, agg.applicable));
+      } else {
+        cls = 'a-goal';
+      }
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('class', cls);
+      path.setAttribute('marker-end', `url(#mk-${cls})`);
+      path.setAttribute('data-edge-key', e.from + '→' + e.to);  // v0.5.1: focus targeting
+      svg.appendChild(path);
+    }
+    canvas.insertBefore(svg, canvas.firstChild);
+  }
+
+  function cssEsc(s) { return (window.CSS && CSS.escape) ? CSS.escape(s) : s.replace(/([^\w-])/g, '\\$1'); }
+
+  // ------------------------------------------------------------
+  // Main render entry — called by boot() on Load and on any
+  // state change (view / goal / student).
+  // ------------------------------------------------------------
+  function renderAll(payload, opts) {
+    opts = opts || {};
+    const mode = opts.mode || 'class';
+    const goalCode = opts.goalCode;
+    const student = opts.studentCol
+      ? payload.students.find(s => s.col === opts.studentCol)
+      : null;
+
+    _focusedCode = null;  // v0.5.1: fresh render = fresh focus state
+    const main = $('#main');
+    main.innerHTML = '';
+
+    if (!goalCode) {
+      main.appendChild(el('div', { class: 'dag-empty' }, [
+        el('h2', null, 'Pick a target event above.'),
+        el('p', null, 'The canvas will draw the board-visible prereq chain leading to that goal.'),
+      ]));
+      $('#goal-summary').style.display = 'none';
+      return;
+    }
+    if (mode === 'student' && !student) {
+      main.appendChild(el('div', { class: 'dag-empty' }, [
+        el('h2', null, 'Pick a student.'),
+        el('p', null, 'Student view needs a student selected.'),
+      ]));
+      $('#goal-summary').style.display = 'none';
+      return;
+    }
+    if (!payload.byCode[goalCode]) {
+      main.appendChild(el('div', { class: 'dag-empty' }, [
+        el('h2', null, `${goalCode} is not on this board.`),
+        el('p', null, goalCode === 'SY 7521O'
+          ? 'Try a STC tab in the Board picker above — SY 7521O lives on the STC board.'
+          : 'This goal event exists in the MCG but isn\'t on the currently loaded tab.'),
+      ]));
+      $('#goal-summary').style.display = 'none';
+      return;
+    }
+
+    // v0.3.2: Student view — if the selected student isn't applicable to
+    // the chosen goal, don't render a DAG at all. Show an explicit Not
+    // Applicable screen per issue feedback.
+    if (mode === 'student' && student) {
+      const goalEvt = payload.byCode[goalCode];
+      const goalCell = goalEvt && goalEvt.cells.find(c => c.col === student.col);
+      const notRequired = goalCell && goalCell.rgbFamily === 'darkGrey';
+      if (notRequired) {
+        const mcg = MCG_GRAPH.events[goalCode] || {};
+        main.appendChild(el('div', { class: 'dag-empty' }, [
+          el('h2', null, 'Not Applicable'),
+          el('p', null, `${goalCode} (${mcg.eventName || ''}) is not required for ${student.name}.`),
+          el('p', null, `${student.name} (${student.type}) has a dark-grey cell — the scheduler does not require this event.`),
+          el('p', { style: 'margin-top:10px;font-size:12px;color:var(--ink-faint)' },
+            'Pick a different goal or switch to Class view.'),
+        ]));
+        $('#goal-summary').style.display = 'none';
+        return;
+      }
+    }
+
+    _lastGoalCode = goalCode;
+    const scopeStudents = goalScopeStudents(payload, goalCode);
+
+    // Build DAG + filtered layout. v0.5: buildDag is viewer-aware and
+    // applies Rule A / DG / condition / oneOf / series-collapse per
+    // student (class mode = union).
+    const dag = buildDag(goalCode, payload, { mode, student });
+    const layout = layoutDag(dag, payload, { mode, student, scopeStudents });
+
+    const mcgGoal = MCG_GRAPH.events[goalCode];
+    const dagreAvailable = typeof dagre !== 'undefined';
+    const canvas = el('div', {
+      class: 'dag-canvas' + (dagreAvailable ? '' : ' fallback'),
+      id: 'dag-canvas',
+    });
+
+    // Collect visible node codes in a flat list (dagre doesn't care about tiers)
+    const visibleCodes = [];
+    for (const codes of layout.tiers) for (const c of codes) visibleCodes.push(c);
+
+    // Build all node DOM elements first — we need them in the DOM to measure
+    // their size before running dagre. Nodes are rendered invisible until
+    // layout completes so we don't flash the pre-layout positions.
+    const nodeByCode = {};
+    for (const code of visibleCodes) {
+      const isGoal = code === goalCode;
+      const meta = dag.nodesByCode[code];
+      let node;
+      if (meta && meta.isGroup) {
+        node = renderNodeGroup(code, meta, payload, student, mode);
+      } else if (meta && meta.isMissing) {
+        node = renderNodeMissing(code, meta, payload);
+      } else {
+        node = mode === 'student'
+          ? renderNodeStudent(code, payload, student, isGoal)
+          : renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal);
+      }
+      if (dagreAvailable) {
+        node.style.visibility = 'hidden';
+        node.style.left = '0px';
+        node.style.top = '0px';
+      }
+      // v0.5.1: click-to-focus. Clicking the node body (anywhere except the
+      // +/- toggle, which already calls e.stopPropagation) sets focus on this
+      // event. Click the canvas background to clear focus.
+      node.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (_focusedCode === code) clearFocus();
+        else setFocus(code);
+      });
+      nodeByCode[code] = node;
+      canvas.appendChild(node);
+    }
+    canvas.addEventListener('click', () => clearFocus());
+    main.appendChild(canvas);
+
+    _lastCanvas = canvas;
+    _lastPayload = payload;
+    _lastEdges = layout.edges;
+    _lastMode = mode;
+    _lastStudent = student;
+    _lastVisibleCodes = visibleCodes;
+    _lastNodeByCode = nodeByCode;
+
+    if (dagreAvailable) {
+      // Wait for DOM to compute sizes, then layout.
+      requestAnimationFrame(() => requestAnimationFrame(() => applyDagreLayout()));
+    } else {
+      // Fallback path — needs the tiered column structure the pre-v0.4
+      // code generated. Re-render with columns.
+      main.innerHTML = '';
+      const canvasFb = el('div', { class: 'dag-canvas fallback', id: 'dag-canvas' });
+      for (let d = 0; d < layout.tiers.length; d++) {
+        const codes = layout.tiers[d];
+        if (!codes.length) continue;
+        const col = el('div', { class: 'dag-col' });
+        col.appendChild(el('div', { class: 'dag-col-label' }, d === 0 ? 'GOAL' : `TIER −${d}`));
+        for (const code of codes) {
+          const isGoal = d === 0;
+          const n = mode === 'student'
+            ? renderNodeStudent(code, payload, student, isGoal)
+            : renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal);
+          col.appendChild(n);
+        }
+        canvasFb.appendChild(col);
+      }
+      main.appendChild(canvasFb);
+      _lastCanvas = canvasFb;
+      redrawArrowsSoon();
+      banner('Dagre not loaded — using fallback column layout. Check that dagre.min.js sits next to index.html.', true);
+    }
+
+    if (_resizeObserver) _resizeObserver.disconnect();
+    if (typeof ResizeObserver !== 'undefined' && dagreAvailable) {
+      _resizeObserver = new ResizeObserver(() => redrawArrowsSoon());
+      _resizeObserver.observe(_lastCanvas);
+    }
+
+    // Summary strip
+    renderGoalSummary(payload, goalCode, dag, layout, mode, student, scopeStudents);
+  }
+
+  // Measure all rendered nodes, feed sizes+edges to dagre, then position
+  // nodes using dagre's coords and draw arrows through its waypoints.
+  function applyDagreLayout() {
+    if (!_lastCanvas || !_lastVisibleCodes) return;
+    const canvas = _lastCanvas;
+    const nodeByCode = _lastNodeByCode;
+    const edges = _lastEdges;
+    const settings = getLayoutSettings();
+
+    const g = new dagre.graphlib.Graph({ compound: false });
+    const graphOpts = {
+      rankdir: settings.rankdir,
+      ranksep: settings.ranksep,
+      nodesep: settings.nodesep,
+      edgesep: settings.edgesep,
+      marginx: settings.marginx,
+      marginy: settings.marginy,
+      ranker: settings.ranker,
+    };
+    if (settings.align) graphOpts.align = settings.align;
+    g.setGraph(graphOpts);
+    g.setDefaultEdgeLabel(() => ({}));
+
+    // Measure each node (its CSS class already reflects collapsed/expanded state)
+    for (const code of _lastVisibleCodes) {
+      const el = nodeByCode[code];
+      const rect = el.getBoundingClientRect();
+      g.setNode(code, { width: rect.width, height: rect.height });
+    }
+
+    // Optional: boost weight on edges that point directly into the goal so
+    // dagre prefers to keep that final chain straight.
+    const goalCode = _lastGoalCode;
+    for (const e of edges) {
+      if (g.hasNode(e.from) && g.hasNode(e.to)) {
+        const attrs = { code_from: e.from, code_to: e.to, bridge: e.bridge || [] };
+        if (settings.goalEdgeWeight > 1 && e.to === goalCode) {
+          attrs.weight = settings.goalEdgeWeight;
+        }
+        if (settings.minlen > 1) attrs.minlen = settings.minlen;
+        g.setEdge(e.from, e.to, attrs);
+      }
+    }
+
+    try {
+      dagre.layout(g);
+    } catch (err) {
+      console.error('[bbcs] dagre.layout threw:', err);
+      banner('Layout error: ' + (err.message || err), true);
+      return;
+    }
+
+    // Apply positions
+    g.nodes().forEach(code => {
+      const n = g.node(code);
+      const el = nodeByCode[code];
+      if (!el || !n) return;
+      const left = n.x - n.width / 2;
+      const top = n.y - n.height / 2;
+      el.style.left = left + 'px';
+      el.style.top = top + 'px';
+      el.style.visibility = '';
+    });
+
+    // Size canvas to graph bounding box
+    const gi = g.graph();
+    canvas.style.width = (gi.width + 20) + 'px';
+    canvas.style.height = (gi.height + 20) + 'px';
+
+    drawArrowsDagre(canvas, g, _lastPayload, { mode: _lastMode, student: _lastStudent });
+    // v0.5.1: re-apply click-to-focus state if any (re-layout wipes the SVG)
+    if (_focusedCode) setFocus(_focusedCode);
+  }
+
+  // Expand/collapse all nodes in the current canvas.
+  function setAllExpanded(shouldExpand) {
+    if (!_lastCanvas) return;
+    const nodes = _lastCanvas.querySelectorAll('.node:not(.goal)');
+    nodes.forEach(n => {
+      const code = n.getAttribute('data-code');
+      if (!code) return;
+      if (shouldExpand) {
+        expanded.add(code);
+        n.classList.remove('collapsed');
+      } else {
+        expanded.delete(code);
+        n.classList.add('collapsed');
+      }
+      const toggle = n.querySelector('.node-toggle');
+      if (toggle) {
+        toggle.textContent = shouldExpand ? '−' : '+';
+        toggle.title = shouldExpand ? 'Collapse' : 'Expand';
+      }
+    });
+    redrawArrowsSoon();
+  }
+
+  // v0.4: toggles and resizes trigger a full dagre re-layout (nodes change
+  // size, so the whole rank layout may shift). Fallback path just redraws
+  // arrows since there's no dagre output to reapply.
+  function redrawArrowsSoon() {
+    if (!_lastCanvas || !_lastEdges) return;
+    if (typeof dagre !== 'undefined' && _lastVisibleCodes) {
+      requestAnimationFrame(() => requestAnimationFrame(() => applyDagreLayout()));
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+        drawArrows(_lastCanvas, _lastEdges, _lastPayload, { mode: _lastMode, student: _lastStudent })));
+    }
+  }
+
+  // SVG arrow renderer using dagre edge waypoints. Waypoints are computed
+  // to avoid passing through nodes. Draw a smoothed path through them.
+  function drawArrowsDagre(canvas, dagreGraph, payload, { mode, student }) {
+    const existing = canvas.querySelector('svg.dag-arrows');
+    if (existing) existing.remove();
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'dag-arrows');
+    const gi = dagreGraph.graph();
+    svg.setAttribute('width', gi.width + 20);
+    svg.setAttribute('height', gi.height + 20);
+    svg.style.pointerEvents = 'none';
+
+    const defs = document.createElementNS(svgNS, 'defs');
+    for (const cls of ['a-green', 'a-yellow', 'a-none', 'a-goal']) {
+      const m = document.createElementNS(svgNS, 'marker');
+      m.setAttribute('id', 'mk-' + cls);
+      m.setAttribute('viewBox', '0 0 10 10');
+      m.setAttribute('refX', '8'); m.setAttribute('refY', '5');
+      m.setAttribute('markerWidth', '7'); m.setAttribute('markerHeight', '7');
+      m.setAttribute('orient', 'auto-start-reverse');
+      const p = document.createElementNS(svgNS, 'path');
+      p.setAttribute('d', 'M0,0 L10,5 L0,10 z');
+      p.setAttribute('fill',
+        cls === 'a-green' ? '#2e7d32' :
+        cls === 'a-yellow' ? '#b88600' :
+        cls === 'a-none' ? '#c62828' : '#999');
+      m.appendChild(p); defs.appendChild(m);
+    }
+    svg.appendChild(defs);
+
+    const lineStyle = window.bbcsLineStyle || 'polyline';
+
+    dagreGraph.edges().forEach(e => {
+      const edge = dagreGraph.edge(e);
+      if (!edge.points || edge.points.length < 2) return;
+      const pts = edge.points;
+
+      // Clamp first and last points to the actual node edges so arrows
+      // visibly start/end at the container border instead of looking like
+      // they emerge from the centroid. Dagre places endpoints near the
+      // border but the exact point depends on internal rank offsets; for
+      // visual consistency we push them to the mid-height of the facing
+      // edge (right-center of source, left-center of target).
+      const srcNode = dagreGraph.node(e.v);
+      const tgtNode = dagreGraph.node(e.w);
+      if (srcNode) { pts[0] = { x: srcNode.x + srcNode.width / 2, y: srcNode.y }; }
+      if (tgtNode) { pts[pts.length - 1] = { x: tgtNode.x - tgtNode.width / 2, y: tgtNode.y }; }
+
+      let d;
+      if (lineStyle === 'straight') {
+        // Ignore waypoints entirely — direct line from source to target.
+        d = `M ${pts[0].x} ${pts[0].y} L ${pts[pts.length - 1].x} ${pts[pts.length - 1].y}`;
+      } else if (lineStyle === 'smooth') {
+        // Cubic bezier per segment with horizontal tangent control points.
+        d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i], b = pts[i + 1];
+          const dx = b.x - a.x;
+          const c1x = a.x + dx * 0.5, c1y = a.y;
+          const c2x = a.x + dx * 0.5, c2y = b.y;
+          d += ` C ${c1x} ${c1y} ${c2x} ${c2y} ${b.x} ${b.y}`;
+        }
+      } else if (lineStyle === 'orthogonal') {
+        // Right-angle routing: for each segment, go horizontally half-way,
+        // then vertically to the target y, then horizontally the rest.
+        d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const a = pts[i], b = pts[i + 1];
+          const midX = (a.x + b.x) / 2;
+          d += ` L ${midX} ${a.y} L ${midX} ${b.y} L ${b.x} ${b.y}`;
+        }
+      } else {
+        // Polyline — straight segments between dagre waypoints. Default.
+        d = `M ${pts[0].x} ${pts[0].y}`;
+        for (let i = 1; i < pts.length; i++) d += ` L ${pts[i].x} ${pts[i].y}`;
+      }
+
+      // Arrow color = source node status. Group (virtual) source → neutral.
+      let cls = 'a-none';
+      const srcIsGroup = typeof e.v === 'string' && e.v.startsWith('GROUP:');
+      if (srcIsGroup) {
+        cls = 'a-goal';
+      } else if (mode === 'student' && student) {
+        const info = computeNodeForStudent(e.v, payload, student);
+        if (!info.applicable) cls = 'a-goal';
+        else if (info.isComplete) cls = 'a-green';
+        else if (info.completion === 'scheduled' && !info.opted) cls = 'a-none';
+        else if (info.completion === 'scheduled') cls = 'a-yellow';
+        else if (info.opted) cls = 'a-green';
+        else cls = 'a-none';
+      } else if (payload.byCode[e.v]) {
+        const scope = goalScopeStudents(payload, _lastGoalCode || e.w);
+        const boardEvent = payload.byCode[e.v];
+        const mcgEvent = MCG_GRAPH.events[e.v];
+        const perStudent = statusModule.computeEventStatus(boardEvent, scope, payload.classMeta);
+        const agg = statusModule.aggregateEvent(boardEvent, mcgEvent, perStudent, scope);
+        cls = arrowClassForBand(bandForPct(agg.pctComplete, agg.applicable));
+      } else {
+        cls = 'a-goal';
+      }
+      const path = document.createElementNS(svgNS, 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('class', cls);
+      path.setAttribute('marker-end', `url(#mk-${cls})`);
+      path.setAttribute('data-edge-key', e.v + '→' + e.w);  // v0.5.1: focus targeting
+      // Bridge tooltip — surfaces off-board prereqs traversed on this edge
+      if (edge.bridge && edge.bridge.length) {
+        const titleEl = document.createElementNS(svgNS, 'title');
+        titleEl.textContent = 'via off-board: ' + edge.bridge.join(' → ');
+        path.appendChild(titleEl);
+        path.style.pointerEvents = 'stroke';  // so hover works on the line
+      }
+      svg.appendChild(path);
+    });
+
+    canvas.insertBefore(svg, canvas.firstChild);
+  }
+
+  // ------------------------------------------------------------
+  // v0.5.1: Click-to-focus highlighting.
+  // setFocus(code): dim everything except `code`, its direct upstream
+  //   prereqs (events that are listed as `from` on edges where to=code),
+  //   and the connecting edges. Click again or click empty canvas clears.
+  // ------------------------------------------------------------
+  function setFocus(code) {
+    if (!_lastCanvas || !_lastEdges) return;
+    _focusedCode = code;
+    const directPrereqs = new Set();
+    for (const e of _lastEdges) if (e.to === code) directPrereqs.add(e.from);
+    // Highlight set = clicked + direct upstream
+    const highlight = new Set([code, ...directPrereqs]);
+    // Apply CSS classes
+    _lastCanvas.classList.add('has-focus');
+    const allNodes = _lastCanvas.querySelectorAll('.node');
+    allNodes.forEach(n => {
+      const c = n.getAttribute('data-code');
+      n.classList.remove('focused', 'focus-prereq', 'dimmed');
+      if (c === code) n.classList.add('focused');
+      else if (directPrereqs.has(c)) n.classList.add('focus-prereq');
+      else n.classList.add('dimmed');
+    });
+    // Dim/un-dim arrows: keep arrows whose target = focused code
+    const svg = _lastCanvas.querySelector('svg.dag-arrows');
+    if (svg) {
+      const paths = svg.querySelectorAll('path[data-edge-key]');
+      paths.forEach(p => {
+        const ek = p.getAttribute('data-edge-key');
+        if (!ek) return;
+        const [from, to] = ek.split('→');
+        p.classList.remove('focus-edge', 'dim-edge');
+        if (to === code) p.classList.add('focus-edge');
+        else p.classList.add('dim-edge');
+      });
+    }
+  }
+  function clearFocus() {
+    _focusedCode = null;
+    if (!_lastCanvas) return;
+    _lastCanvas.classList.remove('has-focus');
+    _lastCanvas.querySelectorAll('.node').forEach(n => {
+      n.classList.remove('focused', 'focus-prereq', 'dimmed');
+    });
+    const svg = _lastCanvas.querySelector('svg.dag-arrows');
+    if (svg) svg.querySelectorAll('path[data-edge-key]').forEach(p => p.classList.remove('focus-edge', 'dim-edge'));
+  }
+
+  function renderGoalSummary(payload, goalCode, dag, layout, mode, student, scopeStudents) {
+    const wrap = $('#goal-summary');
+    wrap.style.display = 'flex';
+    wrap.innerHTML = '';
+    const mcg = MCG_GRAPH.events[goalCode] || {};
+    const totalNodes = Object.keys(dag.nodesByCode).length;
+    const visible = layout.tiers.reduce((n, t) => n + t.length, 0);
+    const hidden = totalNodes - visible;
+    const parts = [
+      ['Target', `${goalCode} — ${mcg.eventName || ''}`],
+      ['Applicability', (mcg.applicability || []).join(', ') || 'unrestricted'],
+      ['View', mode === 'student' ? `Student — ${student.name} (${student.type})` : `Class aggregate (${(scopeStudents || payload.students).length} in scope)`],
+      ['Board', payload.sheetName],
+      ['Nodes shown', `${visible} of ${totalNodes}${hidden ? ` (${hidden} hidden)` : ''}`],
+    ];
+    for (const [k, v] of parts) {
+      wrap.appendChild(el('div', null, [el('span', null, k + ': '), el('strong', null, v)]));
+    }
+  }
+
+  return { renderAll, setAllExpanded, buildDag };
+})();
+
+/* --------------------------------------------------------
+ * issues.js — fetch and render issues.md (simple MD subset)
+ * -------------------------------------------------------- */
+const issues = (() => {
+  async function fetchIssues() {
+    try {
+      const r = await fetch('./issues.md');
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return await r.text();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function renderMarkdown(md) {
+    // Minimal MD: headings + **bold** + bullet lists. Good enough for the log.
+    const lines = md.split(/\r?\n/);
+    const out = [];
+    for (let line of lines) {
+      if (/^#+\s/.test(line)) {
+        const depth = line.match(/^#+/)[0].length;
+        const tag = 'h' + Math.min(depth + 2, 6);
+        out.push(`<${tag}>${escHtml(line.replace(/^#+\s*/, ''))}</${tag}>`);
+      } else if (/^---$/.test(line)) {
+        out.push('<hr>');
+      } else if (/^\s*[-*]\s+/.test(line)) {
+        out.push(`<li>${escHtml(line.replace(/^\s*[-*]\s+/, ''))}</li>`);
+      } else if (line.trim() === '') {
+        out.push('<br>');
+      } else {
+        out.push(`<p>${escHtml(line).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>')}</p>`);
+      }
+    }
+    return out.join('\n');
+  }
+
+  async function showPanel() {
+    openPanel('Issue Log', null);
+    const md = await fetchIssues();
+    const body = $('#panel-body');
+    if (md == null) {
+      body.innerHTML = `
+        <p>Couldn't fetch <code>issues.md</code> (probably running from <code>file://</code>).</p>
+        <p>Either:</p>
+        <ul>
+          <li>Serve this folder locally: <code>python -m http.server 8080</code></li>
+          <li>Or paste the file contents below:</li>
+        </ul>
+        <textarea id="paste-issues" style="width:100%;height:200px;font-family:var(--mono);font-size:11px;margin-top:8px;padding:8px;"></textarea>
+        <button class="btn" style="margin-top:8px" id="paste-render">Render pasted issues</button>
+        <div id="paste-output"></div>
+      `;
+      $('#paste-render').addEventListener('click', () => {
+        const v = $('#paste-issues').value;
+        $('#paste-output').innerHTML = '<hr>' + renderMarkdown(v);
+      });
+    } else {
+      body.innerHTML = renderMarkdown(md);
+    }
+  }
+
+  return { showPanel };
+})();
+
+/* --------------------------------------------------------
+ * v0.5.2a — App settings (display toggles + duplicate handling).
+ * Persisted to localStorage.bbcs::settings. Separate from layout
+ * knobs so a user's display preferences survive a layout reset.
+ * -------------------------------------------------------- */
+// Event types that the Big Board is expected to track (if MCG says you need
+// an event of this type and it's not on the board, that's a gap worth
+// flagging). R/Y/Z/W/O are curriculum-only (reports, debriefs, working groups,
+// space-ops) — we collapse those through bridges silently as before.
+const BB_TRACKED_TYPES_ALL = new Set(['F','C','L','S','E','G','H','M','B','I']);
+
+const APP_SETTINGS_DEFAULTS = Object.freeze({
+  showMIBs: true,               // M-type nodes
+  showAsync: true,              // B-type nodes
+  showExams: false,             // E-type nodes (default off — low-signal for most users)
+  showGround: false,            // G-type nodes (ground school — same)
+  showMissingFromBB: true,      // render MCG-required-but-missing as warning nodes
+  showUntrackedOffBoard: false, // show A/R/Y/Z/W/O as ghost nodes (default: hide/bridge)
+  duplicates: {},               // { code: { mode: 'any'|'all'|'one', selected: [rowNumbers] } }
+});
+let _appSettings = null;
+function getAppSettings() {
+  if (_appSettings) return _appSettings;
+  let stored = {};
+  try { stored = JSON.parse(localStorage.getItem('bbcs::settings') || '{}'); } catch (_) {}
+  _appSettings = Object.assign({}, APP_SETTINGS_DEFAULTS, stored);
+  // Deep-restore duplicates subobject so stored overrides aren't lost
+  _appSettings.duplicates = Object.assign({}, APP_SETTINGS_DEFAULTS.duplicates, (stored && stored.duplicates) || {});
+  return _appSettings;
+}
+function saveAppSettings() {
+  try { localStorage.setItem('bbcs::settings', JSON.stringify(_appSettings)); } catch (_) {}
+}
+function setAppSetting(key, value) {
+  getAppSettings();
+  _appSettings[key] = value;
+  saveAppSettings();
+}
+function resetAppSettings() {
+  _appSettings = JSON.parse(JSON.stringify(APP_SETTINGS_DEFAULTS));
+  saveAppSettings();
+}
+
+// Effective BB-tracked types given user toggles. An event type in this set
+// is "shown" (either as on-board node or as missing-from-BB warning). An
+// event type NOT in this set is silently bridged through, regardless of
+// whether the BB tracks it. So "hide MIBs" hides on-BB MIBs too.
+function effectiveTrackedTypes() {
+  const s = getAppSettings();
+  const set = new Set(BB_TRACKED_TYPES_ALL);
+  if (!s.showMIBs)   set.delete('M');
+  if (!s.showAsync)  set.delete('B');
+  if (!s.showExams)  set.delete('E');
+  if (!s.showGround) set.delete('G');
+  return set;
+}
+
+/* --------------------------------------------------------
+ * Layout-knobs panel — exposes every dagre setting as a live
+ * input. Changes are debounced 120ms and trigger re-layout.
+ * Settings persist to localStorage.
+ * -------------------------------------------------------- */
+const LAYOUT_DEFAULTS = Object.freeze({
+  rankdir: 'LR',
+  ranksep: 80,
+  nodesep: 16,
+  edgesep: 8,
+  marginx: 20,
+  marginy: 20,
+  ranker: 'network-simplex',
+  align: '',            // '' = balanced (default); UL | UR | DL | DR
+  minlen: 1,
+  goalEdgeWeight: 1,    // multiplier for edges pointing into the goal
+});
+
+let _layoutSettings = null;
+function getLayoutSettings() {
+  if (_layoutSettings) return _layoutSettings;
+  let stored = {};
+  try { stored = JSON.parse(localStorage.getItem('bbcs::layoutKnobs') || '{}'); } catch (_) {}
+  _layoutSettings = Object.assign({}, LAYOUT_DEFAULTS, stored);
+  return _layoutSettings;
+}
+function setLayoutSetting(key, value) {
+  const s = getLayoutSettings();
+  s[key] = value;
+  try { localStorage.setItem('bbcs::layoutKnobs', JSON.stringify(s)); } catch (_) {}
+}
+function resetLayoutSettings() {
+  _layoutSettings = Object.assign({}, LAYOUT_DEFAULTS);
+  try { localStorage.removeItem('bbcs::layoutKnobs'); } catch (_) {}
+}
+
+function layoutPanel() {
+  const s = getLayoutSettings();
+  const html = `
+    <p style="font-size:12px; color:var(--ink-soft); margin-bottom:10px;">
+      Every knob dagre exposes. Changes re-layout immediately.
+    </p>
+
+    <h4>Direction + algorithm</h4>
+    <div class="knob-grid">
+      <label>rankdir</label>
+      <select data-knob="rankdir">
+        <option value="LR" ${s.rankdir === 'LR' ? 'selected' : ''}>LR — prereq ← left, goal → right</option>
+        <option value="RL" ${s.rankdir === 'RL' ? 'selected' : ''}>RL — flipped (goal on left)</option>
+        <option value="TB" ${s.rankdir === 'TB' ? 'selected' : ''}>TB — top to bottom</option>
+        <option value="BT" ${s.rankdir === 'BT' ? 'selected' : ''}>BT — bottom to top</option>
+      </select>
+      <label>ranker</label>
+      <select data-knob="ranker">
+        <option value="network-simplex" ${s.ranker === 'network-simplex' ? 'selected' : ''}>network-simplex (best quality, default)</option>
+        <option value="tight-tree" ${s.ranker === 'tight-tree' ? 'selected' : ''}>tight-tree (faster, more compact)</option>
+        <option value="longest-path" ${s.ranker === 'longest-path' ? 'selected' : ''}>longest-path (fastest, lower quality)</option>
+      </select>
+      <label>align</label>
+      <select data-knob="align">
+        <option value="" ${s.align === '' ? 'selected' : ''}>balanced (default)</option>
+        <option value="UL" ${s.align === 'UL' ? 'selected' : ''}>UL — upper-left</option>
+        <option value="UR" ${s.align === 'UR' ? 'selected' : ''}>UR — upper-right</option>
+        <option value="DL" ${s.align === 'DL' ? 'selected' : ''}>DL — lower-left</option>
+        <option value="DR" ${s.align === 'DR' ? 'selected' : ''}>DR — lower-right</option>
+      </select>
+    </div>
+
+    <h4>Spacing (pixels)</h4>
+    <div class="knob-grid">
+      <label title="Gap between ranks (horizontal for LR)">ranksep</label>
+      <input type="number" min="0" max="400" step="5" data-knob="ranksep" value="${s.ranksep}">
+      <label title="Gap between nodes in the same rank">nodesep</label>
+      <input type="number" min="0" max="200" step="2" data-knob="nodesep" value="${s.nodesep}">
+      <label title="Gap between parallel edges">edgesep</label>
+      <input type="number" min="0" max="100" step="1" data-knob="edgesep" value="${s.edgesep}">
+      <label title="Left/right canvas padding">marginx</label>
+      <input type="number" min="0" max="200" step="5" data-knob="marginx" value="${s.marginx}">
+      <label title="Top/bottom canvas padding">marginy</label>
+      <input type="number" min="0" max="200" step="5" data-knob="marginy" value="${s.marginy}">
+    </div>
+
+    <h4>Per-edge tuning</h4>
+    <div class="knob-grid">
+      <label title="Force every edge to span ≥ N ranks. Default 1.">minlen</label>
+      <input type="number" min="1" max="5" step="1" data-knob="minlen" value="${s.minlen}">
+      <label title="Weight multiplier for edges pointing directly into the goal. Higher = straighter.">goal-edge weight</label>
+      <input type="number" min="1" max="10" step="1" data-knob="goalEdgeWeight" value="${s.goalEdgeWeight}">
+    </div>
+
+    <div style="margin-top:14px; display:flex; gap:8px; flex-wrap: wrap;">
+      <button class="btn" id="knobs-reset">Reset to defaults</button>
+      <button class="btn" id="knobs-close">Close</button>
+    </div>
+
+    <h4 style="margin-top:18px;">Presets</h4>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="btn" data-preset="compact">Compact</button>
+      <button class="btn" data-preset="normal">Normal</button>
+      <button class="btn" data-preset="spacious">Spacious</button>
+    </div>
+  `;
+  openPanel('Layout knobs', html);
+
+  // Live-update handlers
+  const debounced = debounce(() => {
+    if (state && state.payload) renderCurrent();
+  }, 120);
+
+  $$('#panel-body [data-knob]').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const key = e.target.dataset.knob;
+      const raw = e.target.value;
+      const value = (e.target.type === 'number') ? (parseFloat(raw) || 0) : raw;
+      setLayoutSetting(key, value);
+      debounced();
+    });
+  });
+
+  $$('#panel-body [data-preset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset;
+      const values = preset === 'compact'   ? { ranksep: 50, nodesep: 10, edgesep: 4, marginx: 10, marginy: 10 }
+                   : preset === 'spacious'  ? { ranksep: 140, nodesep: 30, edgesep: 14, marginx: 30, marginy: 30 }
+                   :                          { ranksep: 80, nodesep: 16, edgesep: 8, marginx: 20, marginy: 20 };
+      for (const [k, v] of Object.entries(values)) setLayoutSetting(k, v);
+      layoutPanel();  // re-render the panel to reflect new values
+      if (state && state.payload) renderCurrent();
+    });
+  });
+
+  $('#knobs-reset').addEventListener('click', () => {
+    resetLayoutSettings();
+    layoutPanel();  // reopen with defaults shown
+    if (state && state.payload) renderCurrent();
+  });
+  $('#knobs-close').addEventListener('click', closePanel);
+}
+
+/* --------------------------------------------------------
+ * v0.5.2a — Settings panel: display toggles + duplicate
+ * handling overview + validation summary.
+ * -------------------------------------------------------- */
+function settingsPanel() {
+  const s = getAppSettings();
+  const payload = state && state.payload;
+  const duplicates = (payload && payload.duplicates) || [];
+  const loadedGoal = state && state.goalCode;
+
+  const dupBlocks = duplicates.map(d => {
+    const cfg = s.duplicates[d.code] || { mode: 'one', selected: [d.rows[0] && d.rows[0].row] };
+    const rowItems = d.rows.map((r, i) => {
+      const checked = (cfg.selected || []).indexOf(r.row) !== -1;
+      return `<label class="dup-row"><input type="checkbox" data-dup-code="${escAttr(d.code)}" data-dup-row="${r.row}" ${checked ? 'checked' : ''}> <span class="mono">row ${r.row}</span> · ${escHtml(r.title || '(no title)')}</label>`;
+    }).join('\n');
+    return `
+      <div class="dup-block">
+        <div class="dup-head"><span class="mono">${escHtml(d.code)}</span><span class="muted">${d.rows.length} rows</span></div>
+        <div class="dup-modes">
+          <label><input type="radio" name="mode-${escAttr(d.code)}" value="any" data-dup-mode="${escAttr(d.code)}" ${cfg.mode==='any'?'checked':''}> <strong>Any of selected</strong> — single event, complete if any selected row is</label>
+          <label><input type="radio" name="mode-${escAttr(d.code)}" value="all" data-dup-mode="${escAttr(d.code)}" ${cfg.mode==='all'?'checked':''}> <strong>All of selected</strong> — split into sub-events (each must complete)</label>
+          <label><input type="radio" name="mode-${escAttr(d.code)}" value="one" data-dup-mode="${escAttr(d.code)}" ${cfg.mode==='one'?'checked':''}> <strong>One of selected</strong> — use only the first selected row</label>
+        </div>
+        <div class="dup-rows">${rowItems}</div>
+        <div class="muted small">Applied as: <em class="dup-note" data-dup-note="${escAttr(d.code)}">${dupNote(cfg)}</em></div>
+      </div>
+    `;
+  }).join('\n');
+
+  const html = `
+    <div class="settings-section">
+      <h4>What's shown in the DAG</h4>
+      <p class="small muted" style="margin-bottom:8px">Toggles what types of events appear as their own nodes vs. being bridged through silently. The MCG chain is the authority — these toggles just control visibility, not correctness.</p>
+      <div class="toggle-list">
+        <label><input type="checkbox" data-setting="showMIBs" ${s.showMIBs?'checked':''}> <strong>Show MIBs</strong> <span class="muted">(type M — mission-info briefs)</span></label>
+        <label><input type="checkbox" data-setting="showAsync" ${s.showAsync?'checked':''}> <strong>Show async content</strong> <span class="muted">(type B — CBTs)</span></label>
+        <label><input type="checkbox" data-setting="showExams" ${s.showExams?'checked':''}> <strong>Show exams</strong> <span class="muted">(type E — written/closed-book exams)</span></label>
+        <label><input type="checkbox" data-setting="showGround" ${s.showGround?'checked':''}> <strong>Show ground school</strong> <span class="muted">(type G)</span></label>
+        <label><input type="checkbox" data-setting="showMissingFromBB" ${s.showMissingFromBB?'checked':''}> <strong>Show missing-from-BB warnings</strong> <span class="muted">(MCG says required, BB has no row — dashed orange node)</span></label>
+        <label><input type="checkbox" data-setting="showUntrackedOffBoard" ${s.showUntrackedOffBoard?'checked':''}> <strong>Show untracked off-board events</strong> <span class="muted">(lectures/reports/debriefs — normally bridged through)</span></label>
+      </div>
+      <p class="small muted" style="margin-top:8px">Turning a type off bridges those events silently — prereq chains still work, you just don't see the intermediate nodes.</p>
+    </div>
+
+    <div class="settings-section">
+      <h4>Big Board duplicates ${duplicates.length ? '<span class="badge-count">' + duplicates.length + '</span>' : ''}</h4>
+      <p class="small muted" style="margin-bottom:8px">When the board has 2+ rows with the same event code, tell the app how to use them. Choices persist across reloads.</p>
+      ${duplicates.length ? dupBlocks : '<p class="muted small">No duplicates on the loaded board.</p>'}
+    </div>
+
+    <div class="settings-section">
+      <h4>Validation summary</h4>
+      ${renderValidationSummary(payload, loadedGoal)}
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button class="btn" id="settings-reset">Reset to defaults</button>
+      <button class="btn" id="settings-close">Close</button>
+    </div>
+  `;
+  openPanel('Settings', html);
+
+  // Wire checkbox + radio handlers
+  $$('#panel-body input[data-setting]').forEach(inp => {
+    inp.addEventListener('change', e => {
+      setAppSetting(e.target.dataset.setting, e.target.checked);
+      if (state && state.payload) renderCurrent();
+      // Don't reopen panel — let the user continue toggling
+    });
+  });
+  $$('#panel-body input[data-dup-mode]').forEach(inp => {
+    inp.addEventListener('change', e => {
+      const code = e.target.dataset.dupMode;
+      const mode = e.target.value;
+      updateDupConfig(code, { mode });
+      refreshDupNote(code);
+      applyDupResolution();
+      if (state && state.payload) renderCurrent();
+    });
+  });
+  $$('#panel-body input[data-dup-code]').forEach(inp => {
+    inp.addEventListener('change', e => {
+      const code = e.target.dataset.dupCode;
+      const row = parseInt(e.target.dataset.dupRow, 10);
+      const cfg = getAppSettings().duplicates[code] || { mode: 'one', selected: [] };
+      const selected = new Set(cfg.selected || []);
+      if (e.target.checked) selected.add(row); else selected.delete(row);
+      updateDupConfig(code, { selected: [...selected].sort((a,b) => a-b) });
+      refreshDupNote(code);
+      applyDupResolution();
+      if (state && state.payload) renderCurrent();
+    });
+  });
+  $('#settings-reset').addEventListener('click', () => {
+    resetAppSettings();
+    settingsPanel();
+    if (state && state.payload) renderCurrent();
+  });
+  $('#settings-close').addEventListener('click', closePanel);
+}
+
+// Human-readable note for a duplicate config
+function dupNote(cfg) {
+  const n = (cfg.selected || []).length;
+  if (!n) return 'no rows selected — defaults to first-row-only';
+  if (cfg.mode === 'any')  return `merged as one event; complete if any of ${n} selected row${n>1?'s':''} is complete`;
+  if (cfg.mode === 'all')  return `split into ${n} sub-events; each must complete`;
+  return `tracks only the first selected row (row ${cfg.selected[0]})`;
+}
+function refreshDupNote(code) {
+  const cfg = getAppSettings().duplicates[code];
+  const el = document.querySelector('[data-dup-note="' + cssEscAttr(code) + '"]');
+  if (el) el.textContent = dupNote(cfg);
+}
+function updateDupConfig(code, patch) {
+  const s = getAppSettings();
+  s.duplicates[code] = Object.assign({ mode: 'one', selected: [] }, s.duplicates[code] || {}, patch);
+  saveAppSettings();
+}
+
+// v0.5.2a stub: apply-duplicate-resolution hook. No-op in 5.2a (first-row-wins).
+// v0.5.2b will replace payload.byCode[code] based on mode.
+function applyDupResolution() { /* filled in v0.5.2b */ }
+
+function renderValidationSummary(payload, goalCode) {
+  if (!payload) return '<p class="muted small">No board loaded yet.</p>';
+  const out = [];
+  const dupes = payload.duplicates || [];
+  out.push(`<div><strong>Duplicate BB codes:</strong> ${dupes.length}${dupes.length ? ' — ' + dupes.map(d => '<span class="mono">' + escHtml(d.code) + '</span>').join(', ') : ''}</div>`);
+
+  // BB codes not in MCG (informational — the app won't render them anyway)
+  const mcgCodes = (MCG_GRAPH && MCG_GRAPH.events) ? new Set(Object.keys(MCG_GRAPH.events)) : new Set();
+  const bbOnly = Object.keys(payload.byCode || {}).filter(c => !mcgCodes.has(c));
+  out.push(`<div><strong>BB codes not in MCG:</strong> ${bbOnly.length}${bbOnly.length ? ' <span class="muted small">(won\'t appear in any DAG — visible in the debug Events view)</span>' : ''}</div>`);
+  if (bbOnly.length) {
+    out.push('<ul class="small mono">' + bbOnly.map(c => '<li>' + escHtml(c) + '</li>').join('') + '</ul>');
+  }
+
+  // MCG-required for current goal but missing from BB
+  if (goalCode && render && render.buildDag) {
+    try {
+      const dag = render.buildDag(goalCode, payload, { mode: 'class' });
+      const missing = Object.values(dag.nodesByCode).filter(n => n.isMissing);
+      out.push(`<div><strong>Missing from BB for ${escHtml(goalCode)} chain:</strong> ${missing.length}${missing.length ? ' — ' + missing.map(n => '<span class="mono">' + escHtml(n.code) + '</span>').join(', ') : ''}</div>`);
+    } catch (e) {
+      out.push('<div class="small muted">(could not compute — ' + escHtml(e.message) + ')</div>');
+    }
+  }
+  return out.join('\n');
+}
+
+function escAttr(s)     { return String(s || '').replace(/["&<>]/g, c => ({'"':'&quot;','&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function cssEscAttr(s)  { return escAttr(s); }
+
+// Generic debounce
+function debounce(fn, ms) {
+  let t = null;
+  return function () {
+    const args = arguments;
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
+
+/* --------------------------------------------------------
+ * panel helpers
+ * -------------------------------------------------------- */
+function openPanel(title, contentHtml) {
+  $('#panel-title').textContent = title;
+  if (contentHtml != null) $('#panel-body').innerHTML = contentHtml;
+  $('#panel').classList.add('open');
+  $('#panel-backdrop').classList.add('open');
+}
+function closePanel() {
+  $('#panel').classList.remove('open');
+  $('#panel-backdrop').classList.remove('open');
+}
+
+function legendPanel() {
+  const html = `
+    <h4>Node header (Class view)</h4>
+    <p style="margin-bottom:8px; font-size:12px; color:var(--ink-soft)">Colored by aggregate % complete across applicable students.</p>
+    <div class="legend-grid">
+      <div class="legend-swatch" style="background:#e4f5dc;border-color:#3d8b29"></div><div><strong>Green</strong> — 75%+ complete</div>
+      <div class="legend-swatch" style="background:#fff4cc;border-color:#b58700"></div><div><strong>Yellow</strong> — 1–74% complete</div>
+      <div class="legend-swatch" style="background:#fdecea;border-color:#c62828"></div><div><strong>Red</strong> — 0% complete / not started</div>
+      <div class="legend-swatch" style="background:#f0f0f0;border-style:dashed;border-color:#999"></div><div><strong>Grey dashed</strong> — the target goal event</div>
+    </div>
+
+    <h4>Student dots (inside each node)</h4>
+    <div class="legend-grid">
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#2e7d32;border:1px solid #1c5a24"></span></div><div>Complete</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#b88600;border:1px solid #8a6700"></span></div><div>Scheduled (future date)</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#fff;border:1.5px solid #c62828"></span></div><div>Pending</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#8a56d6;border:1px solid #5a3b8f"></span></div><div>Paired (partner incomplete)</div>
+    </div>
+
+    <h4>Node header (Student view)</h4>
+    <div class="legend-grid">
+      <div class="legend-swatch" style="background:#2e7d32;border-color:#1f5313"></div><div><strong>DONE</strong> — student has completed this event</div>
+      <div class="legend-swatch" style="background:#d7e8f5;border-color:#5c8dba"></div><div><strong>OPTED</strong> — prereqs met, student can do this event</div>
+      <div class="legend-swatch" style="background:#fff4cc;border-color:#b58700"></div><div><strong>SCHEDULED</strong> — future date listed on the sheet</div>
+      <div class="legend-swatch" style="background:#fdecea;border-color:#c62828"></div><div><strong>NOT OPTED</strong> — at least one on-board prereq pending</div>
+      <div class="legend-swatch" style="background:#ff8c00;border-color:#c62828"></div><div><strong>⚠ SCHEDULED · NOT OPTED</strong> — planning error: student is on the schedule but prereqs aren't met</div>
+    </div>
+
+    <h4>Arrows</h4>
+    <p style="font-size:12px; color:var(--ink-soft)">
+      Arrow color matches the <em>source</em> node's status.
+      Green flows from complete/advanced nodes; red flows from blocking ones.
+    </p>
+
+    <h4>What's hidden / dimmed</h4>
+    <ul>
+      <li><strong>Off-board prereqs</strong> (academic lectures, etc.) never shown.</li>
+      <li><strong>Non-goal-scope students:</strong> a PF 8332F (ABM/FTE/P) view never shows CSO/RPA, even on prereq nodes.</li>
+      <li><strong>Class view:</strong> nodes with zero goal-scope applicable students are hidden.</li>
+      <li><strong>Student view:</strong> nodes not applicable to the selected student are hidden; if the goal itself doesn't apply, a Not Applicable screen is shown.</li>
+      <li><strong>"Not required" cells</strong> (dark-grey on the big board) drop the student from that node's applicable set.</li>
+      <li><strong>Dimmed names:</strong> a student name is greyed when their on-board prereqs for that specific node aren't met yet — still visible, just faded.</li>
+    </ul>
+
+    <h4>Collapsed nodes</h4>
+    <p style="font-size:12px; color:var(--ink-soft)">
+      Nodes default to collapsed (just code + status color) to reduce clutter. Click (+) on any node to expand, or use the
+      <strong>Expand all</strong> / <strong>Collapse all</strong> buttons in the sub-bar.
+    </p>
+  `;
+  openPanel('Legend', html);
+}
+
+/* --------------------------------------------------------
+ * Debug tables — Students & Events property inspection
+ * Shows exactly the properties the code uses for filtering.
+ * -------------------------------------------------------- */
+let _debugPreviousView = null;  // stash so "Back" returns to the DAG
+
+function cellClass(rgbFamily) {
+  if (rgbFamily === 'darkGrey') return 'cell-dg';
+  if (rgbFamily === 'lightGrey') return 'cell-lg';
+  if (rgbFamily === 'paired') return 'cell-pa';
+  if (rgbFamily === 'white') return 'cell-wh';
+  return 'cell-na';
+}
+function cellLabel(cell) {
+  if (!cell) return '—';
+  if (cell.rgbFamily === 'darkGrey') return 'DG';
+  if (cell.rgbFamily === 'lightGrey') return cell.value ? 'LG ' + cell.value : 'LG';
+  if (cell.rgbFamily === 'paired') return cell.value ? 'PA ' + cell.value : 'PA';
+  if (cell.rgbFamily === 'white' && cell.value) return cell.value;
+  if (cell.rgbFamily === 'white') return '·';
+  return '?';
+}
+
+function renderDebugStudents() {
+  if (!state || !state.payload) return;
+  const main = $('#main');
+  _debugPreviousView = state.goalCode;
+  main.innerHTML = '';
+
+  const payload = state.payload;
+  const wrap = el('div', { class: 'debug-table-wrap' });
+
+  // Back button
+  const backBtn = el('button', { class: 'btn debug-back-btn' }, '← Back to DAG');
+  backBtn.addEventListener('click', () => { if (state.payload) renderCurrent(); });
+  wrap.appendChild(backBtn);
+
+  wrap.appendChild(el('h2', null, 'Student Properties'));
+  wrap.appendChild(el('p', { class: 'subtitle' }, 'Properties used by the code for filtering. Cell colors are from the board (ground truth). DG=dark-grey (not required), LG=light-grey (complete), PA=paired, ·=white empty, date=white w/ date.'));
+
+  // Collect on-board events for column headers — show goal events + let user filter
+  const goalEvents = MCG_GRAPH.goalEvents.filter(g => payload.byCode[g]);
+
+  // Filter
+  const filterDiv = el('div', { class: 'debug-filter' });
+  filterDiv.appendChild(el('label', null, 'Filter events: '));
+  const filterInput = el('input', { type: 'text', placeholder: 'Type event code to add columns…', id: 'debug-evt-filter' });
+  filterDiv.appendChild(filterInput);
+  const filterInfo = el('span', { style: 'font-size:11px;color:var(--ink-faint)' }, `Showing ${goalEvents.length} goal events. Type a code (e.g. "CF 6370") to add columns.`);
+  filterDiv.appendChild(filterInfo);
+  wrap.appendChild(filterDiv);
+
+  // Build table
+  let extraCodes = [];
+  function buildTable() {
+    const existingTable = wrap.querySelector('table');
+    if (existingTable) existingTable.remove();
+
+    const allCodes = [...goalEvents, ...extraCodes];
+    const table = el('table', { class: 'debug-table' });
+
+    // Header
+    const thead = el('thead');
+    const hRow = el('tr');
+    for (const h of ['#', 'Name', 'Type', 'Col']) hRow.appendChild(el('th', null, h));
+    for (const code of allCodes) {
+      const mcg = MCG_GRAPH.events[code];
+      const th = el('th', { title: mcg ? mcg.eventName : code }, code);
+      hRow.appendChild(th);
+    }
+    thead.appendChild(hRow);
+    table.appendChild(thead);
+
+    // Body
+    const tbody = el('tbody');
+    payload.students.forEach((s, idx) => {
+      const row = el('tr');
+      row.appendChild(el('td', null, String(idx + 1)));
+      row.appendChild(el('td', null, s.name));
+      row.appendChild(el('td', null, s.type));
+      row.appendChild(el('td', null, String(s.col)));
+
+      for (const code of allCodes) {
+        const evt = payload.byCode[code];
+        const cell = evt ? evt.cells.find(c => c.col === s.col) : null;
+        const td = el('td', { class: cellClass(cell ? cell.rgbFamily : null), title: code + ': ' + (cell ? cell.rgbFamily + (cell.value ? ' = ' + cell.value : '') : 'no cell') }, cellLabel(cell));
+        row.appendChild(td);
+      }
+      tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  buildTable();
+
+  // Live filter: type event code to add columns
+  filterInput.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const val = filterInput.value.trim().toUpperCase().replace(/\s+/g, ' ');
+    if (!val) return;
+    // Find matching on-board events
+    const matches = Object.keys(payload.byCode).filter(c => c.includes(val) && !goalEvents.includes(c) && !extraCodes.includes(c));
+    if (matches.length === 0) {
+      filterInfo.textContent = `No on-board event matching "${val}"`;
+      return;
+    }
+    extraCodes.push(...matches.slice(0, 10));
+    filterInfo.textContent = `Added: ${matches.slice(0, 10).join(', ')}. ${goalEvents.length + extraCodes.length} total columns.`;
+    filterInput.value = '';
+    buildTable();
+  });
+
+  main.appendChild(wrap);
+}
+
+function renderDebugEvents() {
+  if (!state || !state.payload) return;
+  const main = $('#main');
+  _debugPreviousView = state.goalCode;
+  main.innerHTML = '';
+
+  const payload = state.payload;
+  const wrap = el('div', { class: 'debug-table-wrap' });
+
+  // Back button
+  const backBtn = el('button', { class: 'btn debug-back-btn' }, '← Back to DAG');
+  backBtn.addEventListener('click', () => { if (state.payload) renderCurrent(); });
+  wrap.appendChild(backBtn);
+
+  wrap.appendChild(el('h2', null, 'Event Properties'));
+  wrap.appendChild(el('p', { class: 'subtitle' }, 'Properties used by the code for filtering & connecting. MCG Applicability = metadata from MCG (informational). Board Cells = ground truth from the big board. Click a row to expand per-student cells.'));
+
+  // Filter
+  const filterDiv = el('div', { class: 'debug-filter' });
+  filterDiv.appendChild(el('label', null, 'Filter: '));
+  const filterInput = el('input', { type: 'text', placeholder: 'Filter by code or title…', id: 'debug-evt-search' });
+  filterDiv.appendChild(filterInput);
+  const scopeSelect = el('select', { id: 'debug-evt-scope' });
+  scopeSelect.appendChild(el('option', { value: 'all' }, 'All on-board events'));
+  scopeSelect.appendChild(el('option', { value: 'dag' }, 'Current DAG only'));
+  filterDiv.appendChild(scopeSelect);
+  wrap.appendChild(filterDiv);
+
+  // Student type summary columns
+  const studentTypes = [...new Set(payload.students.map(s => s.type))].sort();
+
+  // Current DAG codes
+  let dagCodes = null;
+  if (state.goalCode && payload.byCode[state.goalCode]) {
+    const dag = render.buildDag(state.goalCode, payload);
+    dagCodes = new Set(Object.keys(dag.nodesByCode));
+  }
+
+  function buildTable() {
+    const existing = wrap.querySelector('table');
+    if (existing) existing.remove();
+
+    const searchVal = (filterInput.value || '').trim().toUpperCase();
+    const scopeVal = scopeSelect.value;
+
+    const table = el('table', { class: 'debug-table' });
+    const thead = el('thead');
+    const hRow = el('tr');
+    for (const h of ['Code', 'Title', 'Phase', 'MCG Applicability', 'Prerequisites']) {
+      hRow.appendChild(el('th', null, h));
+    }
+    // Per-type cell summary columns
+    for (const t of studentTypes) {
+      hRow.appendChild(el('th', { title: `Cell colors for ${t} students` }, t));
+    }
+    hRow.appendChild(el('th', null, 'Flags'));
+    thead.appendChild(hRow);
+    table.appendChild(thead);
+
+    const tbody = el('tbody');
+    const codes = Object.keys(payload.byCode).sort();
+
+    for (const code of codes) {
+      // Filter by scope
+      if (scopeVal === 'dag' && dagCodes && !dagCodes.has(code)) continue;
+      // Filter by search
+      const evt = payload.byCode[code];
+      const mcg = MCG_GRAPH.events[code];
+      const title = (mcg && mcg.eventName) || evt.title || '';
+      if (searchVal && !code.includes(searchVal) && !title.toUpperCase().includes(searchVal)) continue;
+
+      const row = el('tr', { style: 'cursor:pointer' });
+
+      // Code
+      row.appendChild(el('td', { style: 'font-weight:700' }, code));
+
+      // Title
+      row.appendChild(el('td', null, title));
+
+      // Phase
+      row.appendChild(el('td', null, mcg ? mcg.phase : code.substring(0, 2)));
+
+      // MCG Applicability
+      const apps = mcg ? (mcg.applicability || []) : [];
+      const appTd = el('td', { class: 'app-list' }, apps.join(', ') || '(unrestricted)');
+      row.appendChild(appTd);
+
+      // Prerequisites
+      const prereqs = mcg ? (mcg.prerequisites || []) : [];
+      const prereqCodes = prereqs.map(p => {
+        const onBoard = !!payload.byCode[p.code];
+        return onBoard ? p.code : p.code + '*';
+      });
+      const prereqTd = el('td', { class: 'prereq-list' }, prereqCodes.join(', ') || '(none)');
+      row.appendChild(prereqTd);
+
+      // Per-type cell summary
+      const flags = [];
+      for (const t of studentTypes) {
+        const studs = payload.students.filter(s => s.type === t);
+        let dg = 0, wh = 0, whDate = 0, lg = 0, pa = 0;
+        for (const s of studs) {
+          const cell = evt.cells.find(c => c.col === s.col);
+          if (!cell || cell.rgbFamily === 'white') {
+            if (cell && cell.value) whDate++;
+            else wh++;
+          } else if (cell.rgbFamily === 'darkGrey') dg++;
+          else if (cell.rgbFamily === 'lightGrey') lg++;
+          else if (cell.rgbFamily === 'paired') pa++;
+        }
+        const parts = [];
+        if (dg) parts.push(dg + 'dg');
+        if (wh) parts.push(wh + 'wh');
+        if (whDate) parts.push(whDate + 'dt');
+        if (lg) parts.push(lg + 'lg');
+        if (pa) parts.push(pa + 'pa');
+        const td = el('td', { style: 'font-size:10px' }, parts.join(' ') || '—');
+
+        // Flag: MCG says not applicable but board has non-dark-grey cells
+        const mcgApplicable = apps.length === 0 || apps.some(a => {
+          if (a === 'P') return /^Pilot/i.test(t);
+          return a === t;
+        });
+        if (!mcgApplicable && (wh + whDate + lg + pa) > 0) {
+          td.classList.add('flag');
+          td.title = `MCG says ${t} not applicable, but board has ${wh + whDate + lg + pa} non-dark-grey cells`;
+          flags.push(t);
+        }
+        row.appendChild(td);
+      }
+
+      // Flags column
+      const flagTd = el('td', null);
+      if (flags.length) {
+        flagTd.innerHTML = '<span class="flag" title="MCG/board mismatch">⚠ ' + flags.join(', ') + '</span>';
+      }
+      row.appendChild(flagTd);
+
+      // Click to expand: show per-student cells
+      row.addEventListener('click', () => {
+        const nextRow = row.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('debug-expand')) {
+          nextRow.remove();
+          return;
+        }
+        const expandRow = el('tr', { class: 'debug-expand' });
+        const expandTd = el('td', { colspan: String(6 + studentTypes.length + 1), style: 'padding:8px;background:#f9f9f9' });
+
+        // Mini table of per-student cells
+        const mini = el('table', { class: 'debug-table', style: 'width:auto;margin:0' });
+        const mHead = el('tr');
+        for (const h of ['Student', 'Type', 'Cell Color', 'Value', 'Strikethrough']) mHead.appendChild(el('th', null, h));
+        mini.appendChild(mHead);
+
+        for (const s of payload.students) {
+          const cell = evt.cells.find(c => c.col === s.col);
+          const mRow = el('tr');
+          mRow.appendChild(el('td', null, s.name));
+          mRow.appendChild(el('td', null, s.type));
+          const colorTd = el('td', { class: cellClass(cell ? cell.rgbFamily : null) }, cell ? cell.rgbFamily : 'no cell');
+          mRow.appendChild(colorTd);
+          mRow.appendChild(el('td', null, cell && cell.value ? String(cell.value) : ''));
+          mRow.appendChild(el('td', null, cell && cell.strikethrough ? 'yes' : ''));
+          mini.appendChild(mRow);
+        }
+        expandTd.appendChild(mini);
+        expandRow.appendChild(expandTd);
+        row.after(expandRow);
+      });
+
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+  }
+
+  buildTable();
+
+  // Live filter
+  filterInput.addEventListener('input', debounce(buildTable, 200));
+  scopeSelect.addEventListener('change', buildTable);
+
+  main.appendChild(wrap);
+}
+
+/* --------------------------------------------------------
+ * cache status helpers (footer)
+ * -------------------------------------------------------- */
+function updateCacheFooter() {
+  const info = api.cacheInfo();
+  const el = $('#foot-cache');
+  if (!info.length) {
+    el.textContent = 'cache: empty';
+    el.style.color = 'var(--ink-faint)';
+    return;
+  }
+  const totalKB = info.reduce((s, i) => s + i.sizeKB, 0);
+  const mostRecent = info
+    .filter(i => i.cachedAt)
+    .sort((a, b) => b.cachedAt.localeCompare(a.cachedAt))[0];
+  const when = mostRecent ? new Date(mostRecent.cachedAt).toLocaleString() : '?';
+  const tip = info.map(i => `${i.name} · ${i.sizeKB} KB · ${i.cachedAt ? new Date(i.cachedAt).toLocaleString() : '?'}`).join('\n');
+  el.textContent = `cache: ${info.length} sheet${info.length > 1 ? 's' : ''} · ${totalKB} KB · newest ${when}`;
+  el.title = tip;
+  el.style.color = 'var(--ink-soft)';
+}
+
+/* --------------------------------------------------------
+ * App state — single source of truth for the UI controls.
+ * renderCurrent() reads this and calls render.renderAll.
+ * -------------------------------------------------------- */
+const state = {
+  payload: null,
+  goalCode: null,
+  mode: 'class',     // 'class' | 'student'
+  studentCol: null,
+};
+
+function renderCurrent() {
+  if (!state.payload) return;
+  render.renderAll(state.payload, {
+    mode: state.mode,
+    goalCode: state.goalCode,
+    studentCol: state.studentCol,
+  });
+}
+
+// Populate #goal-picker based on which goal events exist on the loaded board.
+// Goals not on this sheet still appear but are disabled / flagged.
+function repopulateGoalPicker() {
+  const picker = $('#goal-picker');
+  picker.innerHTML = '';
+  if (!state.payload) {
+    picker.appendChild(el('option', { value: '' }, '— load a board first —'));
+    picker.disabled = true;
+    return;
+  }
+  const seen = new Set();
+  for (const code of MCG_GRAPH.goalEvents) {
+    const mcg = MCG_GRAPH.events[code] || {};
+    const onBoard = !!state.payload.byCode[code];
+    const label = `${code} — ${mcg.eventName || '?'}${onBoard ? '' : '  (not on this board)'}`;
+    const opt = el('option', { value: code }, label);
+    if (!onBoard) opt.disabled = true;
+    picker.appendChild(opt);
+    seen.add(code);
+  }
+  picker.disabled = false;
+
+  // Default selection: first board-visible goal, or keep existing if still valid.
+  if (!state.goalCode || !state.payload.byCode[state.goalCode]) {
+    const firstOnBoard = MCG_GRAPH.goalEvents.find(c => state.payload.byCode[c]);
+    state.goalCode = firstOnBoard || null;
+  }
+  if (state.goalCode) picker.value = state.goalCode;
+}
+
+// Populate #student-picker with the roster.
+function repopulateStudentPicker() {
+  const picker = $('#student-picker');
+  picker.innerHTML = '';
+  if (!state.payload) {
+    picker.appendChild(el('option', { value: '' }, '— no board loaded —'));
+    picker.disabled = true;
+    return;
+  }
+  picker.appendChild(el('option', { value: '' }, '— pick a student —'));
+  // Sort by type then name for scannability
+  const sorted = state.payload.students.slice().sort((a, b) => {
+    if (a.type !== b.type) return a.type.localeCompare(b.type);
+    return a.name.localeCompare(b.name);
+  });
+  for (const s of sorted) {
+    picker.appendChild(el('option', { value: s.col }, `${s.name} · ${s.type} · ${s.dataGroup}`));
+  }
+  picker.disabled = (state.mode !== 'student');
+  if (state.studentCol) picker.value = String(state.studentCol);
+}
+
+/* --------------------------------------------------------
+ * boot — wire up header controls + initial load
+ * -------------------------------------------------------- */
+async function boot() {
+  $('#app-version').textContent = `v${APP_VERSION} · MCG ${MCG_VERSION}`;
+  $('#foot-version').textContent = APP_VERSION;
+  $('#foot-mcg').textContent = MCG_VERSION;
+  $('#foot-endpoint').textContent = CONFIG.GAS_ENDPOINT ? '◉ endpoint set' : '⚠ CONFIG.GAS_ENDPOINT not set';
+
+  // v0.5: fetch MCG before anything else. No cached sheet can be rendered
+  // without the graph, so this is a blocking step. Failure => banner already
+  // shown by loadMcgGraph; let the user retry after fixing hosting.
+  try {
+    await loadMcgGraph();
+    if (MCG_GRAPH.generatedDate) {
+      $('#foot-mcg').textContent = MCG_VERSION + ' · ' + MCG_GRAPH.generatedDate;
+      $('#foot-mcg').title = Object.keys(MCG_GRAPH.events).length + ' events · ' + (MCG_GRAPH.goalEvents || []).length + ' goals';
+    }
+  } catch (_) {
+    // Fatal for rendering; leave UI in a minimal state.
+    return;
+  }
+
+  // Cache canary (v0.3.3): write a timestamp on boot, read back the
+  // previous one. If the previous canary survived across reloads,
+  // localStorage persists for this origin. If it doesn't, the user is
+  // probably on a browser or mode that wipes storage (incognito, "clear
+  // on exit", file:// with strict settings) and the sheet cache won't
+  // persist either — call that out up front.
+  try {
+    const prev = localStorage.getItem('bbcs::canary');
+    const now = Date.now();
+    localStorage.setItem('bbcs::canary', String(now));
+    const readback = localStorage.getItem('bbcs::canary');
+    if (readback !== String(now)) {
+      console.error('[bbcs] localStorage write/read mismatch — cache will NOT work');
+      banner('localStorage is not persisting — sheet cache will not survive reloads. Check browser privacy settings or try serving via http://localhost.', true);
+    } else if (!prev) {
+      console.log('[bbcs] cache canary: first boot (or cache was cleared). Future reloads should hit cache.');
+    } else {
+      const ageMin = Math.round((now - parseInt(prev, 10)) / 60000);
+      console.log(`[bbcs] cache canary: previous boot was ${ageMin} min ago — localStorage persists ✓`);
+    }
+  } catch (e) {
+    console.error('[bbcs] localStorage unavailable:', e);
+    banner('localStorage not available — sheet data will re-fetch every time. ' + (e.message || e), true);
+  }
+
+  updateCacheFooter();
+
+  $('#btn-knobs').addEventListener('click', layoutPanel);
+  $('#btn-settings').addEventListener('click', settingsPanel);
+  $('#btn-legend').addEventListener('click', legendPanel);
+  $('#btn-issues').addEventListener('click', () => issues.showPanel());
+  $('#btn-debug-students').addEventListener('click', renderDebugStudents);
+  $('#btn-debug-events').addEventListener('click', renderDebugEvents);
+  $('#panel-close').addEventListener('click', closePanel);
+  $('#panel-backdrop').addEventListener('click', closePanel);
+
+  $('#btn-load').addEventListener('click', () => loadCurrentSheet({ force: false }));
+  $('#btn-refresh').addEventListener('click', () => loadCurrentSheet({ force: true }));
+  $('#btn-refresh-list').addEventListener('click', async () => {
+    // Manual GAS hit to pull fresh sheet-list. Updates the picker but doesn't load a sheet.
+    const btn = $('#btn-refresh-list');
+    btn.disabled = true; btn.textContent = '⟳ …';
+    try {
+      const list = await api.sheetsAvail();
+      const picker = $('#sheet-picker');
+      const current = picker.value;
+      picker.innerHTML = '';
+      const sorted = list.sheets.slice().sort((a, b) => {
+        const ap = /\d\d[AB]\s.*Big Board/i.test(a.name) ? 0 : 1;
+        const bp = /\d\d[AB]\s.*Big Board/i.test(b.name) ? 0 : 1;
+        if (ap !== bp) return ap - bp;
+        return a.name.localeCompare(b.name);
+      });
+      for (const s of sorted) {
+        picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
+      }
+      picker.disabled = false;
+      if (current && sorted.find(s => s.name === current)) picker.value = current;
+      banner(`Tab list refreshed — ${list.sheets.length} tabs.`);
+    } catch (e) {
+      banner('Could not list sheets: ' + e.message, true);
+    } finally {
+      btn.disabled = false; btn.textContent = '⟳ Tabs';
+    }
+  });
+
+  $('#btn-clear-cache').addEventListener('click', () => {
+    const info = api.cacheInfo();
+    if (!info.length) { banner('Cache is already empty.'); return; }
+    const totalKB = info.reduce((s, i) => s + i.sizeKB, 0);
+    if (!confirm(`Clear cached data for ${info.length} sheet${info.length > 1 ? 's' : ''} (${totalKB} KB)?\n\nNext load will re-fetch from Google Sheets.`)) return;
+    const n = api.clearAll();
+    updateCacheFooter();
+    banner(`Cleared cache (${n} sheet${n !== 1 ? 's' : ''}). Next Load will hit the sheet fresh.`);
+  });
+
+  // View toggle
+  $$('#view-toggle .view-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      if (mode === state.mode) return;
+      state.mode = mode;
+      $$('#view-toggle .view-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      $('#student-picker').disabled = (mode !== 'student');
+      // Expand-all / Collapse-all are only meaningful in class view
+      $('#expand-group').style.display = (mode === 'class') ? 'flex' : 'none';
+      renderCurrent();
+    });
+  });
+
+  // Expand / Collapse all (class-view only)
+  $('#btn-expand-all').addEventListener('click', () => render.setAllExpanded(true));
+  $('#btn-collapse-all').addEventListener('click', () => render.setAllExpanded(false));
+
+  // Line style selector — polyline / smooth / straight.
+  // Persisted across reloads in localStorage.
+  const savedStyle = (() => { try { return localStorage.getItem('bbcs::lineStyle'); } catch (_) { return null; } })();
+  if (savedStyle) {
+    window.bbcsLineStyle = savedStyle;
+    $('#line-style').value = savedStyle;
+  } else {
+    window.bbcsLineStyle = 'polyline';
+  }
+  $('#line-style').addEventListener('change', (e) => {
+    window.bbcsLineStyle = e.target.value;
+    try { localStorage.setItem('bbcs::lineStyle', e.target.value); } catch (_) {}
+    renderCurrent();
+  });
+
+  // Goal + student picker wiring
+  $('#goal-picker').addEventListener('change', (e) => {
+    state.goalCode = e.target.value || null;
+    renderCurrent();
+  });
+  $('#student-picker').addEventListener('change', (e) => {
+    const col = parseInt(e.target.value, 10);
+    state.studentCol = Number.isFinite(col) ? col : null;
+    renderCurrent();
+  });
+
+  if (!CONFIG.GAS_ENDPOINT) {
+    banner('CONFIG.GAS_ENDPOINT is empty. Edit index.html (line ~190) and paste your GAS /exec URL.', true);
+    return;
+  }
+
+  // v0.4: cache-first boot. DO NOT hit sheets_avail on page load — that's
+  // a 1-3s GAS round trip the user stares at every time. Instead:
+  //   1. If we have cached sheets + a cached sheet-list, use those.
+  //   2. If no cached sheet-list but cached payloads exist, build the
+  //      picker from cache entries.
+  //   3. If nothing cached, leave the picker empty and require the user
+  //      to click "Load sheet list" (which calls GAS).
+  // Auto-load the most recent cached sheet on boot so the DAG shows up
+  // with zero clicks.
+  await bootFromCache();
+}
+
+async function bootFromCache() {
+  const cachedList = api.getSheetList();      // v0.4 local storage of last sheets_avail result
+  const cachedSheets = api.cacheInfo();       // per-sheet payload cache
+
+  const picker = $('#sheet-picker');
+  picker.innerHTML = '';
+
+  if (cachedList && cachedList.length) {
+    // Use cached sheet list for the dropdown
+    const sorted = cachedList.slice().sort((a, b) => {
+      const ap = /\d\d[AB]\s.*Big Board/i.test(a.name) ? 0 : 1;
+      const bp = /\d\d[AB]\s.*Big Board/i.test(b.name) ? 0 : 1;
+      if (ap !== bp) return ap - bp;
+      return a.name.localeCompare(b.name);
+    });
+    for (const s of sorted) {
+      picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
+    }
+    picker.disabled = false;
+  } else if (cachedSheets.length) {
+    // Fallback: at least list sheets we've cached payloads for
+    for (const s of cachedSheets) {
+      picker.appendChild(el('option', { value: s.name }, `${s.name}  (cached)`));
+    }
+    picker.disabled = false;
+  } else {
+    picker.appendChild(el('option', { value: '' }, '— click Load sheet list —'));
+    picker.disabled = true;
+  }
+  $('#btn-load').disabled = false;
+  $('#btn-refresh').disabled = false;
+
+  // Auto-load a sensible default sheet if we have any cached payloads.
+  if (cachedSheets.length) {
+    // Prefer 26A FTC Big Board, else most-recently-cached
+    const preferred = cachedSheets.find(s => /^26A FTC Big Board/i.test(s.name));
+    const target = preferred
+      ? preferred.name
+      : cachedSheets.slice().sort((a, b) => (b.cachedAt || '').localeCompare(a.cachedAt || ''))[0].name;
+    picker.value = target;
+    await loadCurrentSheet({ force: false, source: 'auto' });
+  } else {
+    banner('No cached data yet. Pick a board and press Load (or Refresh sheet list to hit GAS).');
+  }
+}
+
+async function loadCurrentSheet({ force, source }) {
+  const name = $('#sheet-picker').value;
+  if (!name) return;
+  if (source !== 'auto') hideBanner();
+  $('#btn-load').disabled = true;
+  $('#btn-load').textContent = 'Loading…';
+  try {
+    const preInfo = api.cacheInfo().find(i => i.name === name);
+    const wasCached = !!preInfo && !force;
+    const raw = await api.fetchSheet(name, { force });
+    const payload = parse.indexPayload(raw);
+    state.payload = payload;
+    // Reset student selection if roster changed
+    if (state.studentCol && !payload.students.find(s => s.col === state.studentCol)) {
+      state.studentCol = null;
+    }
+    $('#view-bar').style.display = 'flex';
+    $('#expand-group').style.display = (state.mode === 'class') ? 'flex' : 'none';
+    repopulateGoalPicker();
+    repopulateStudentPicker();
+    renderCurrent();
+    const src = wasCached ? `cache (${new Date(preInfo.cachedAt).toLocaleTimeString()})` : 'live fetch';
+    const msg = `Loaded "${name}" from ${src} — ${payload.students.length} students, ${payload.events.length} events`;
+    if (payload.duplicates && payload.duplicates.length) {
+      bannerWithAction(
+        `${msg}. ⚠ ${payload.duplicates.length} duplicate code${payload.duplicates.length>1?'s':''} on this board.`,
+        'Open Settings',
+        settingsPanel,
+        true,
+      );
+    } else {
+      banner(msg);
+    }
+    updateCacheFooter();
+  } catch (e) {
+    banner('Fetch failed: ' + e.message, true);
+  } finally {
+    $('#btn-load').disabled = false;
+    $('#btn-load').textContent = 'Load';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>

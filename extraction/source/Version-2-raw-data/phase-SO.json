@@ -1,0 +1,657 @@
+{
+  "phase": "SO",
+  "phaseName": "Space Operations",
+  "sourceDocument": "MCG 26A",
+  "sourcePages": "38-41",
+  "events": {
+    "SO 6101A": {
+      "code": "SO 6101A",
+      "eventName": "GROOT Training Brief",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "An overview of the GROOT system and its operation are provided. Maneuver academics introduces the student to mission planning, briefing, execution, and debrief (PBED) of two satellites operating near each other to students with limited satellite operations and rendezvous and proximity operations (RPO) experience. Robotics academics reinforces PBED and continues to build basic satellite ops knowledge and skills.",
+      "prerequisites": [
+        {
+          "code": "AN 5140A",
+          "name": "Space Operations Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6102A": {
+      "code": "SO 6102A",
+      "eventName": "GROOT Maneuver Academics",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "Grouped in MCG with SO 6101A and SO 6103A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "An overview of the GROOT system and its operation are provided. Maneuver academics introduces the student to mission planning, briefing, execution, and debrief (PBED) of two satellites operating near each other to students with limited satellite operations and rendezvous and proximity operations (RPO) experience. Robotics academics reinforces PBED and continues to build basic satellite ops knowledge and skills.",
+      "prerequisites": [
+        {
+          "code": "AN 5140A",
+          "name": "Space Operations Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6103A": {
+      "code": "SO 6103A",
+      "eventName": "GROOT Robotics Academics",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "Grouped in MCG with SO 6101A and SO 6102A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "An overview of the GROOT system and its operation are provided. Maneuver academics introduces the student to mission planning, briefing, execution, and debrief (PBED) of two satellites operating near each other to students with limited satellite operations and rendezvous and proximity operations (RPO) experience. Robotics academics reinforces PBED and continues to build basic satellite ops knowledge and skills.",
+      "prerequisites": [
+        {
+          "code": "AN 5140A",
+          "name": "Space Operations Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6110S": {
+      "code": "SO 6110S",
+      "eventName": "GROOT Maneuver Operations",
+      "eventType": "S",
+      "eventTypeName": "Simulator",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The profiles for this simulator event are structured to familiarize students with manual and automatic translation and rotation of the GROOT vehicle.",
+      "prerequisites": [
+        {
+          "code": "SO 6102A",
+          "name": "GROOT Maneuver Academics",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6120S": {
+      "code": "SO 6120S",
+      "eventName": "GROOT Robotics Operations",
+      "eventType": "S",
+      "eventTypeName": "Simulator",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The profiles for this simulator event are structured to familiarize students with the various operational modes of the robotic arm, to demonstrate successful grapple, and to demonstrate various impedances to successful grapple.",
+      "prerequisites": [
+        {
+          "code": "SO 6103A",
+          "name": "GROOT Robotics Academics",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "SO 6110S",
+          "name": "GROOT Maneuver Operations",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6130S": {
+      "code": "SO 6130S",
+      "eventName": "GROOT Supervised Exploration and Check-ride Prep SO-1",
+      "eventType": "S",
+      "eventTypeName": "Simulator",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "MCG lists this as a range: 'SO 6130-2S GROOT Supervised Exploration and Check-ride Prep SO-1-3'.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "SO 6130-2S",
+        "seriesPosition": 1,
+        "seriesLength": 3
+      },
+      "description": "These simulator sessions are structured to allow students to explore the GROOT simulator, develop proficiency with CRM, maneuver, and robotics operations. Students will use these sessions to develop their check-ride profiles.",
+      "prerequisites": [
+        {
+          "code": "SO 6120S",
+          "name": "GROOT Robotics Operations",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6131S": {
+      "code": "SO 6131S",
+      "eventName": "GROOT Supervised Exploration and Check-ride Prep SO-2",
+      "eventType": "S",
+      "eventTypeName": "Simulator",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "MCG lists this as a range: 'SO 6130-2S GROOT Supervised Exploration and Check-ride Prep SO-1-3'.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "SO 6130-2S",
+        "seriesPosition": 2,
+        "seriesLength": 3
+      },
+      "description": "These simulator sessions are structured to allow students to explore the GROOT simulator, develop proficiency with CRM, maneuver, and robotics operations. Students will use these sessions to develop their check-ride profiles.",
+      "prerequisites": [
+        {
+          "code": "SO 6120S",
+          "name": "GROOT Robotics Operations",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6132S": {
+      "code": "SO 6132S",
+      "eventName": "GROOT Supervised Exploration and Check-ride Prep SO-3",
+      "eventType": "S",
+      "eventTypeName": "Simulator",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "MCG lists this as a range: 'SO 6130-2S GROOT Supervised Exploration and Check-ride Prep SO-1-3'.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "SO 6130-2S",
+        "seriesPosition": 3,
+        "seriesLength": 3
+      },
+      "description": "These simulator sessions are structured to allow students to explore the GROOT simulator, develop proficiency with CRM, maneuver, and robotics operations. Students will use these sessions to develop their check-ride profiles.",
+      "prerequisites": [
+        {
+          "code": "SO 6120S",
+          "name": "GROOT Robotics Operations",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6140S": {
+      "code": "SO 6140S",
+      "eventName": "GROOT Check-ride",
+      "eventType": "S",
+      "eventTypeName": "Simulator",
+      "phase": "SO",
+      "moduleCode": "SO 6100",
+      "moduleName": "GROOT Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students will demonstrate proficiency on manual and automatic maneuver and robotic operations.",
+      "prerequisites": [
+        {
+          "code": "SO 6132S",
+          "name": "GROOT Supervised Exploration and Check-ride Prep SO-3",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6201A": {
+      "code": "SO 6201A",
+      "eventName": "Ops 101 Training",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students are introduced to roles and responsibilities, battle rhythm, flight safety and best practices for Aerocube satellite operations.",
+      "prerequisites": [
+        {
+          "code": "AN 5140A",
+          "name": "Space Operations Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6210A": {
+      "code": "SO 6210A",
+      "eventName": "Aerocube Training",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students are introduced to the Aerocube space segment, satellite modes, vehicle commanding, telemetry, orbit, and attitude. Students are also provided an overview of the Aerocube ground segment, stations and tools",
+      "prerequisites": [
+        {
+          "code": "SO 6201A",
+          "name": "Ops 101 Training",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6220H": {
+      "code": "SO 6220H",
+      "eventName": "SOCR Display Familiarization",
+      "eventType": "H",
+      "eventTypeName": "Ground Training",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This event is designed to introduce students to the display layout for Aerocube operations. Students will learn how to configure the operator and crew commander terminals and discuss how each element supports operations.",
+      "prerequisites": [
+        {
+          "code": "SO 6210A",
+          "name": "Aerocube Training",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6230E": {
+      "code": "SO 6230E",
+      "eventName": "SOCR Display Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam/Assessment",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "Grouped in MCG with SO 6231O under a shared description block. MCG prereq line cites 'SO 6220H Aerocube Display Familiarization' — drifts from event's official name 'SO 6220H SOCR Display Familiarization'; preserved verbatim as written.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students will complete an examination to configure the display and explain operational relevance of each window. Scheduled concurrently with SO 6231O Contact Demo. Students will learn to build commands, pass plans, and how to run a nominal Aerocube satellite contact. Students must pass their exam to proceed into the contact demo",
+      "prerequisites": [
+        {
+          "code": "SO 6220H",
+          "name": "Aerocube Display Familiarization",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6231O": {
+      "code": "SO 6231O",
+      "eventName": "Aerocube Contact Demo",
+      "eventType": "O",
+      "eventTypeName": "Space Operation",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "Grouped in MCG with SO 6230E under a shared description block. MCG prereq line cites 'SO 6220H Aerocube Display Familiarization' — drifts from event's official name.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students will complete an examination to configure the display and explain operational relevance of each window. Scheduled concurrently with SO 6231O Contact Demo. Students will learn to build commands, pass plans, and how to run a nominal Aerocube satellite contact. Students must pass their exam to proceed into the contact demo",
+      "prerequisites": [
+        {
+          "code": "SO 6220H",
+          "name": "Aerocube Display Familiarization",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6240O": {
+      "code": "SO 6240O",
+      "eventName": "Aerocube First Contact",
+      "eventType": "O",
+      "eventTypeName": "Space Operation",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "Grouped in MCG with SO 6241O under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This event is designed to allow students to serve as operator and then crew commander on a live satellite contact. Students will perform nominal crew operations on Aerocube without supervising instructor input.",
+      "prerequisites": [
+        {
+          "code": "SO 6231O",
+          "name": "Aerocube Contact Demo",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "SO 6241O": {
+      "code": "SO 6241O",
+      "eventName": "Aerocube Crew Solo",
+      "eventType": "O",
+      "eventTypeName": "Space Operation",
+      "phase": "SO",
+      "moduleCode": "SO 6200",
+      "moduleName": "Aerocube Training",
+      "parentCourse": "SO 6000 Operations Training",
+      "applicability": [
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "STC"
+        ],
+        "description": "STC only"
+      },
+      "eventNotes": "Grouped in MCG with SO 6240O under a shared description block. Event name contains 'Crew Solo' as a descriptive label, not an applicability tag.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "This event is designed to allow students to serve as operator and then crew commander on a live satellite contact. Students will perform nominal crew operations on Aerocube without supervising instructor input.",
+      "prerequisites": [
+        {
+          "code": "SO 6231O",
+          "name": "Aerocube Contact Demo",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    }
+  }
+}

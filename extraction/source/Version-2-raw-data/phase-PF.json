@@ -1,0 +1,4242 @@
+{
+  "phase": "PF",
+  "phaseName": "Performance",
+  "sourceDocument": "MCG 26A",
+  "sourcePages": "63-81",
+  "events": {
+    "PF 5101A": {
+      "code": "PF 5101A",
+      "eventName": "Performance Test Plan Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 5100",
+      "moduleName": "Performance Test Plan",
+      "parentCourse": "PF 5000 Performance Preliminaries",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Basic overview of the four performance data group test plans as well as the reports that are due following the flight data collection: Air Data System Calibration Report, Model Validation Report, and Performance Phase Final Test Report.",
+      "prerequisites": [
+        {
+          "code": "AN 5160A",
+          "name": "Flight Sciences Phase Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6102A",
+          "name": "Test Planning Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6101A": {
+      "code": "PF 6101A",
+      "eventName": "Introduction to Aerodynamics Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6102E and PF 6103Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Subsonic aerodynamic fundamentals, equations and terminology used throughout the USAF TPS curriculum; airfoil analysis, forces acting on the aircraft, pressure gradients and the Bernoulli equation, and drag coefficients; boundary layer separation and control; Mach and Reynolds numbers and pitching moments.",
+      "prerequisites": [
+        {
+          "code": "AN 5160A",
+          "name": "Flight Sciences Phase Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6102E": {
+      "code": "PF 6102E",
+      "eventName": "Introduction to Aerodynamics Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6101A and PF 6103Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Subsonic aerodynamic fundamentals, equations and terminology used throughout the USAF TPS curriculum; airfoil analysis, forces acting on the aircraft, pressure gradients and the Bernoulli equation, and drag coefficients; boundary layer separation and control; Mach and Reynolds numbers and pitching moments.",
+      "prerequisites": [
+        {
+          "code": "AN 5160A",
+          "name": "Flight Sciences Phase Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6103Z": {
+      "code": "PF 6103Z",
+      "eventName": "Introduction to Aerodynamics Debrief",
+      "eventType": "Z",
+      "eventTypeName": "Debrief",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6101A and PF 6102E under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Subsonic aerodynamic fundamentals, equations and terminology used throughout the USAF TPS curriculum; airfoil analysis, forces acting on the aircraft, pressure gradients and the Bernoulli equation, and drag coefficients; boundary layer separation and control; Mach and Reynolds numbers and pitching moments.",
+      "prerequisites": [
+        {
+          "code": "AN 5160A",
+          "name": "Flight Sciences Phase Introduction",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6110A": {
+      "code": "PF 6110A",
+      "eventName": "Compressible/Hypersonic Aerodynamics Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6111E and PF 6112Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Compressible flow from transonic to hypersonic; shock waves; boundary layer control over supersonic wings; airfoil shapes, shapes of aircraft structures, and transitions from subsonic to supersonic flight; lift and drag approximations for supersonic airfoil sections; principles of hypersonic aerodynamics and aerothermodynamics and their effect on aerospace vehicles.",
+      "prerequisites": [
+        {
+          "code": "PF 6102E",
+          "name": "Introduction to Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6111E": {
+      "code": "PF 6111E",
+      "eventName": "Compressible/Hypersonic Aerodynamics Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6110A and PF 6112Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Compressible flow from transonic to hypersonic; shock waves; boundary layer control over supersonic wings; airfoil shapes, shapes of aircraft structures, and transitions from subsonic to supersonic flight; lift and drag approximations for supersonic airfoil sections; principles of hypersonic aerodynamics and aerothermodynamics and their effect on aerospace vehicles.",
+      "prerequisites": [
+        {
+          "code": "PF 6102E",
+          "name": "Introduction to Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6112Z": {
+      "code": "PF 6112Z",
+      "eventName": "Compressible/Hypersonic Aerodynamics Debrief",
+      "eventType": "Z",
+      "eventTypeName": "Debrief",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6110A and PF 6111E under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Compressible flow from transonic to hypersonic; shock waves; boundary layer control over supersonic wings; airfoil shapes, shapes of aircraft structures, and transitions from subsonic to supersonic flight; lift and drag approximations for supersonic airfoil sections; principles of hypersonic aerodynamics and aerothermodynamics and their effect on aerospace vehicles.",
+      "prerequisites": [
+        {
+          "code": "PF 6102E",
+          "name": "Introduction to Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6120M": {
+      "code": "PF 6120M",
+      "eventName": "T-38 Low L/D Flight MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "MIB appears immediately before PF 6121F in MCG with no dedicated prerequisites list. No description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "",
+      "prerequisites": []
+    },
+    "PF 6121F": {
+      "code": "PF 6121F",
+      "eventName": "T-38 Low L/D Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 6100",
+      "moduleName": "Fixed Wing Aerodynamics",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [],
+        "description": "All students — flown in T-38 as airborne simulator for low L/D approach/landing"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The objective of this mission is to familiarize the student with low L/D approach and landing flight characteristics using the T-38C aircraft as an airborne simulator. The profiles flown simulate low L/D landing pattern approaches for typical unpowered research aircraft such as the X-24B and the Space Shuttle.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 6121F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6121F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for PF 6121F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6121F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 6121F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6121F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 6101A",
+          "name": "Introduction to Aerodynamics Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8201A",
+          "name": "Energy Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6201A": {
+      "code": "PF 6201A",
+      "eventName": "Modeling and Simulation Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [
+        "ABM",
+        "CSO",
+        "FTE",
+        "P",
+        "RPA",
+        "STC"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "ABM",
+          "CSO",
+          "FTE",
+          "P",
+          "RPA",
+          "STC"
+        ],
+        "description": "FTC + STC (all standard students; ungraded for STC)"
+      },
+      "eventNotes": "Tagged (FTC/STC) in MCG — applies to both standard (FTC) and space (STC) tracks. Grouped with PF 6202E and PF 6203Z under a shared description block. Course is ungraded for STC.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Use of analysis, Computational Fluid Dynamics (CFD), and Wind Tunnel testing to predict aircraft performance. Programmatic considerations for use of Modeling and Simulation (M&S). Theory for the development, validation, and use of lift curves and drag polars during flight testing of aerospace vehicles, discussion of steady state, quasi-steady state, and dynamic methods. Determining uncertainty and interpreting its effect on data. This course is ungraded for STC.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6202E": {
+      "code": "PF 6202E",
+      "eventName": "Modeling and Simulation Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6201A and PF 6203Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Use of analysis, Computational Fluid Dynamics (CFD), and Wind Tunnel testing to predict aircraft performance. Programmatic considerations for use of Modeling and Simulation (M&S). Theory for the development, validation, and use of lift curves and drag polars during flight testing of aerospace vehicles, discussion of steady state, quasi-steady state, and dynamic methods. Determining uncertainty and interpreting its effect on data. This course is ungraded for STC.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6203Z": {
+      "code": "PF 6203Z",
+      "eventName": "Modeling and Simulation Debrief",
+      "eventType": "Z",
+      "eventTypeName": "Debrief",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6201A and PF 6202E under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Use of analysis, Computational Fluid Dynamics (CFD), and Wind Tunnel testing to predict aircraft performance. Programmatic considerations for use of Modeling and Simulation (M&S). Theory for the development, validation, and use of lift curves and drag polars during flight testing of aerospace vehicles, discussion of steady state, quasi-steady state, and dynamic methods. Determining uncertainty and interpreting its effect on data. This course is ungraded for STC.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6210A": {
+      "code": "PF 6210A",
+      "eventName": "Data Standardization Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Reasons for standardizing data to standard conditions; defensible methods for correcting flight test data from test conditions to standard conditions.",
+      "prerequisites": [
+        {
+          "code": "PF 6201A",
+          "name": "Modeling and Simulation Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6220M": {
+      "code": "PF 6220M",
+      "eventName": "T-38 Aerodynamic Modeling Flight/Data MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [
+        "CSO",
+        "P",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "CSO",
+          "P",
+          "RPA"
+        ],
+        "description": "CSO, Pilots, RPA"
+      },
+      "eventNotes": "Grouped in MCG with PF 6221F under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "CSO/P/RPA will receive a flight in the T-38 to practice the test methods used to collect lift and drag data at constant Mach numbers through stabilized and dynamic flight maneuvers.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 6221F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6221F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for PF 6221F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6221F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 6221F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6221F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 6202E",
+          "name": "Modeling and Simulation Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6210A",
+          "name": "Time Safety Margin Lecture (FTC)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6221F": {
+      "code": "PF 6221F",
+      "eventName": "T-38 Aerodynamic Modeling Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [
+        "CSO",
+        "P",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "CSO",
+          "P",
+          "RPA"
+        ],
+        "description": "CSO, Pilots, RPA"
+      },
+      "eventNotes": "Grouped in MCG with PF 6220M under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "CSO/P/RPA will receive a flight in the T-38 to practice the test methods used to collect lift and drag data at constant Mach numbers through stabilized and dynamic flight maneuvers.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 6221F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6221F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for PF 6221F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6221F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 6221F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6221F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 6202E",
+          "name": "Modeling and Simulation Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6210A",
+          "name": "Time Safety Margin Lecture (FTC)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6230F": {
+      "code": "PF 6230F",
+      "eventName": "Data Group Aerodynamic Modeling Data",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students — flown in each student's data group aircraft"
+      },
+      "eventNotes": "Data-group-branching flight: each student flies their data group aircraft. CF prereqs are DG-conditioned per bracket annotation.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "All students will fly a data collection flight to gather data for their model validation report using their data group aircraft.",
+      "prerequisites": [
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for T-38 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "T-38"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6403F",
+          "name": "Learjet CF-2 (ABM/CSO/RPA) [req'd for Learjet Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6542F",
+          "name": "C-12 CF-3 (P, crew solo) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "C-12",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6550F",
+          "name": "C-12 Flight Training (ABM/CSO/FTE) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6621C",
+          "name": "Control Room Familiarization [req'd for Learjet Data Group]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6680F",
+          "name": "F-16 Flight Training (ABM/CSO/FTE/RPA) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "PF 6221F",
+          "name": "T-38 Aerodynamic Modeling Flight (CSO/P/RPA)",
+          "nameTag": [
+            "CSO",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 6240A",
+          "name": "Model Validation Report Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6241F",
+          "name": "C-12 Airborne Test Conduct Intro",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6240A": {
+      "code": "PF 6240A",
+      "eventName": "Model Validation Report Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6241R under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The lecture discusses requirements and grading criteria for the model validation report.",
+      "prerequisites": [
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 6201A",
+          "name": "Modeling and Simulation Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 6230F",
+          "name": "Data Group Aerodynamic Modeling Data [req'd for PF 6241R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6241R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6320A",
+          "name": "Data Presentation Lecture [req'd for PF 6241R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6241R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6401A",
+          "name": "Technical Reports Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 6241R": {
+      "code": "PF 6241R",
+      "eventName": "Model Validation Report",
+      "eventType": "R",
+      "eventTypeName": "Written Report",
+      "phase": "PF",
+      "moduleCode": "PF 6200",
+      "moduleName": "Modeling and Simulation",
+      "parentCourse": "PF 6000 Performance Fundamentals",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 6240A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The lecture discusses requirements and grading criteria for the model validation report.",
+      "prerequisites": [
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 6201A",
+          "name": "Modeling and Simulation Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 6230F",
+          "name": "Data Group Aerodynamic Modeling Data [req'd for PF 6241R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6241R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6320A",
+          "name": "Data Presentation Lecture [req'd for PF 6241R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 6241R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6401A",
+          "name": "Technical Reports Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7101A": {
+      "code": "PF 7101A",
+      "eventName": "Pitot-Statics Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7102E and PF 7103Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Properties of the earth's atmosphere applicable to flight testing; definition of the U.S. Standard Atmosphere and its assumptions; Pitot-static instrumentation; all inputs, outputs and limitations associated with Pitot-static systems including the procedures for error computation and correction and conversion of test readings to U.S. Standard Day calibrations; reduction of test data from tower fly-bys to determine the position errors inherent in aircraft on-board Pitot-static systems.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7102E": {
+      "code": "PF 7102E",
+      "eventName": "Pitot-Statics Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7101A and PF 7103Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Properties of the earth's atmosphere applicable to flight testing; definition of the U.S. Standard Atmosphere and its assumptions; Pitot-static instrumentation; all inputs, outputs and limitations associated with Pitot-static systems including the procedures for error computation and correction and conversion of test readings to U.S. Standard Day calibrations; reduction of test data from tower fly-bys to determine the position errors inherent in aircraft on-board Pitot-static systems.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7103Z": {
+      "code": "PF 7103Z",
+      "eventName": "Pitot-Statics Debrief",
+      "eventType": "Z",
+      "eventTypeName": "Debrief",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7101A and PF 7102E under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Properties of the earth's atmosphere applicable to flight testing; definition of the U.S. Standard Atmosphere and its assumptions; Pitot-static instrumentation; all inputs, outputs and limitations associated with Pitot-static systems including the procedures for error computation and correction and conversion of test readings to U.S. Standard Day calibrations; reduction of test data from tower fly-bys to determine the position errors inherent in aircraft on-board Pitot-static systems.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7110M": {
+      "code": "PF 7110M",
+      "eventName": "F-16/T-38 Tower Flyby Flight/Data MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7111C and PF 7112F under a shared description block. Rule H paired flight/tower — pilots fly in data-group aircraft (T-38 or F-16 per Rule K); ABM/CSO/FTE/RPA collect data from tower.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Demonstrate and practice tower flyby flight test techniques used to test, evaluate and calibrate aircraft Pitot-static systems. The sortie allows a student to demonstrate the ability to plan and perform a mission in an unfamiliar aircraft and environment. Student pilots will fly the mission in their data group aircraft (T-38 or F-16), and ABM/CSO/FTE/RPA students will collect data in the tower.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 7112F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7112F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for PF 7112F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7112F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7102E",
+          "name": "Pitot-Statics Exam [req'd for PF 7111C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7111C"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7120A",
+          "name": "Air Data System Calibration Report Lecture [req'd for PF 7111C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7111C"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7111C": {
+      "code": "PF 7111C",
+      "eventName": "F-16/T-38 Tower Flyby Tower",
+      "eventType": "C",
+      "eventTypeName": "Control Room",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [
+        "ABM",
+        "CSO",
+        "FTE",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "ABM",
+          "CSO",
+          "FTE",
+          "RPA"
+        ],
+        "description": "Non-pilots — tower side of paired tower flyby exercise (Rule H)"
+      },
+      "eventNotes": "Grouped in MCG with PF 7110M and PF 7112F under a shared description block. Rule H tower half — non-pilots work the tower.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Demonstrate and practice tower flyby flight test techniques used to test, evaluate and calibrate aircraft Pitot-static systems. The sortie allows a student to demonstrate the ability to plan and perform a mission in an unfamiliar aircraft and environment. Student pilots will fly the mission in their data group aircraft (T-38 or F-16), and ABM/CSO/FTE/RPA students will collect data in the tower.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 7112F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7112F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for PF 7112F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7112F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7102E",
+          "name": "Pitot-Statics Exam [req'd for PF 7111C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7111C"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7120A",
+          "name": "Air Data System Calibration Report Lecture [req'd for PF 7111C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7111C"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7112F": {
+      "code": "PF 7112F",
+      "eventName": "F-16/T-38 Tower Flyby Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [
+        "P"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "P"
+        ],
+        "description": "Pilots — flown in F-16 if F-16 DG, else T-38 (Rule K)"
+      },
+      "eventNotes": "Grouped in MCG with PF 7110M and PF 7111C under a shared description block. Rule H flight half. Rule K aircraft selection: F-16 if pilot is F-16 DG, else T-38.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Demonstrate and practice tower flyby flight test techniques used to test, evaluate and calibrate aircraft Pitot-static systems. The sortie allows a student to demonstrate the ability to plan and perform a mission in an unfamiliar aircraft and environment. Student pilots will fly the mission in their data group aircraft (T-38 or F-16), and ABM/CSO/FTE/RPA students will collect data in the tower.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 7112F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7112F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for PF 7112F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7112F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7102E",
+          "name": "Pitot-Statics Exam [req'd for PF 7111C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7111C"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7120A",
+          "name": "Air Data System Calibration Report Lecture [req'd for PF 7111C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7111C"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7120A": {
+      "code": "PF 7120A",
+      "eventName": "Air Data System Calibration Report Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7121R under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Requirements for the air data systems calibration report and grading criteria are provided during the lecture. The report documents the Pitot static system of the data group's data aircraft and provides an opportunity for students to practice report writing skills.",
+      "prerequisites": [
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7101A",
+          "name": "Pitot-Statics Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA) [req'd for PF 7121R]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7112F",
+          "name": "F-16/T-38 Tower Flyby Flight (P) [req'd for PF 7121R]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6320A",
+          "name": "Data Presentation Lecture [req'd for PF 7121R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6404Z",
+          "name": "Test Reporting Feedback [req'd for PF 7121R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6410B",
+          "name": "Technical Reports [req'd for PF 7121R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 7121R": {
+      "code": "PF 7121R",
+      "eventName": "Air Data System Calibration Report",
+      "eventType": "R",
+      "eventTypeName": "Written Report",
+      "phase": "PF",
+      "moduleCode": "PF 7100",
+      "moduleName": "Air Data System",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7120A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Requirements for the air data systems calibration report and grading criteria are provided during the lecture. The report documents the Pitot static system of the data group's data aircraft and provides an opportunity for students to practice report writing skills.",
+      "prerequisites": [
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7101A",
+          "name": "Pitot-Statics Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA) [req'd for PF 7121R]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7112F",
+          "name": "F-16/T-38 Tower Flyby Flight (P) [req'd for PF 7121R]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6320A",
+          "name": "Data Presentation Lecture [req'd for PF 7121R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6404Z",
+          "name": "Test Reporting Feedback [req'd for PF 7121R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6410B",
+          "name": "Technical Reports [req'd for PF 7121R]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 7121R"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 7201A": {
+      "code": "PF 7201A",
+      "eventName": "Propulsion Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 7200",
+      "moduleName": "Propulsion",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7202E and PF 7203Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "These blocks cover the fundamentals of propulsion with an emphasis on flight test applications. It begins with first-principles analysis and applies them to various propulsion types, with a primary focus on turbine engines. Key topics include engine components, cycle analysis, performance evaluation, operability, and control characteristics. Students will assess propulsion system limitations, failure modes, and advanced concepts, including emerging technologies and alternative propulsion methods. The course prepares students to analyze, evaluate, and test propulsion systems in a flight test environment using analytical methods and practical applications.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7202E": {
+      "code": "PF 7202E",
+      "eventName": "Propulsion Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam",
+      "phase": "PF",
+      "moduleCode": "PF 7200",
+      "moduleName": "Propulsion",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7201A and PF 7203Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "These blocks cover the fundamentals of propulsion with an emphasis on flight test applications. It begins with first-principles analysis and applies them to various propulsion types, with a primary focus on turbine engines. Key topics include engine components, cycle analysis, performance evaluation, operability, and control characteristics. Students will assess propulsion system limitations, failure modes, and advanced concepts, including emerging technologies and alternative propulsion methods. The course prepares students to analyze, evaluate, and test propulsion systems in a flight test environment using analytical methods and practical applications.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 7203Z": {
+      "code": "PF 7203Z",
+      "eventName": "Propulsion Debrief",
+      "eventType": "Z",
+      "eventTypeName": "Debrief",
+      "phase": "PF",
+      "moduleCode": "PF 7200",
+      "moduleName": "Propulsion",
+      "parentCourse": "PF 7000 Performance Systems",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 7201A and PF 7202E under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "These blocks cover the fundamentals of propulsion with an emphasis on flight test applications. It begins with first-principles analysis and applies them to various propulsion types, with a primary focus on turbine engines. Key topics include engine components, cycle analysis, performance evaluation, operability, and control characteristics. Students will assess propulsion system limitations, failure modes, and advanced concepts, including emerging technologies and alternative propulsion methods. The course prepares students to analyze, evaluate, and test propulsion systems in a flight test environment using analytical methods and practical applications.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8101A": {
+      "code": "PF 8101A",
+      "eventName": "Takeoff and Landing Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 8100",
+      "moduleName": "Takeoff and Cruise",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8102M under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Equations that can be used to determine takeoff performance and to correct flight test data to standard conditions; equations to analyze ground roll and speed on landing, braking distances and the effects of reverse thrust, aerodynamic braking and runway surface conditions on landing; effects of atmospheric influences and variations in pilot technique at varying gross weights under various conditions; discussion of a variety of typical takeoff and landing tests accomplished at AFTC; braking, anti-skid and barrier testing. The brief will cover test techniques for performing takeoff and landing tests and gathering data for takeoff and landing ground roll distances; development of a method for reducing these data to standard day conditions; and safety considerations that apply. Though specific flights are not dedicated to collecting takeoff and landing data, it is expected that students will collect the data on all applicable sorties.",
+      "prerequisites": [
+        {
+          "code": "PF 6102E",
+          "name": "Introduction to Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8102M": {
+      "code": "PF 8102M",
+      "eventName": "Takeoff Data MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8100",
+      "moduleName": "Takeoff and Cruise",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8101A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Equations that can be used to determine takeoff performance and to correct flight test data to standard conditions; equations to analyze ground roll and speed on landing, braking distances and the effects of reverse thrust, aerodynamic braking and runway surface conditions on landing; effects of atmospheric influences and variations in pilot technique at varying gross weights under various conditions; discussion of a variety of typical takeoff and landing tests accomplished at AFTC; braking, anti-skid and barrier testing. The brief will cover test techniques for performing takeoff and landing tests and gathering data for takeoff and landing ground roll distances; development of a method for reducing these data to standard day conditions; and safety considerations that apply. Though specific flights are not dedicated to collecting takeoff and landing data, it is expected that students will collect the data on all applicable sorties.",
+      "prerequisites": [
+        {
+          "code": "PF 6102E",
+          "name": "Introduction to Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8110A": {
+      "code": "PF 8110A",
+      "eventName": "Cruise Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 8100",
+      "moduleName": "Takeoff and Cruise",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Theoretical background required to determine aircraft cruise performance; data reduction methods oriented toward providing cruise data in the format used at the AFTC; definition of the basic cruise assumption of level unaccelerated flight; development of lift and drag functional relationships based on subsonic aerodynamics in a form suitable for cruise performance analysis; determination of thrust and fuel flow parameters; derivation of the equations for range and endurance; determination of optimum fuel flows and RPM settings for cruise.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8201A": {
+      "code": "PF 8201A",
+      "eventName": "Energy Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8202E and PF 8203Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Relationships of various forces acting on an aircraft in flight; the simplification of equations for steady climb and descent; factors that affect optimum angle of climb, maximum rate of climb and time to climb; analysis of polar diagrams for energy management; analysis of the forces acting on an aircraft in a turn; factors affecting turn performance; computation of corrections to standard day; methods of testing turn performance for non-standard day atmospheric and non-standard weight conditions; derivation and explanation of the equations used to correct check climb, level acceleration, and turn performance data.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8202E": {
+      "code": "PF 8202E",
+      "eventName": "Energy Exam",
+      "eventType": "E",
+      "eventTypeName": "Exam",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8201A and PF 8203Z under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Relationships of various forces acting on an aircraft in flight; the simplification of equations for steady climb and descent; factors that affect optimum angle of climb, maximum rate of climb and time to climb; analysis of polar diagrams for energy management; analysis of the forces acting on an aircraft in a turn; factors affecting turn performance; computation of corrections to standard day; methods of testing turn performance for non-standard day atmospheric and non-standard weight conditions; derivation and explanation of the equations used to correct check climb, level acceleration, and turn performance data.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8203Z": {
+      "code": "PF 8203Z",
+      "eventName": "Energy Debrief",
+      "eventType": "Z",
+      "eventTypeName": "Debrief",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8201A and PF 8202E under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Relationships of various forces acting on an aircraft in flight; the simplification of equations for steady climb and descent; factors that affect optimum angle of climb, maximum rate of climb and time to climb; analysis of polar diagrams for energy management; analysis of the forces acting on an aircraft in a turn; factors affecting turn performance; computation of corrections to standard day; methods of testing turn performance for non-standard day atmospheric and non-standard weight conditions; derivation and explanation of the equations used to correct check climb, level acceleration, and turn performance data.",
+      "prerequisites": [
+        {
+          "code": "PF 6111E",
+          "name": "Compressible/Hypersonic Aerodynamics Exam",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8210M": {
+      "code": "PF 8210M",
+      "eventName": "C-12 Level Accel/Turn Perf MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "CSO",
+        "FTE"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "ABM",
+          "CSO",
+          "FTE"
+        ],
+        "description": "ABM, CSO, FTE — C-12 Level Accel/Turn Perf"
+      },
+      "eventNotes": "Grouped in MCG with PF 8211F under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Student ABM/CSO/FTEs gain practice directing a flight test mission. The students will practice building test cards as part of the MIB and flight preparation. The IP will demonstrate and allow the student to practice the 1G level acceleration and deceleration methods of determining specific excess power. The sawtooth climb method for determining specific excess power will also be demonstrated. Students will practice techniques for determining sustained level turn performance.",
+      "prerequisites": [
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam + 5 days [req'd for PF 8211F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8211F"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8211F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8211F"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6241F",
+          "name": "C-12 Airborne Test Conduct Intro [req'd for PF 8211F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8211F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8211F": {
+      "code": "PF 8211F",
+      "eventName": "C-12 Level Accel/Turn Perf Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "CSO",
+        "FTE"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "ABM",
+          "CSO",
+          "FTE"
+        ],
+        "description": "ABM, CSO, FTE — C-12 Level Accel/Turn Perf flight"
+      },
+      "eventNotes": "Grouped in MCG with PF 8210M under a shared description block. PF 8202E Energy Exam prereq includes timing constraint '+ 5 days' preserved verbatim.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Student ABM/CSO/FTEs gain practice directing a flight test mission. The students will practice building test cards as part of the MIB and flight preparation. The IP will demonstrate and allow the student to practice the 1G level acceleration and deceleration methods of determining specific excess power. The sawtooth climb method for determining specific excess power will also be demonstrated. Students will practice techniques for determining sustained level turn performance.",
+      "prerequisites": [
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam + 5 days [req'd for PF 8211F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8211F"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8211F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8211F"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6241F",
+          "name": "C-12 Airborne Test Conduct Intro [req'd for PF 8211F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8211F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8220M": {
+      "code": "PF 8220M",
+      "eventName": "T-38 Turn Performance MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "FTE",
+        "P",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "ABM",
+          "FTE",
+          "P",
+          "RPA"
+        ],
+        "description": "ABM, FTE, Pilots, RPA — T-38 turn performance"
+      },
+      "eventNotes": "Grouped in MCG with PF 8221C and PF 8222F under a shared description block. Rule H paired control-room/flight exercise (ABM/FTE control room; P/RPA flight).",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "During the F-16 or T-38 flight, student pilots/RPA pilots will practice mission planning and conduct ground operations, takeoff data collection, trim shots, and spot landings. They will observe and practice FTTs for determining sustained level turn performance using stabilized load factor or stabilized airspeed turns. Students will practice FTTs for check climb and descent performance.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 8222F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8222F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 8222F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8222F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6231C",
+          "name": "F-16/Control Room Test Conduct Intro (ABM/FTE) [req'd for PF 8221C]",
+          "nameTag": [
+            "ABM",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6241F",
+          "name": "C-12 Airborne Test Conduct Intro [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8221C": {
+      "code": "PF 8221C",
+      "eventName": "T-38 Turn Performance Control Room",
+      "eventType": "C",
+      "eventTypeName": "Control Room",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "FTE"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "ABM",
+          "FTE"
+        ],
+        "description": "ABM, FTE — control room half (Rule H)"
+      },
+      "eventNotes": "Grouped in MCG with PF 8220M and PF 8222F under a shared description block. Rule H control-room half.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "During the F-16 or T-38 flight, student pilots/RPA pilots will practice mission planning and conduct ground operations, takeoff data collection, trim shots, and spot landings. They will observe and practice FTTs for determining sustained level turn performance using stabilized load factor or stabilized airspeed turns. Students will practice FTTs for check climb and descent performance.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 8222F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8222F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 8222F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8222F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6231C",
+          "name": "F-16/Control Room Test Conduct Intro (ABM/FTE) [req'd for PF 8221C]",
+          "nameTag": [
+            "ABM",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6241F",
+          "name": "C-12 Airborne Test Conduct Intro [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8222F": {
+      "code": "PF 8222F",
+      "eventName": "T-38 Turn Performance Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "P",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "P",
+          "RPA"
+        ],
+        "description": "Pilots, RPA — T-38 turn performance flight (Rule H flight half)"
+      },
+      "eventNotes": "Grouped in MCG with PF 8220M and PF 8221C under a shared description block. Rule H flight half.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "During the F-16 or T-38 flight, student pilots/RPA pilots will practice mission planning and conduct ground operations, takeoff data collection, trim shots, and spot landings. They will observe and practice FTTs for determining sustained level turn performance using stabilized load factor or stabilized airspeed turns. Students will practice FTTs for check climb and descent performance.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 8222F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8222F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 8222F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8222F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6231C",
+          "name": "F-16/Control Room Test Conduct Intro (ABM/FTE) [req'd for PF 8221C]",
+          "nameTag": [
+            "ABM",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6241F",
+          "name": "C-12 Airborne Test Conduct Intro [req'd for PF 8221C]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8221C"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8230M": {
+      "code": "PF 8230M",
+      "eventName": "T-38 Level Accel/Sawtooth Climbs MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "P",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "P",
+          "RPA"
+        ],
+        "description": "Pilots, RPA — T-38 level accel/sawtooth climbs"
+      },
+      "eventNotes": "Grouped in MCG with PF 8231F under a shared description block. Shared description drift: prose describes T-38 Turn Performance (also shared by PF 8222F) — preserved verbatim as written in MCG.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "During the F-16 or T-38 flight, student pilots/RPA pilots will practice mission planning and conduct ground operations, takeoff data collection, trim shots, and spot landings. They will observe and practice FTTs for determining sustained level turn performance using stabilized load factor or stabilized airspeed turns. Students will practice FTTs for check climb and descent performance.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 8231F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 8231F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam [req'd for PF 8231F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8231F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8231F": {
+      "code": "PF 8231F",
+      "eventName": "T-38 Level Accel/Sawtooth Climbs Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "P",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "T-38",
+        "standardMapping": [
+          "P",
+          "RPA"
+        ],
+        "description": "Pilots, RPA — T-38 level accel/sawtooth climbs flight"
+      },
+      "eventNotes": "Grouped in MCG with PF 8230M under a shared description block. Shared description drift: prose describes T-38 Turn Performance — preserved verbatim as written in MCG.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "During the F-16 or T-38 flight, student pilots/RPA pilots will practice mission planning and conduct ground operations, takeoff data collection, trim shots, and spot landings. They will observe and practice FTTs for determining sustained level turn performance using stabilized load factor or stabilized airspeed turns. Students will practice FTTs for check climb and descent performance.",
+      "prerequisites": [
+        {
+          "code": "CF 6362F",
+          "name": "T-38 CF-3 (P) [req'd for PF 8231F]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6804F",
+          "name": "T-38 CF-4 (RPA) [req'd for PF 8231F]",
+          "nameTag": [
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8102M",
+          "name": "Takeoff Data MIB",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8202E",
+          "name": "Energy Exam [req'd for PF 8231F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6202B",
+          "name": "Performance Test Conduct Lecture [req'd for PF 8231F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8231F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8240F": {
+      "code": "PF 8240F",
+      "eventName": "Data Group Level Accel/Turn Perf Data Flights 1",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students — flown in each student's data group aircraft (Rule B: numbering is flight-in-series, not DG filter)"
+      },
+      "eventNotes": "MCG lists this as a range: 'PF 8240-2F Data Group Level Accel/Turn Perf Data Flights 1-3'. Per MCG fidelity, each series member carries the full shared prereq list.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "PF 8240-2F",
+        "seriesPosition": 1,
+        "seriesLength": 3
+      },
+      "description": "All students will fly three Level Acceleration/Turn Perf Data Flights in their data group aircraft to collect data for their Performance Phase Final Test Oral Report.",
+      "prerequisites": [
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for T-38 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "T-38"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6403F",
+          "name": "Learjet CF-2 (ABM/CSO/RPA) [req'd for Learjet Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6542F",
+          "name": "C-12 CF-3 (P, crew solo) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "C-12",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6550F",
+          "name": "C-12 Flight Training (ABM/CSO/FTE) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6621C",
+          "name": "Control Room Familiarization [req'd for Learjet Data Group]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6680F",
+          "name": "F-16 Flight Training (ABM/CSO/FTE/RPA) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8110A",
+          "name": "Cruise Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8211F",
+          "name": "C-12 Level Accel/Turn Perf Flight (ABM/CSO/FTE)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8222F",
+          "name": "T-38 Turn Performance Flight (P/RPA)",
+          "nameTag": [
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8231F",
+          "name": "T-38 Level Accel/Sawtooth Climbs Flight (P/RPA)",
+          "nameTag": [
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8241F": {
+      "code": "PF 8241F",
+      "eventName": "Data Group Level Accel/Turn Perf Data Flights 2",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students — flown in each student's data group aircraft (Rule B)"
+      },
+      "eventNotes": "MCG lists this as a range: 'PF 8240-2F Data Group Level Accel/Turn Perf Data Flights 1-3'. Per MCG fidelity, each series member carries the full shared prereq list.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "PF 8240-2F",
+        "seriesPosition": 2,
+        "seriesLength": 3
+      },
+      "description": "All students will fly three Level Acceleration/Turn Perf Data Flights in their data group aircraft to collect data for their Performance Phase Final Test Oral Report.",
+      "prerequisites": [
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for T-38 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "T-38"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6403F",
+          "name": "Learjet CF-2 (ABM/CSO/RPA) [req'd for Learjet Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6542F",
+          "name": "C-12 CF-3 (P, crew solo) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "C-12",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6550F",
+          "name": "C-12 Flight Training (ABM/CSO/FTE) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6621C",
+          "name": "Control Room Familiarization [req'd for Learjet Data Group]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6680F",
+          "name": "F-16 Flight Training (ABM/CSO/FTE/RPA) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8110A",
+          "name": "Cruise Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8211F",
+          "name": "C-12 Level Accel/Turn Perf Flight (ABM/CSO/FTE)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8222F",
+          "name": "T-38 Turn Performance Flight (P/RPA)",
+          "nameTag": [
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8231F",
+          "name": "T-38 Level Accel/Sawtooth Climbs Flight (P/RPA)",
+          "nameTag": [
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8242F": {
+      "code": "PF 8242F",
+      "eventName": "Data Group Level Accel/Turn Perf Data Flights 3",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8200",
+      "moduleName": "Energy",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students — flown in each student's data group aircraft (Rule B)"
+      },
+      "eventNotes": "MCG lists this as a range: 'PF 8240-2F Data Group Level Accel/Turn Perf Data Flights 1-3'. Per MCG fidelity, each series member carries the full shared prereq list. PF 8242F is referenced by downstream events (PF 8302F, PF 8332F) by name.",
+      "seriesInfo": {
+        "inSeries": true,
+        "seriesId": "PF 8240-2F",
+        "seriesPosition": 3,
+        "seriesLength": 3
+      },
+      "description": "All students will fly three Level Acceleration/Turn Perf Data Flights in their data group aircraft to collect data for their Performance Phase Final Test Oral Report.",
+      "prerequisites": [
+        {
+          "code": "CF 6370F",
+          "name": "T-38 Flight Training (ABM/CSO/FTE) [req'd for T-38 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "T-38"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6403F",
+          "name": "Learjet CF-2 (ABM/CSO/RPA) [req'd for Learjet Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6542F",
+          "name": "C-12 CF-3 (P, crew solo) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "C-12",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6550F",
+          "name": "C-12 Flight Training (ABM/CSO/FTE) [req'd for C-12 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "C-12"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6621C",
+          "name": "Control Room Familiarization [req'd for Learjet Data Group]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "Learjet"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6673F",
+          "name": "F-16 CF-4 (P, crew solo) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": "crew-solo",
+          "nameTagAircraft": "F-16",
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "CF 6680F",
+          "name": "F-16 Flight Training (ABM/CSO/FTE/RPA) [req'd for F-16 Data Group]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "datagroup",
+            "values": [
+              "F-16"
+            ]
+          },
+          "group": null
+        },
+        {
+          "code": "PF 5101A",
+          "name": "Performance Test Plan Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8110A",
+          "name": "Cruise Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8211F",
+          "name": "C-12 Level Accel/Turn Perf Flight (ABM/CSO/FTE)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8222F",
+          "name": "T-38 Turn Performance Flight (P/RPA)",
+          "nameTag": [
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8231F",
+          "name": "T-38 Level Accel/Sawtooth Climbs Flight (P/RPA)",
+          "nameTag": [
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8301M": {
+      "code": "PF 8301M",
+      "eventName": "C-12 Autopilot Flight Control System Flight MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "CSO",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "CSO",
+          "RPA"
+        ],
+        "description": "CSO, RPA — C-12 Autopilot FCS (feeder to C-12 Performance Practical goal)"
+      },
+      "eventNotes": "Grouped in MCG with PF 8302F under a shared description block. Also includes FTEs as test conductors for ABM/CSO/RPA Performance Practical Exams per description.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Introduction to flying the C-12 as a simulated remotely piloted aircraft by use of the Autopilot Flight Control System and throttles to fly performance flight test techniques. Includes FTEs assigned as test conductors for ABM/CSO/RPA Performance Practical Exams.",
+      "prerequisites": [
+        {
+          "code": "PF 6121F",
+          "name": "T-38 Low L/D Flight [req'd for PF 8302F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8302F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8242F",
+          "name": "Data Group Level Accel/Turn Perf Data Flights 3",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6251F",
+          "name": "C-12 Intermediate Airborne Test Conduct (FTC) [req'd for PF 8302F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8302F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8302F": {
+      "code": "PF 8302F",
+      "eventName": "C-12 Autopilot Flight Control System Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "CSO",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "CSO",
+          "RPA"
+        ],
+        "description": "CSO, RPA — C-12 Autopilot FCS flight (feeder to PF 8311F C-12 Performance Practical goal)"
+      },
+      "eventNotes": "Grouped in MCG with PF 8301M under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Introduction to flying the C-12 as a simulated remotely piloted aircraft by use of the Autopilot Flight Control System and throttles to fly performance flight test techniques. Includes FTEs assigned as test conductors for ABM/CSO/RPA Performance Practical Exams.",
+      "prerequisites": [
+        {
+          "code": "PF 6121F",
+          "name": "T-38 Low L/D Flight [req'd for PF 8302F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8302F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8242F",
+          "name": "Data Group Level Accel/Turn Perf Data Flights 3",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6251F",
+          "name": "C-12 Intermediate Airborne Test Conduct (FTC) [req'd for PF 8302F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8302F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8310M": {
+      "code": "PF 8310M",
+      "eventName": "C-12 Performance Practical MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "CSO",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "CSO",
+          "RPA"
+        ],
+        "description": "CSO, RPA — MIB for C-12 Performance Practical (paired with goal event PF 8311F)"
+      },
+      "eventNotes": "Grouped in MCG with PF 8311F under a shared description block. Paired MIB for goal event.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The objective of this practical is to evaluate each student CSO/RPA's ability: to operate as an effective test team member during an airborne test, to flight plan before and during the mission, to perform a representative cross section of performance flight test maneuvers and to manage area navigation during the mission. The students' post flight analysis of maneuvers is evaluated through an oral debrief and written report. FTEs are assigned as non-graded test conductors for this event and will attend the MIB in addition to conducting the flight.",
+      "prerequisites": [
+        {
+          "code": "PF 8301M",
+          "name": "C-12 Autopilot Flight Control System Flight MIB (CSO/RPA)",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8302F",
+          "name": "C-12 Autopilot Flight Control System Flight (CSO/RPA) [req'd for PF 8311F]",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8311F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8311F": {
+      "code": "PF 8311F",
+      "eventName": "C-12 Performance Practical Flight",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "CSO",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "CSO",
+          "RPA"
+        ],
+        "description": "CSO, RPA — GOAL EVENT: C-12 Performance Practical Flight"
+      },
+      "eventNotes": "GOAL EVENT for CSO and RPA. Grouped in MCG with PF 8310M under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The objective of this practical is to evaluate each student CSO/RPA's ability: to operate as an effective test team member during an airborne test, to flight plan before and during the mission, to perform a representative cross section of performance flight test maneuvers and to manage area navigation during the mission. The students' post flight analysis of maneuvers is evaluated through an oral debrief and written report. FTEs are assigned as non-graded test conductors for this event and will attend the MIB in addition to conducting the flight.",
+      "prerequisites": [
+        {
+          "code": "PF 8301M",
+          "name": "C-12 Autopilot Flight Control System Flight MIB (CSO/RPA)",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8302F",
+          "name": "C-12 Autopilot Flight Control System Flight (CSO/RPA) [req'd for PF 8311F]",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8311F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8320R": {
+      "code": "PF 8320R",
+      "eventName": "C-12 Performance Practical Written Report",
+      "eventType": "R",
+      "eventTypeName": "Written Report",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "CSO",
+        "RPA"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": "C-12",
+        "standardMapping": [
+          "CSO",
+          "RPA"
+        ],
+        "description": "CSO, RPA — written report following C-12 Performance Practical"
+      },
+      "eventNotes": "",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Following the C-12 Performance Practical Exam flight, students will write individual reports using the provided template, answering the requirements spelled out in the C-12 CSO/RPA Performance Practical Exam Test Plan.",
+      "prerequisites": [
+        {
+          "code": "PF 8311F",
+          "name": "C-12 Performance Practical Flight (CSO/RPA)",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8330M": {
+      "code": "PF 8330M",
+      "eventName": "Multi-Engine Performance Practical MIB",
+      "eventType": "M",
+      "eventTypeName": "Mission Info Brief",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "FTE",
+        "P"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "ABM",
+          "FTE",
+          "P"
+        ],
+        "description": "ABM, FTE, Pilots — MIB for Multi-Engine Performance Practical (paired with goal event PF 8332F)"
+      },
+      "eventNotes": "Grouped in MCG with PF 8331G and PF 8332F under a shared description block. Paired MIB + ground school for goal event.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The objective of this practical is to evaluate each student's ability to operate as an effective test team member during an airborne test, to evaluate each pilot's ability to flight plan before and during the mission and perform a representative cross section of flight test maneuvers and area plan during the mission, and to evaluate each FTE's ability to perform as a test conductor on a performance flight test, to include mission planning, flying, analyzing and reporting the results. Student pilots will produce a daily report and student FTEs will produce a test report answering the objectives from the provided test plan following the sortie.",
+      "prerequisites": [
+        {
+          "code": "PF 6121F",
+          "name": "T-38 Low L/D Flight [req'd for PF 8332F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8332F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7112F",
+          "name": "F-16/T-38 Tower Flyby Flight (P)",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8242F",
+          "name": "Data Group Level Accel/Turn Perf Data Flights 3",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6251F",
+          "name": "C-12 Intermediate Airborne Test Conduct (FTC) [req for PF 8332F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8332F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8331G": {
+      "code": "PF 8331G",
+      "eventName": "Multi-Engine Performance Practical Ground School",
+      "eventType": "G",
+      "eventTypeName": "Ground School",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "FTE",
+        "P"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "ABM",
+          "FTE",
+          "P"
+        ],
+        "description": "ABM, FTE, Pilots — Ground School for Multi-Engine Performance Practical"
+      },
+      "eventNotes": "Grouped in MCG with PF 8330M and PF 8332F under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The objective of this practical is to evaluate each student's ability to operate as an effective test team member during an airborne test, to evaluate each pilot's ability to flight plan before and during the mission and perform a representative cross section of flight test maneuvers and area plan during the mission, and to evaluate each FTE's ability to perform as a test conductor on a performance flight test, to include mission planning, flying, analyzing and reporting the results. Student pilots will produce a daily report and student FTEs will produce a test report answering the objectives from the provided test plan following the sortie.",
+      "prerequisites": [
+        {
+          "code": "PF 6121F",
+          "name": "T-38 Low L/D Flight [req'd for PF 8332F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8332F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7112F",
+          "name": "F-16/T-38 Tower Flyby Flight (P)",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8242F",
+          "name": "Data Group Level Accel/Turn Perf Data Flights 3",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6251F",
+          "name": "C-12 Intermediate Airborne Test Conduct (FTC) [req for PF 8332F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8332F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8332F": {
+      "code": "PF 8332F",
+      "eventName": "Multi-Engine Performance Practical",
+      "eventType": "F",
+      "eventTypeName": "Flight",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "FTE",
+        "P"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "ABM",
+          "FTE",
+          "P"
+        ],
+        "description": "ABM, FTE, Pilots — GOAL EVENT: Multi-Engine Performance Practical"
+      },
+      "eventNotes": "GOAL EVENT for ABM, FTE, Pilots. Grouped in MCG with PF 8330M and PF 8331G under a shared description block. MCG uses 'req for PF 8332F' (without apostrophe) on the TF 6251F prereq — preserved verbatim.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "The objective of this practical is to evaluate each student's ability to operate as an effective test team member during an airborne test, to evaluate each pilot's ability to flight plan before and during the mission and perform a representative cross section of flight test maneuvers and area plan during the mission, and to evaluate each FTE's ability to perform as a test conductor on a performance flight test, to include mission planning, flying, analyzing and reporting the results. Student pilots will produce a daily report and student FTEs will produce a test report answering the objectives from the provided test plan following the sortie.",
+      "prerequisites": [
+        {
+          "code": "PF 6121F",
+          "name": "T-38 Low L/D Flight [req'd for PF 8332F]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8332F"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 7111C",
+          "name": "F-16/T-38 Tower Flyby Tower (ABM/CSO/FTE/RPA)",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 7112F",
+          "name": "F-16/T-38 Tower Flyby Flight (P)",
+          "nameTag": [
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "PF 8242F",
+          "name": "Data Group Level Accel/Turn Perf Data Flights 3",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        },
+        {
+          "code": "TF 6251F",
+          "name": "C-12 Intermediate Airborne Test Conduct (FTC) [req for PF 8332F]",
+          "nameTag": [
+            "ABM",
+            "CSO",
+            "FTE",
+            "P",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8332F"
+          },
+          "group": null
+        }
+      ]
+    },
+    "PF 8340R": {
+      "code": "PF 8340R",
+      "eventName": "Multi-Engine Performance Practical Written Report",
+      "eventType": "R",
+      "eventTypeName": "Written Report",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "P"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "P"
+        ],
+        "description": "Pilots — pilot version of Multi-Engine Performance Practical Written Report"
+      },
+      "eventNotes": "Grouped in MCG with PF 8341R under a shared description block. Parallel pilot/non-pilot variants (similar to Rule L role-specific variants).",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Following the Multi-Engine Performance Practical Exam flight, students will write individual reports using the provided templates, answering the requirements spelled out in the Performance Practical Exam Test Plan.",
+      "prerequisites": [
+        {
+          "code": "PF 8332F",
+          "name": "Multi-Engine Performance Practical (ABM/FTE/P)",
+          "nameTag": [
+            "ABM",
+            "FTE",
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8341R": {
+      "code": "PF 8341R",
+      "eventName": "Multi-Engine Performance Practical Written Report",
+      "eventType": "R",
+      "eventTypeName": "Written Report",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [
+        "ABM",
+        "FTE"
+      ],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [
+          "ABM",
+          "FTE"
+        ],
+        "description": "ABM, FTE — non-pilot version of Multi-Engine Performance Practical Written Report"
+      },
+      "eventNotes": "Grouped in MCG with PF 8340R under a shared description block. Parallel pilot/non-pilot variants (similar to Rule L role-specific variants).",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Following the Multi-Engine Performance Practical Exam flight, students will write individual reports using the provided templates, answering the requirements spelled out in the Performance Practical Exam Test Plan.",
+      "prerequisites": [
+        {
+          "code": "PF 8332F",
+          "name": "Multi-Engine Performance Practical (ABM/FTE/P)",
+          "nameTag": [
+            "ABM",
+            "FTE",
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8350A": {
+      "code": "PF 8350A",
+      "eventName": "Performance Phase Final Test Oral Report Lecture",
+      "eventType": "A",
+      "eventTypeName": "Academic Lecture",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8351Y under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students will present a group oral report on the results of their maneuver and takeoff performance flight tests. Students will learn about presenting flight test results in a briefing environment with an emphasis on slide design and briefing technique. Evaluation of data and results is also discussed.",
+      "prerequisites": [
+        {
+          "code": "PF 7121R",
+          "name": "Air Data System Calibration Report [req'd for PF 8351Y]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8351Y"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8311F",
+          "name": "C-12 Performance Practical Flight (CSO/RPA) [req'd for PF 8351Y]",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8351Y"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8332F",
+          "name": "Multi-Engine Performance Practical (ABM/FTE/P) [req'd for PF 8351Y]",
+          "nameTag": [
+            "ABM",
+            "FTE",
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8351Y"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6420A",
+          "name": "Oral Reporting Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    },
+    "PF 8351Y": {
+      "code": "PF 8351Y",
+      "eventName": "Performance Phase Final Test Oral Report",
+      "eventType": "Y",
+      "eventTypeName": "Oral Report",
+      "phase": "PF",
+      "moduleCode": "PF 8300",
+      "moduleName": "Performance Testing",
+      "parentCourse": "PF 8000 Performance Characterization",
+      "applicability": [],
+      "applicabilityDetail": {
+        "role": null,
+        "aircraft": null,
+        "standardMapping": [],
+        "description": "All students"
+      },
+      "eventNotes": "Grouped in MCG with PF 8350A under a shared description block.",
+      "seriesInfo": {
+        "inSeries": false,
+        "seriesId": null,
+        "seriesPosition": null,
+        "seriesLength": null
+      },
+      "description": "Students will present a group oral report on the results of their maneuver and takeoff performance flight tests. Students will learn about presenting flight test results in a briefing environment with an emphasis on slide design and briefing technique. Evaluation of data and results is also discussed.",
+      "prerequisites": [
+        {
+          "code": "PF 7121R",
+          "name": "Air Data System Calibration Report [req'd for PF 8351Y]",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8351Y"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8311F",
+          "name": "C-12 Performance Practical Flight (CSO/RPA) [req'd for PF 8351Y]",
+          "nameTag": [
+            "CSO",
+            "RPA"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8351Y"
+          },
+          "group": null
+        },
+        {
+          "code": "PF 8332F",
+          "name": "Multi-Engine Performance Practical (ABM/FTE/P) [req'd for PF 8351Y]",
+          "nameTag": [
+            "ABM",
+            "FTE",
+            "P"
+          ],
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": {
+            "type": "forDownstream",
+            "target": "PF 8351Y"
+          },
+          "group": null
+        },
+        {
+          "code": "TF 6420A",
+          "name": "Oral Reporting Lecture",
+          "nameTag": null,
+          "nameTagRole": null,
+          "nameTagAircraft": null,
+          "condition": null,
+          "group": null
+        }
+      ]
+    }
+  }
+}
