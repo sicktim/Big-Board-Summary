@@ -12,6 +12,25 @@
 
 ---
 
+## 0. Source-of-truth ordering (read this first)
+
+The app pulls from two sources: the **MCG** (curriculum JSON, derived from the 26A PDF) and the **Big Board / DBB** (live Google Sheet, fetched via GAS).
+
+**The MCG is authoritative for *what* a student must complete.** The Big Board is authoritative for *whether* they have completed it (status, schedule, comments). Never the other way around.
+
+| Question | Read from |
+|---|---|
+| Does this event apply to this student? | **MCG** applicability + `nameTag` + `condition` (datagroup, forDownstream) |
+| Is the event a prereq of the goal? | **MCG** prereq graph |
+| Has this student completed / scheduled this event? | **Big Board** cell color + value |
+| Who is in the class roster? | **Big Board** name list (the only place names live) |
+
+**Recurring failure mode**: the codebase has twice (v0.5.0 CF 6370F, v0.5.2 PF 8211F) drifted into using DBB cell color/presence to *infer applicability*. A miscolored cell or a stray flight on the Big Board is then read as ground truth, and the MCG is silently overridden. **Don't do this.** Derive applicability from MCG → roster, then look up status on DBB. When the two disagree on applicability, surface a warning rather than picking a side.
+
+This rule is also captured in `AGENTIC.md` § System Evolution Log (2026-05-03).
+
+---
+
 ## 1. Student Types (26A class composition)
 
 | Board label | Count | MCG applicability code | Role |

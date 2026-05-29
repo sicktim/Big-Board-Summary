@@ -1,7 +1,7 @@
 # Project State
 
-**Last updated:** 2026-05-02 (folder reorganization; no code changes)
-**Current version:** v0.5.1 (per `issues.md` top entry)
+**Last updated:** 2026-05-05 (v0.5.2f — duplicate-event resolution actually applies)
+**Current version:** v0.5.2f (`tracker/index.html` APP_VERSION)
 **Active class:** 26A
 
 ---
@@ -16,15 +16,26 @@ The display app rewrite to v0.5 (2026-04-21) is **landed and working**. It repla
 
 ---
 
-## Open issues (from `issues.md` v0.5.1, highest-priority first)
+## Open issues
+
+**Recently resolved (v0.5.2b–e):**
+
+- ✅ PF 8211F "no applicable students" — MCG-vs-DBB applicability mismatch now surfaces as a node banner; excused students stay visible. (v0.5.2b)
+- ✅ PF 8241F false syllabus-deviation warning — chain walker now respects per-student filtering, series collapse, and higher-level-completion early-out. (v0.5.2b)
+- ✅ Paired-event status — paired-opted is now a real status with partner indicator (matched by shared `bgHex`). (v0.5.2b)
+- ✅ Class-view "WARN: PreReqs Not Met" tooltip now lists which specific prereqs are missing, with scheduled date + partner info. (v0.5.2c, was v0.5.1 carry-over)
+- ✅ DG LA/TP Data Flight 1 hover tooltip — covered by the v0.5.2c tooltip work above.
+- ✅ Hard WARN over-fired on past-scheduled-but-unmarked prereqs (Morrison 5/4 case). Now split into hard / soft-past (verify) / soft-future (covered) with distinct color treatments. (v0.5.2d)
+- ✅ Past-dated unverified cells now render as yellow scheduled (not red pending). Only wording flips to "verify"; dot/chip color unchanged. (v0.5.2e)
+- ✅ Duplicate-event resolution: applyDupResolution was a no-op stub; now 'one' uses the single selected row (UI flips to radios), 'any' merges cells with best-status-wins per student, 'all' falls back to 'any' until sub-event splitting lands in v0.5.3. Banner gets × dismiss + auto-hide on CTA. (v0.5.2f)
+
+**Still open from v0.5.1 (highest-priority first):**
 
 1. **MCG-as-truth display rule** (PRIORITY): events with suffix S/C/F/I/L must render even if absent from Big Board. If absent, show "XX ####X — (event name) — not currently tracked on Big Board."
-2. **Hover tooltip on "prereqs not met"** must list which specific prereqs are missing, plus scheduled date if any. Format example in `issues.md`.
-3. **Click-to-focus**: clicking an event (not expanding it) should highlight that event + only its direct prerequisites; defocus everything else.
-4. **OR-block rendering for SY 7511F**: there should be two OR blocks (the second for control room events). SY 7222F is missing from the page.
-5. **Hidden-node count tooltip**: "Nodes shown: 46 of 47 (1 hidden)" should be clickable to reveal what's hidden.
-6. **CF 6681F missing entirely** — should show only non-F-16 datagroup pilots.
-7. **DG LA/TP Data Flight 1**: hover tooltip not showing missing prereqs for not-opted students.
+2. **Click-to-focus**: clicking an event (not expanding it) should highlight that event + only its direct prerequisites; defocus everything else.
+3. **OR-block rendering for SY 7511F**: there should be two OR blocks (the second for control room events). SY 7222F is missing from the page.
+4. **Hidden-node count tooltip**: "Nodes shown: 46 of 47 (1 hidden)" should be clickable to reveal what's hidden.
+5. **CF 6681F missing entirely** — should show only non-F-16 datagroup pilots.
 
 ---
 
