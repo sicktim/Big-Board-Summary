@@ -257,6 +257,26 @@ For a given aircraft, multiple distinct CF events may exist — one per student-
 
 **Implication**: when the data shows multiple "flight training" / "cockpit" / "exam" / "boldface" events on the same aircraft, expect role-specific variants. The tag tells you which one applies to the viewer.
 
+### Rule M — Implied sequence inside an MCG block (PROPOSED — awaiting ruling)
+Added 2026-10-01 (tracker v0.6.0). **This is an inference, not MCG text.** It is drawn with dashed arrows and can be switched off in Settings ("Infer the order inside an MCG block").
+
+**The gap it fills.** The MCG describes an exercise as one block — MIB, ground school, sim, flight, report — with one prerequisite list, and tags entries `[req'd for X]` to say which member needs them. It never states that the report needs its flight, or the exam flight its exam sim. Read literally:
+- `SY 7503F` (MQ-9 Systems Practical, a goal event) lists `SY 7211S [req'd for SY 7502S]`. `SY 7502S` (the exam sim) is not a prereq of `SY 7503F`, so per §7.1 the edge prunes and the practical has **no board-visible prerequisites at all**.
+- `TF 7503F` (Capstone) requires `TF 7113R` (Graded Qual Eval 1 Report), whose prereqs are all `[req'd for TF 7112F]` (the GQE-1 flight). The report is never linked to its own flight, so Capstone's chain is empty.
+
+**The rule.** When event E carries a prereq tagged `[req'd for T]` and T is
+1. in E's own block (`eventNotes`: "Grouped in MCG with … under a shared description block"),
+2. numbered **before** E, and
+3. applicable to the viewer (Rule A / D / E on T),
+
+then T is treated as E's predecessor (edge `T → E`, flagged `implied`), and the tagged prereq reaches E through T, which lists it itself. In the 26A data this pattern occurs on 141 prereq entries, and in all 141 the earlier member lists the same prereq.
+
+**Not covered:** a later member (MIB tagged for its flight) — unchanged, §7.1 applies. Members with no `[req'd for]` tag between them (the MIB ↔ practical question in §12) — unchanged.
+
+**Known doubtful case:** `FQ 8150F` "Target for T-38 HQ Flight (P)" is placed after `FQ 8141F` "T-38 HQ Flight". Flying target probably doesn't require having flown your own.
+
+**Ruling needed:** keep as is / restrict (e.g. only report-after-flight and exam-after-sim) / drop.
+
 ---
 
 ## 7. Prereq Condition Types
@@ -280,7 +300,9 @@ A prereq's `condition` field (when non-null) narrows when the edge applies. Two 
 
 **Worked example**: `PF 7102E "Pitot-Statics Exam [Req'd for PF 7111C]"` is listed under `PF 7112F`'s prereqs. Root (P) doesn't do `PF 7111C` (tower side, not in his audience), so this prereq prunes for Root. An ABM student whose chain does pass through `PF 7111C` keeps this prereq.
 
-**Sibling-target quirk**: `condition.target` may name a sibling event rather than a descendant. The target is "the event that actually requires this prereq," not necessarily downstream in the DAG sense.
+**Sibling-target quirk**: `condition.target` may name a sibling event rather than a descendant. The target is "the event that actually requires this prereq," not necessarily downstream in the DAG sense. When that sibling is an *earlier* member of the same block, see **Rule M** (proposed).
+
+**"In the viewer's chain" means "leads to the goal"** (v0.6.0). The target counts only if it still has a path to the goal after pruning — not merely because the walk touched it. Whatever stops leading to the goal is removed from the graph, so a pruned edge can no longer leave its upstream subtree drawn as a separate, unconnected graph.
 
 ### 7.2 `datagroup`
 
@@ -337,7 +359,19 @@ The graph carries the **full MCG curriculum** (every event). The UI shows only w
 - Flights (`F`), Exams (`E`), Sims (`S`), Control Room (`C`), Reports (`R`, `Y`), Ground Training (`H`), Ground School (`G`): on Big Board → show.
 - Asynchronous content (`B`): likely hide (similar to lectures); confirm.
 
-**Source of truth is the sheet, not the type letter.** Use the cross-reference. Type-letter heuristics break (MIBs, for example).
+**Source of truth is the sheet, not the type letter.** Use the cross-reference. Type-letter heuristics break (MIBs, for example). As of v0.6.0 the tracker follows this literally: an event with a board row is shown whatever its type (`CF 6130A`, an academic event, has one), unless the user switched that type off in Settings.
+
+### 8.1 Board conventions observed on the live board (2026-10-01)
+
+Read from the 26A / 26B FTC tabs. Confirm or correct — the tracker now relies on these.
+
+- **A cell color marks a group, not only a pair.** Paired practicals use one color per pair; data-group rows (`PF 8240-2F`, `PF 6230F`, `FQ 6310-1F`, `FQ 8131F`, `SY 6131F`) put 3–8 students on one color. Strikethrough = that student's event is done.
+- **White cell with a struck-through date = complete.** Seen on a paired row for students who went without a color (`SY 7211S`: 20 colored + 4 white, all struck, same week).
+- **Colors pair across rows too.** `SY 7212F` (flight) and `SY 7213C` (control room) use one color per cell, matching between the two rows — the pilot and the engineer working the same sortie. Not used by the tracker yet.
+- **Rows with no event code** (39 on 26A): student FTTs, BITS, currency, surveys, "Extra" data flights, Wavebreak, Midterm Feedback. Indexed by title; a repeated title becomes "Title #1…#n".
+- **Placeholder text** such as `--` appears in completed cells; not a date.
+- **Columns the backend does not surface yet**: per-role gates (Pilot / FTE / CSO / RPA: All · None · Some · Opt), Event Type, Aircraft (Code.gs 0.3.0 adds these to the payload), and the currency block in rows 1–5 (last-flown date per student for T-38 / F-16 / C-12, with the >30 / >20 / <14-day legend).
+- **Tabs differ in width.** 26B has one fewer student column than 26A, so its meta block starts one column earlier. Code.gs 0.3.0 locates it from the row-8 labels.
 
 ---
 
@@ -409,6 +443,8 @@ The current extraction has gaps (missing tags, missing series metadata, repeated
 - Exhaustive list of numbered series in MCG 26A (requires PDF audit).
 - Full cross-reference of which MCG event codes appear on the Big Board (`fetch_sheet.json`).
 - Whether MIBs (e.g., `PF 8310M`, `PF 8330M`) should be implicit prereqs of their paired practicals (`PF 8311F`, `PF 8332F`) — currently NOT in the JSON for either side, consistent but possibly missing a day-of briefing edge.
+- **Rule M (proposed, 2026-10-01)** — is the order of events inside an MCG block a prerequisite sequence? The tracker currently assumes so only where the MCG tags a prereq for an earlier member of the block. Keep / restrict / drop.
+- Either-or events (`SY 7304F` flight vs `SY 7305C` control room): the board greys out the half a student doesn't do, which the tracker reports as an MCG/DBB applicability mismatch for every student. Should a grey cell on one half of a flight / control-room pair be treated as "does the other half" rather than a mismatch?
 - Additional condition types beyond `forDownstream` and `datagroup` that may surface during re-extraction.
 
 ---

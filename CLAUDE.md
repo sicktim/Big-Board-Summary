@@ -11,7 +11,7 @@ USAF TPS Master Curriculum Guide (MCG) curriculum status tracker. A single-page 
 Read in this order. Stop after each step if you have what you need.
 
 1. **`docs/00-state.md`** — where the project actually is right now, what's next, blockers.
-2. **`issues.md`** — live bug log, newest at top. v0.5.1 is the current target.
+2. **`issues.md`** — live bug log, newest at top. The v0.6.0 entry (2026-10-01) is the latest.
 3. **`docs/01-architecture.md`** — component map, data flow.
 4. **`docs/02-knowledge-base.md`** — MCG rules (Rules A–L), student types, DG mappings. **Read before writing any DAG logic.**
 5. **`docs/03-derived-requirements.md`** — design decisions D1–D17, status states, sheet-parsing contract.
@@ -38,7 +38,7 @@ Specialty docs (open as needed):
 MCG-Tracker/
 ├── CLAUDE.md                          ← this file
 ├── README.md                          ← human-friendly overview
-├── issues.md                          ← live issue log (v0.5.1 active)
+├── issues.md                          ← live issue log (v0.6.0 newest)
 ├── docs/                              ← canonical docs, read in numbered order
 │   ├── 00-state.md
 │   ├── 01-architecture.md
@@ -51,7 +51,7 @@ MCG-Tracker/
 ├── data/
 │   └── MCG-26A_2026-04-21.json        ← canonical curriculum data (667 events)
 ├── tracker/                           ← the display app
-│   ├── index.html                     ← single-page app (v0.5.1)
+│   ├── index.html                     ← single-page app (v0.6.0)
 │   ├── Code.gs                        ← GAS Web App backend
 │   ├── serve.cjs                      ← local dev http server
 │   ├── dagre.min.js                   ← vendored layout dep
@@ -65,8 +65,10 @@ MCG-Tracker/
 │   ├── schemas/
 │   ├── scripts/
 │   └── source/                        ← MCG 26A.pdf, raw text extracts, version-1/2/3 outputs
+├── site/                              ← what GitHub Pages serves: copy of tracker/ statics + issues.md
 └── dev/                               ← test/inspection harnesses, off the production path
-    ├── _dag-harness.cjs
+    ├── app-harness.cjs                ← RUN THIS: real app code vs saved payloads, 4 invariants
+    ├── _dag-harness.cjs               ← (old: pasted copies of app functions — stale, reference only)
     ├── _dagre-test.cjs
     ├── _inspect_xlsx*.cjs
     ├── _review-harness.cjs
@@ -81,15 +83,18 @@ MCG-Tracker/
 - **Tracker runtime**: open `tracker/index.html` via `node tracker/serve.cjs` (or `python -m http.server` from `tracker/`). It refuses to load over `file://` — the JSON fetch needs same-origin HTTP.
 - **Data source of truth**: `data/MCG-26A_2026-04-21.json` is canonical. `tracker/mcg-26a.json` is a runtime copy. If you change one, sync the other (or replace one with a copy step in `serve.cjs`).
 - **Big Board source**: a fixed Google Sheet, fetched via the deployed GAS Web App. The Sheet ID and GAS deployment URL are set in `Code.gs` Script Properties, not in code. Foreign-national students are marked by a rich-text red asterisk on names — preserve, don't strip.
+- **Before publishing**: `node dev/app-harness.cjs` must end with "All invariants hold". It evaluates the real script out of `tracker/index.html` against every payload in `tracker/JSON-outputs/` (gitignored — save a fresh `fetch_sheet` response there). Then copy `tracker/` statics + `issues.md` into `site/` (README "Publishing"). `/release` walks through it.
+- **Board tabs differ**: 26B has one fewer student column than 26A. `Code.gs` ≥ 0.3.0 finds the event columns by header label; the app also repairs a shifted payload from an older backend (`parse.repairShiftedLayout`). Never assume fixed columns.
 - **Versioning**: every source file carries the convention block in `docs/03-derived-requirements.md` §5. MAJOR = data contract break, MINOR = visible behavior, PATCH = fix.
 
 ---
 
 ## Current target
 
-v0.5.1 — see top of `issues.md`. Highest-priority items:
+v0.6.0 was published 2026-10-01. See `docs/00-state.md` → "Waiting on the user" for what is pending:
 
-- Display events that are S/C/F/I/L per MCG even if absent from Big Board (with a "not currently tracked on Big Board" message).
-- Show what specific prereq is missing on hover/highlight.
-- Click-to-focus on event + direct prerequisites only.
-- "OR block" rendering for SY 7511F path (SY 7222F connection).
+- User's feedback from testing it online.
+- Redeploy `Code.gs` 0.3.0 in the Apps Script editor.
+- Ruling on KB Rule M (implied block sequence) and on either-or mismatch banners.
+
+Ranked feature suggestions for what to build next are in `docs/00-state.md`.

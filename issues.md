@@ -5,6 +5,88 @@
 > triage and propose fixes; version bumps in code headers should reference
 > the issue date/title.
 
+v0.6.0 — custom target events + audit of the 2026-10-01 live board (2026-10-01)
+
+Request: keep the 11 practical/comprehensive targets, but let the user make
+any event the target — found by name or by event code — because more events
+are now required before graduation. Also: audit against the current Big
+Board output, fix what's wrong, suggest what would help read the flow.
+
+- **Feature — searchable Target Event picker.** Presets unchanged; type part
+  of a code ("7503", "sy 75", "tf7503f") or a name ("capstone") to target
+  anything in the MCG or on the board, including board rows with no event
+  code ("Wavebreak Form Tng"). ★ pins, recents remembered, `/` opens it,
+  `#target=TF%207503F` in the URL makes a view linkable. A target that is in
+  the MCG but not on the board still gets its chain; a board-only target
+  shows its own roster (no chain exists for it).
+- **Target node shows itself.** Progress + roster (class) / status chip
+  (student), where it used to say only "TARGET · N applicable".
+
+Found and fixed (each confirmed against live data; see `dev/app-harness.cjs`):
+
+- **Comprehensive Written / Oral Exam views were blank.** `collapseOffBoard`
+  stopped after 64 nodes, so lectures/exams stayed in the DAG as if they
+  were board events and `renderNodeClass` threw on the first one
+  (`Cannot read properties of undefined (reading 'cells')`). Reproduced on
+  the published site for TF 9102E and TF 9111E.
+- **"OPTED" was wrong for 58 of 454 student/event pairs** (26A, 10/1). The
+  v0.5.2e shortcut `status !== 'pending' → stop` also stopped the prereq
+  walk at off-board events and at the event's own cell. So anyone merely
+  scheduled read as opted, and nothing behind a lecture/report was checked
+  (FQ 9511F showed pilots OPTED with FQ 8202F not flown). The walker now
+  reads the same per-viewer graph the canvas draws, so the two can't
+  disagree; it also gains forDownstream conditions and oneOf groups, which
+  it never applied.
+- **MQ-9 Systems Practical (SY 7503F) drew with nothing leading into the
+  target** — 55 of 56 nodes were a separate, unconnected graph. Cause: its
+  prereqs are tagged "[req'd for SY 7502S]" (the exam sim, an earlier member
+  of the same MCG block), the edge was dropped, and its subtree left
+  floating. Two changes: (a) nodes that no longer lead to the target are
+  removed; (b) **implied block sequence** — an event whose prereq is tagged
+  for an *earlier* member of its own block is drawn after that member
+  (dashed arrow). Same rule gives Capstone (TF 7503F) its chain through
+  Graded Qual Eval 1. Settings → "Infer the order inside an MCG block"
+  turns (b) off. **Needs a ruling — see KB Rule M.**
+- **26B FTC Big Board was unusable.** Its event columns sit one column left
+  of 26A's; the backend reads fixed columns, so codes came back in the
+  wrong field and nothing matched. Repaired in the browser now; fixed at
+  the source in `Code.gs` 0.3.0 (finds columns by header label) — **needs
+  redeploy**.
+- **39 board rows with no event code were dropped** (Stud FTT, BITS,
+  surveys, "Extra" data flights, Wavebreak, Midterm Feedback…). Now indexed
+  by title and targetable.
+- **CF 6130A never appeared in any chain** although it has a board row —
+  academic-type events were bridged even when on the board.
+- **Colored cells are groups, not only pairs.** Data-group rows put 3–8
+  students on one color; the roster named one arbitrary "partner". Now names
+  all, or "group of N".
+- **White cell + struck date = complete** (SY 7211S: 4 such cells). Was
+  stuck at "scheduled — verify".
+- **Dates on a board with no class end date (26B)** were all read as the
+  start year.
+- **First visit dead-ended**: empty disabled board list, Load did nothing.
+  Now fetches the list and loads the default board.
+- **Stale data was invisible**: the app boots from cache (the local dev copy
+  was 146 days old). Header now shows when the board was pulled; amber
+  after 24 h.
+- **Transient Google errors** ("GAS 404", HTML error page) — one automatic
+  retry, plain-language message.
+- Smaller: "Lines" default mismatch for new visitors; "--" shown as a date;
+  Not Applicable screen when the MCG (not just a grey cell) excludes the
+  student; hidden nodes named in the summary strip; Legend rewritten;
+  opening view scrolls to the target.
+
+Open — needs your call:
+
+- **KB Rule M (implied block sequence)** — keep, restrict, or drop. It is
+  an inference, drawn dashed; one case looks doubtful (FQ 8150F "Target for
+  T-38 HQ Flight" placed after FQ 8141F).
+- **Redeploy `Code.gs`.** Deployed backend still reports 0.1.0; the repo has
+  0.2.0 (your getFontLines speed-up) and now 0.3.0.
+- **SY 7304F / SY 7305C mismatch banners** fire for every student because
+  the board greys out whichever of flight / control room they don't do.
+  Looks like a false alarm for either-or events.
+
 v0.5.0 — MCG re-extraction rewrite (2026-04-21)
   Schema: switched from embedded v1 MCG graph to the structured v2 handoff
   JSON (`mcg-handoff-2026-04-21/MCG-26A_2026-04-21.json`, copied in place as

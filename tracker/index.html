@@ -3,10 +3,57 @@
 ============================================================
  File:       index.html
  Module:     big-board-curriculum-status / client
- Version:    0.5.2f
+ Version:    0.6.0
  MCG Target: 26A
- Updated:    2026-05-05
+ Updated:    2026-10-01
  Changelog:
+   0.6.0 - Custom target events + live-board audit fixes (2026-10-01).
+           Feature:
+           - Target Event is now a searchable picker instead of a fixed
+             dropdown. The 11 practical/comprehensive goal events stay as
+             presets; ANY other event can be made the target by typing
+             part of its code ("7503", "sy75") or name ("capstone").
+             Catalog = every MCG event + every Big Board row (including
+             board-only rows that have no event code, e.g. "Wavebreak
+             Form Tng"). Custom targets can be pinned (★) and the last
+             few are remembered. Target is mirrored to the URL
+             (#target=TF%207503F) so a view can be bookmarked / shared.
+             Press "/" to jump to the search box.
+           - An MCG event that is NOT on the board can still be a target:
+             the board-visible prereq chain is drawn behind it.
+           - The target node now shows its own progress + roster (class
+             view) / status chip (student view). It used to show only
+             "TARGET · N applicable", hiding who had actually done it.
+           Fixes (found auditing the 2026-10-01 live board output):
+           - Board rows with no event code (39 on 26A) were silently
+             dropped. They are now indexed under their title as
+             board-only events (searchable, usable as targets).
+           - 26B FTC Big Board was unusable: its meta columns sit one
+             column left of 26A's, so the deployed backend (Code.gs
+             0.1.0, fixed columns) returned event codes in `courseNo`.
+             parse.repairShiftedLayout detects that and remaps in the
+             browser. Code.gs 0.3.0 fixes it at the source (header-label
+             column detection) once redeployed.
+           - Year inference for m/d dates when the board has no class
+             end date (26B) — assumed everything was in the start year.
+           - Colored cells are groups, not only pairs (data groups of
+             3-8 share a color). Roster now names every group mate /
+             "group of N" instead of one arbitrary partner.
+           - White cell + struck-through date = complete (solo student
+             on a paired row, e.g. SY 7211S). Was shown as "scheduled —
+             verify" forever.
+           - Placeholder cell text ("--") no longer shown as a date.
+           - First visit with an empty cache left a disabled picker and
+             a dead Load button. Boot now fetches the tab list and loads
+             the default board on its own.
+           - "Lines" default: the dropdown said Straight while the
+             renderer drew Polyline until the user touched it.
+           - Stale-data visibility: header shows when the board data was
+             pulled and turns amber after 24 h.
+           - Student view shows Not Applicable when the MCG excludes the
+             student from the target (was only checking dark-grey).
+           - "N hidden" in the summary strip now names the hidden nodes.
+           - Legend rewritten to match the states actually rendered.
    0.5.2f - Duplicate-event resolution actually applies (2026-05-05).
             Symptom: user marked T-38 TP not-required for one student
             and F-16 TP complete for that student (same event code on
@@ -735,7 +782,16 @@
   .node.s-none .node-head   { background: #fdecea; color: #8a1c1c; }
   .node.s-yellow .node-head { background: #fff4cc; color: #6b4b00; }
   .node.s-green .node-head  { background: #e4f5dc; color: #1f5313; }
-  .node.goal .node-head     { background: #f0f0f0; color: #666; }
+  /* v0.6.0: the target keeps its dashed border but its header now carries
+     the same status color as any other node (it used to be flat grey with
+     no roster). Only a target that isn't on the board stays neutral. */
+  .node.goal.offboard-goal .node-head { background: #f0f0f0; color: #666; }
+  .node-target-tag {
+    display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor;
+    border-radius: 3px; font-family: var(--sans); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.06em; vertical-align: 1px;
+  }
+  .node-offboard-note { padding: 8px 10px 10px; font-size: 10px; line-height: 1.4; color: var(--ink-soft); }
 
   /* Header status colors (student view — 4 states, v0.3.3: shifted OPTED
      to a blue hue so it reads as distinctly different from DONE green). */
@@ -884,6 +940,8 @@
   .dag-arrows path.a-yellow { stroke: var(--started); }
   .dag-arrows path.a-none   { stroke: var(--warn); }
   .dag-arrows path.a-goal   { stroke: #999; }
+  /* v0.6.0: implied block-sequence link (not stated as a prereq in the MCG) */
+  .dag-arrows path.implied  { stroke-dasharray: 7 5; }
 
   /* Empty/help states inside main */
   .dag-empty { padding: 80px 40px; text-align: center; color: var(--ink-faint); }
@@ -895,6 +953,64 @@
     font-size: 12px; font-family: var(--mono); color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 16px;
   }
   .goal-summary strong { color: var(--ink); }
+
+  /* ===========================================================
+     v0.6.0 — Target Event picker (searchable combobox)
+     =========================================================== */
+  .target-picker { position: relative; }
+  .target-btn {
+    display: flex; align-items: center; gap: 8px; width: 400px; max-width: 62vw;
+    border: 1.5px solid var(--line); background: #fff; padding: 5px 9px; border-radius: 3px;
+    font-size: 13px; text-align: left;
+  }
+  .target-btn:hover:not([disabled]) { border-color: var(--accent); }
+  .target-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+  .target-btn-code { font-family: var(--mono); font-weight: 700; white-space: nowrap; }
+  .target-btn-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-soft); }
+  .target-btn-caret { color: var(--ink-faint); font-size: 11px; }
+  .target-pop {
+    position: absolute; top: calc(100% + 4px); left: 0; z-index: 120; width: 560px; max-width: 94vw;
+    background: #fff; border: 2px solid var(--line); border-radius: 5px; box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  }
+  .target-pop[hidden] { display: none; }
+  .target-pop input[type="text"] {
+    width: 100%; border: none; border-bottom: 1.5px solid var(--line); border-radius: 3px 3px 0 0;
+    padding: 9px 12px; font-size: 14px; font-family: var(--sans);
+  }
+  .target-list { max-height: 56vh; overflow-y: auto; padding: 4px 0; }
+  .target-sec {
+    padding: 8px 12px 3px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--ink-faint);
+  }
+  .target-row { display: flex; align-items: center; gap: 8px; padding: 5px 12px; cursor: pointer; font-size: 12px; }
+  .target-row.active { background: var(--accent-soft); }
+  .target-row.current .target-row-code { color: var(--accent); }
+  .target-row.off-board .target-row-name { color: var(--ink-faint); }
+  .target-row-code { font-family: var(--mono); font-weight: 700; width: 78px; flex-shrink: 0; white-space: nowrap; }
+  .target-row-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .target-tag {
+    flex-shrink: 0; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 1px 5px; border-radius: 3px; border: 1px solid var(--line-soft); color: var(--ink-soft); white-space: nowrap;
+  }
+  .target-tag.t-off   { color: #7a4500; border-color: #c97a0f; background: #fff6e8; }
+  .target-tag.t-board { color: #3c1e6b; border-color: #8a56d6; background: #f6f1ff; }
+  .target-pin {
+    flex-shrink: 0; border: none; background: transparent; font-size: 15px; line-height: 1;
+    padding: 0 2px; color: var(--line-soft);
+  }
+  .target-pin:hover { color: var(--started); }
+  .target-pin.on { color: var(--started); }
+  .target-empty { padding: 16px 12px; font-size: 12px; color: var(--ink-faint); }
+  .target-foot {
+    padding: 6px 12px; border-top: 1px solid var(--line-soft); font-size: 10px;
+    font-family: var(--mono); color: var(--ink-faint); background: #fafafa; border-radius: 0 0 3px 3px;
+  }
+
+  /* v0.6.0: "board data as of" chip next to Refresh */
+  .data-age { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); white-space: nowrap; }
+  .data-age.stale {
+    color: #6b4b00; background: #fff4cc; border: 1px solid #d4a017; border-radius: 3px; padding: 2px 7px; font-weight: 600;
+  }
 </style>
 </head>
 <body>
@@ -916,6 +1032,7 @@
     <button class="btn" id="btn-refresh" disabled title="Force re-fetch selected board from GAS, bypass cache">Refresh</button>
     <button class="btn" id="btn-refresh-list" title="Pull fresh list of tabs from GAS">⟳ Tabs</button>
   </div>
+  <span class="data-age" id="data-age"></span>
   <div class="hbar-spacer"></div>
 </header>
 <div class="view-bar" id="view-bar" style="display:none;">
@@ -933,10 +1050,22 @@
     </select>
   </div>
   <div class="ctrl-group">
-    <label for="goal-picker">Target Event</label>
-    <select id="goal-picker" disabled>
-      <option value="">— load a board first —</option>
-    </select>
+    <label for="target-btn">Target Event</label>
+    <!-- v0.6.0: searchable picker. Presets = the MCG goal events; anything
+         else on the board or in the MCG can be found by code or name. -->
+    <div class="target-picker" id="target-picker">
+      <button type="button" class="target-btn" id="target-btn" disabled aria-haspopup="listbox" aria-expanded="false"
+              title="Choose the target event — search by code or name ( / )">
+        <span class="target-btn-code" id="target-btn-code">—</span>
+        <span class="target-btn-name" id="target-btn-name">load a board first</span>
+        <span class="target-btn-caret">▾</span>
+      </button>
+      <div class="target-pop" id="target-pop" hidden>
+        <input type="text" id="target-search" placeholder="Search any event by code or name…" autocomplete="off" spellcheck="false" aria-label="Search target events">
+        <div class="target-list" id="target-list" role="listbox"></div>
+        <div class="target-foot">↑↓ move · Enter select · Esc close · ★ pin a custom target</div>
+      </div>
+    </div>
   </div>
   <div class="ctrl-group" id="expand-group" style="display:none;">
     <button class="btn" id="btn-expand-all" title="Expand all nodes">Expand all</button>
@@ -945,10 +1074,10 @@
   <div class="ctrl-group">
     <label for="line-style">Lines</label>
     <select id="line-style" title="How edges are drawn between nodes">
-      <option value="polyline" selected>Polyline</option>
+      <option value="straight" selected>Straight</option>
       <option value="smooth">Smooth curve</option>
       <option value="orthogonal">Orthogonal (right-angle)</option>
-      <option value="straight">Straight</option>
+      <option value="polyline">Polyline</option>
     </select>
   </div>
   <div class="hbar-spacer"></div>
@@ -970,7 +1099,7 @@
     <h2>No board loaded</h2>
     <p>Pick a board above and press <strong>Load</strong>.</p>
     <p style="margin-top:8px; font-size:12px;">
-      First run? Open this file and set <code>CONFIG.GAS_ENDPOINT</code> to your deployed Apps Script Web App /exec URL.
+      Empty board list? Press <strong>⟳ Tabs</strong> to fetch it from the Big Board.
     </p>
   </div>
 </main>
@@ -1003,6 +1132,7 @@
 <script id="config" type="application/json">
 {
   "GAS_ENDPOINT": "https://script.google.com/macros/s/AKfycbyU4XfKl5ct6SMzl1nh7e4yZOR6U_wqD9_4HbUNBUOm7fgUaJIPTUIH95CVEGsIfVmiUw/exec",
+  "DEFAULT_SHEET": "26A FTC Big Board",
   "ENABLE_CACHE": true,
   "DEBUG": false
 }
@@ -1035,7 +1165,7 @@ const CONFIG = (() => {
   catch (e) { return { GAS_ENDPOINT: '', ENABLE_CACHE: true, DEBUG: false }; }
 })();
 
-const APP_VERSION = '0.5.2f';
+const APP_VERSION = '0.6.0';
 const MCG_VERSION = '26A';
 const MCG_JSON_URL = './mcg-26a.json';
 
@@ -1152,11 +1282,34 @@ const api = (() => {
   async function call(params, { force = false } = {}) {
     if (!CONFIG.GAS_ENDPOINT) throw new Error('CONFIG.GAS_ENDPOINT is empty. Set it near the top of index.html.');
     const url = CONFIG.GAS_ENDPOINT + '?' + new URLSearchParams(params).toString();
-    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
-    if (!res.ok) throw new Error(`GAS ${res.status}: ${res.statusText}`);
-    const body = await res.json();
-    if (!body.ok) throw new Error(body.error || 'GAS reported not-ok');
-    return body;
+    // v0.6.0: Apps Script intermittently answers with a 404 or an HTML
+    // error page instead of JSON (seen live: "GAS 404", "Unexpected token
+    // '<'"); the same request succeeds seconds later. Try twice before
+    // bothering the user, and say what happened in plain words.
+    let lastErr = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+        if (!res.ok) throw new Error(`Google answered ${res.status} instead of the board data`);
+        const text = await res.text();
+        let body;
+        try { body = JSON.parse(text); }
+        catch (_) { throw new Error('Google returned an error page instead of the board data'); }
+        if (!body.ok) {
+          // The backend itself said no (bad tab name, missing SHEET_ID…) — retrying won't help.
+          const err = new Error(body.error || 'GAS reported not-ok');
+          err.final = true;
+          throw err;
+        }
+        return body;
+      } catch (e) {
+        lastErr = e;
+        if (e.final) break;
+        console.warn(`[bbcs] GAS call failed (attempt ${attempt} of 2):`, e.message || e);
+      }
+    }
+    if (!lastErr.final) lastErr.message += ' (tried twice — usually temporary, press Load again)';
+    throw lastErr;
   }
 
   return {
@@ -1279,14 +1432,66 @@ const parse = (() => {
     return mcgCodes.some(c => eventApplicability.indexOf(c) !== -1);
   }
 
+  // v0.6.0: the deployed backend (Code.gs < 0.3.0) reads the event-meta
+  // block from fixed columns AA..AE. A tab with one fewer student column
+  // (26B FTC Big Board) has that block one column to the left, so every
+  // field comes back shifted: the event code lands in `courseNo`, the
+  // title in `eventNo`, the Pilot gate in `title`. Detect that signature
+  // and put the fields back. Code.gs 0.3.0 finds the columns by their
+  // header labels and reports `payload.layout`, in which case we trust it.
+  function repairShiftedLayout(payload) {
+    if (payload.layout) return null;
+    const looksLikeCode = s => /^[A-Z]{2}[\s\-]?\d{4}/.test(String(s || '').trim());
+    let inEventNo = 0, inCourseNo = 0;
+    for (const e of payload.events) {
+      if (looksLikeCode(e.eventNoRaw != null ? e.eventNoRaw : e.eventNo)) inEventNo++;
+      if (looksLikeCode(e.courseNo)) inCourseNo++;
+    }
+    if (inCourseNo < 20 || inCourseNo <= inEventNo * 3) return null;
+    for (const e of payload.events) {
+      const code = String(e.courseNo || '').trim();
+      const title = String((e.eventNoRaw != null ? e.eventNoRaw : e.eventNo) || '').trim();
+      e.pilotGate = e.title;
+      e.title = title;
+      e.courseNo = e.series;
+      e.series = (code.match(/^[A-Z]{2}/) || [''])[0];
+      e.eventNoRaw = code;
+      e.eventNo = normalizeCode(code);
+    }
+    return 'Event columns on this tab sit one column left of where the deployed backend looks; '
+      + 'remapped in the browser. Redeploy Code.gs 0.3.0+ to fix it at the source.';
+  }
+
   function indexPayload(payload) {
+    const layoutNote = repairShiftedLayout(payload);
+    if (layoutNote) console.warn('[bbcs] ' + layoutNote);
+
+    // v0.6.0: rows with no event code (student FTTs, BITS, surveys, "Extra"
+    // data flights, Wavebreak…) used to be dropped here, which made them
+    // invisible and un-targetable. Index them under their title; a title
+    // that repeats (four "T-38 Stud FTT" rows) gets "#1…#n" so each row
+    // stays its own event rather than tripping the duplicate-code logic.
+    const uncodedByTitle = {};
+    for (const evt of payload.events) {
+      if (normalizeCode(evt.eventNo)) continue;
+      const t = String(evt.title || '').trim();
+      if (!t) continue;
+      (uncodedByTitle[t] = uncodedByTitle[t] || []).push(evt);
+    }
+    for (const [t, rows] of Object.entries(uncodedByTitle)) {
+      rows.forEach((evt, i) => {
+        evt.uncoded = true;
+        evt.boardKey = rows.length > 1 ? `${t} #${i + 1}` : t;
+      });
+    }
+
     // v0.5.2: collect ALL rows per code into rowsByCode so the settings-driven
     // duplicate-resolution step (parse.resolveDuplicates) can pick the effective
     // row or merge cells. `byCode` still returns one row per code for backward
     // compatibility; `duplicates` lists codes with >1 row.
     const rowsByCode = {};
     for (const evt of payload.events) {
-      const code = normalizeCode(evt.eventNo);
+      const code = normalizeCode(evt.eventNo) || evt.boardKey;
       if (!code) continue;
       (rowsByCode[code] = rowsByCode[code] || []).push(evt);
     }
@@ -1303,7 +1508,7 @@ const parse = (() => {
       console.warn('[bbcs] duplicate event codes on board:',
         duplicates.map(d => d.code + ' (' + d.rows.map(r => 'row ' + r.row).join(', ') + ')').join('; '));
     }
-    return { ...payload, byCode, rowsByCode, duplicates };
+    return { ...payload, byCode, rowsByCode, duplicates, layoutNote };
   }
 
   return { normalizeCode, isStudentApplicable, expandStudentTypeToMcg, indexPayload };
@@ -1370,7 +1575,62 @@ const dagFilter = (() => {
     return null;
   }
 
-  return { viewerTypeOf, viewerDGOf, edgePassesForViewer, seriesPrevPrereq };
+  // v0.6.0: does this MCG event apply to a viewer of this type / DG?
+  // Same test as statusModule.isStudentApplicablePerMcg, but on the
+  // (type, DG) pair the DAG walk carries instead of a student record.
+  function eventAppliesToViewer(mcgEvent, viewerType, viewerDG) {
+    const det = (mcgEvent && mcgEvent.applicabilityDetail) || {};
+    const map = (det.standardMapping && det.standardMapping.length)
+      ? det.standardMapping
+      : ((mcgEvent && mcgEvent.applicability) || []);
+    if (!map.length) return true;
+    if (!map.includes(viewerType)) return false;
+    if (viewerType === 'P' && det.aircraft) {
+      if (det.role === 'crew-solo' && viewerDG !== det.aircraft) return false;
+      if (det.role === 'non-crew-solo' && viewerDG === det.aircraft) return false;
+    }
+    return true;
+  }
+
+  // v0.6.0: MCG "shared description block" membership. The MCG describes
+  // an exercise as one block (MIB, ground school, sim, flight, report) with
+  // one prereq list; the extraction records the grouping in eventNotes as
+  // "Grouped in MCG with A, B, C under a shared description block."
+  const _blockCache = new Map();
+  function blockSiblings(mcgEvent) {
+    if (!mcgEvent || !mcgEvent.code) return new Set();
+    let sibs = _blockCache.get(mcgEvent.code);
+    if (!sibs) {
+      const m = /Grouped in MCG with (.+?) under a shared description block/.exec(mcgEvent.eventNotes || '');
+      sibs = new Set(m ? (m[1].match(/[A-Z]{2} \d{4}[A-Z]/g) || []) : []);
+      sibs.delete(mcgEvent.code);
+      _blockCache.set(mcgEvent.code, sibs);
+    }
+    return sibs;
+  }
+
+  // v0.6.0 — implied block sequence (KB Rule M, PROPOSED — pending ruling).
+  // A prereq annotated "[req'd for T]" where T is an EARLIER member of the
+  // owner's own block says the block's prereqs bite at T, not at the owner.
+  // The MCG never states "owner ← T" (report ← its flight, exam flight ←
+  // its exam sim), so the owner used to be left with no way to reach those
+  // prereqs: SY 7503F and TF 7503F drew with nothing leading into them.
+  // When T applies to the viewer, treat T as the owner's predecessor and
+  // let the prereq arrive through T (which lists it itself). Returns T's
+  // code, or null when the rule doesn't apply. Settings can turn it off.
+  function impliedBlockPredecessor(ownerEvent, prereq, viewerType, viewerDG, mcgEvents) {
+    const c = prereq && prereq.condition;
+    if (!c || c.type !== 'forDownstream' || !c.target || c.target === ownerEvent.code) return null;
+    const target = mcgEvents[c.target];
+    if (!target || !blockSiblings(ownerEvent).has(c.target)) return null;
+    // codes inside a block run in exercise order: only an earlier member
+    if (parseInt(c.target.slice(3, 7), 10) >= parseInt(ownerEvent.code.slice(3, 7), 10)) return null;
+    if (!eventAppliesToViewer(target, viewerType, viewerDG)) return null;
+    return c.target;
+  }
+
+  return { viewerTypeOf, viewerDGOf, edgePassesForViewer, seriesPrevPrereq,
+           eventAppliesToViewer, blockSiblings, impliedBlockPredecessor };
 })();
 
 /* --------------------------------------------------------
@@ -1413,7 +1673,11 @@ const statusModule = (() => {
         const monthI = parseInt(m[1], 10) - 1;
         const dayI = parseInt(m[2], 10);
         const cs = classStart ? new Date(classStart) : null;
-        const ce = classEnd ? new Date(classEnd) : null;
+        let ce = classEnd ? new Date(classEnd) : null;
+        // v0.6.0: a board with a start date but no end date (26B) used to
+        // put every m/d in the start year, so a B-class's Jan–Jun dates
+        // read as already past. The course runs about a year; assume that.
+        if (cs && !ce) ce = new Date(cs.getFullYear() + 1, cs.getMonth(), cs.getDate());
         if (cs && ce && cs.getFullYear() !== ce.getFullYear()) {
           const d1 = new Date(cs.getFullYear(), monthI, dayI);
           const d2 = new Date(ce.getFullYear(), monthI, dayI);
@@ -1444,22 +1708,32 @@ const statusModule = (() => {
     // by mid-afternoon).
     const result = { completion: 'pending', scheduled: false, flag: null, dateText: null };
     if (!cell) return result;
+    // v0.6.0: only surface cell text that carries a date. The board also
+    // holds placeholders ("--") that read as nonsense in "complete · --".
+    const shownText = (cell.value && /\d/.test(String(cell.value))) ? String(cell.value) : null;
     if (cell.rgbFamily === 'darkGrey') { result.completion = 'notreq'; return result; }
     if (cell.rgbFamily === 'lightGrey') {
       result.completion = 'complete';
-      if (cell.value) result.dateText = String(cell.value);
+      result.dateText = shownText;
       return result;
     }
     if (cell.rgbFamily === 'paired') {
       result.completion = cell.strikethrough ? 'complete' : 'paired-opted';
-      if (cell.value) result.dateText = String(cell.value);
+      result.dateText = shownText;
       return result;
     }
     // white
-    if (cell.strikethrough) {
-      console.warn('[bbcs] white cell with strikethrough', cell);
-    }
     const d = parseCellDate(cell.value, classMeta.startDate, classMeta.endDate);
+    // v0.6.0: a struck-through date in a white cell is a completion mark —
+    // the student did a group/paired event without a color (SY 7211S on
+    // 26A: 20 colored + 4 white cells, all struck, same week). It used to
+    // sit at "scheduled — verify" indefinitely.
+    if (cell.strikethrough && d) {
+      result.completion = 'complete';
+      result.dateText = shownText;
+      result.flag = 'white-struck';
+      return result;
+    }
     if (d) {
       result.dateText = String(cell.value);
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1602,62 +1876,85 @@ const statusModule = (() => {
  *   Each chain item: { code, title, onBoard, depth, status }
  * -------------------------------------------------------- */
 const chain = (() => {
-  // v0.5.2: chain walking now applies per-student MCG filtering + Rule G
-  // series collapse via dagFilter. Without these, isOpted descended into
-  // prereqs that didn't apply to the student (e.g. crew-solo C-12 events
-  // for an F-16 pilot, or PF 8240F's foundational prereqs after the
-  // higher-level event was already complete) and produced false-positive
-  // "prereqs not met" warnings.
+  // v0.6.0: the chain is read off the same per-viewer prerequisite graph
+  // the canvas draws (render.buildDagForViewer, before off-board collapse),
+  // built with THIS event as the target. One source for "what leads to X"
+  // means OPTED / NOT OPTED can't disagree with the arrows, and the walker
+  // gets Rule A / D / E / G, datagroup + forDownstream conditions, oneOf
+  // groups and the implied block sequence without re-implementing them.
+  // (v0.5.2 walked mcg.prerequisites itself and knew none of the last
+  // three.) The graph depends only on the viewer's type + data group, so
+  // it's cached per (event, type, DG); cleared on board load and whenever
+  // a setting changes.
+  const _dagCache = new Map();
+  function resetCache() { _dagCache.clear(); }
+  function prereqGraph(code, payload, student) {
+    const viewerType = dagFilter.viewerTypeOf(student);
+    const viewerDG = dagFilter.viewerDGOf(student);
+    const key = code + '|' + viewerType + '|' + viewerDG;
+    let g = _dagCache.get(key);
+    if (!g) {
+      const dag = render.buildDagForViewer(code, payload, viewerType, viewerDG);
+      g = {};   // event code → codes of its direct prerequisites
+      for (const e of dag.edges) (g[e.to] = g[e.to] || []).push(e.from);
+      _dagCache.set(key, g);
+    }
+    return g;
+  }
+
+  // What still stands between `student` and `goalCode`.
+  // Each item: { code, title, onBoard, status, flag, dateText, depth }
   function buildChainForStudent(goalCode, payload, student) {
     const mcgEvents = MCG_GRAPH.events || {};
     const now = new Date();
-    const seen = new Set();
+    const preds = prereqGraph(goalCode, payload, student);
+    const look = (code) => {
+      const evt = payload.byCode[code];
+      if (!evt) return { onBoard: false, status: 'offboard', flag: null, dateText: null, evt: null };
+      const c = statusModule.classifyCell(evt.cells.find(x => x.col === student.col), payload.classMeta, now);
+      return { onBoard: true, status: c.completion, flag: c.flag || null, dateText: c.dateText || null, evt };
+    };
     const out = [];
-    const stack = [{ code: goalCode, depth: 0 }];
-    const viewerType = dagFilter.viewerTypeOf(student);
-    const viewerDG = dagFilter.viewerDGOf(student);
-    while (stack.length) {
-      const node = stack.shift();
-      if (seen.has(node.code)) continue;
-      seen.add(node.code);
-      const mcg = mcgEvents[node.code];
-      const onBoardEvt = payload.byCode[node.code];
-      const onBoard = !!onBoardEvt;
-      let status = 'offboard';
-      let flag = null;
-      let dateText = null;
-      if (onBoard) {
-        const cell = onBoardEvt.cells.find(c => c.col === student.col);
-        const classified = statusModule.classifyCell(cell, payload.classMeta, now);
-        status = classified.completion;
-        flag = classified.flag || null;
-        dateText = classified.dateText || null;
-      }
-      if (node.code !== goalCode) {
+    // Done or excused on the board → nothing is "missing" for it, whatever
+    // the cells upstream say.
+    const own = look(goalCode);
+    if (own.status === 'complete' || own.status === 'notreq') return out;
+
+    const seen = new Set([goalCode]);
+    const queue = [{ code: goalCode, depth: 0 }];
+    while (queue.length) {
+      const node = queue.shift();
+      for (const from of preds[node.code] || []) {
+        if (seen.has(from)) continue;
+        seen.add(from);
+        if (from.startsWith('GROUP:')) {
+          // oneOf: any one completed alternative satisfies the whole group.
+          const alts = preds[from] || [];
+          if (alts.some(a => look(a).status === 'complete')) { alts.forEach(a => seen.add(a)); continue; }
+          queue.push({ code: from, depth: node.depth });
+          continue;
+        }
+        const st = look(from);
+        const mcg = mcgEvents[from];
         out.push({
-          code: node.code,
-          title: (mcg && mcg.eventName) || (onBoardEvt && onBoardEvt.title) || '?',
-          onBoard,
-          status,
-          flag,        // v0.5.2d: 'past-date-unchecked' for white cells with past dates
-          dateText,    // v0.5.2d: scheduled date if any, used for soft-monitor categorization
-          depth: node.depth,
+          code: from,
+          title: (mcg && mcg.eventName) || (st.evt && st.evt.title) || '?',
+          onBoard: st.onBoard,
+          status: st.status,
+          flag: st.flag,          // v0.5.2d: 'past-date-unchecked' for white cells with past dates
+          dateText: st.dateText,  // v0.5.2d: scheduled date if any, used for soft-monitor categorization
+          depth: node.depth + 1,
         });
-      }
-      // Walk this event's prereqs only when the cell has truly no plan
-      // (pending blank). Anything else — complete, scheduled (future or
-      // past-await-update after v0.5.2e classifyCell change), notreq,
-      // paired-opted — represents a plan we trust; don't descend, otherwise
-      // a deeper blank cell would escalate the whole chain to "hard hole."
-      if (status !== 'pending') continue;
-      // Rule G: pos > 1 in a tight series collapses to pos N-1 only.
-      const serialPrev = dagFilter.seriesPrevPrereq(mcg, mcgEvents);
-      const rawPrereqs = serialPrev ? [serialPrev] : ((mcg && mcg.prerequisites) || []);
-      for (const p of rawPrereqs) {
-        if (!p || !p.code || seen.has(p.code)) continue;
-        // Per-student filter: skip prereqs that don't apply to this viewer.
-        if (mcg && !dagFilter.edgePassesForViewer(mcg, p, viewerType, viewerDG)) continue;
-        stack.push({ code: p.code, depth: node.depth + 1 });
+        // Keep walking through off-board events (Rule I: hidden, not
+        // pruned) and through board cells with no plan at all. A cell that
+        // is complete, scheduled, paired or excused is a plan we trust —
+        // stop there, otherwise a blank cell three levels above a
+        // presumed-done flight would escalate the whole chain.
+        // v0.6.0: the v0.5.2e shortcut `status !== 'pending' → stop` also
+        // stopped at off-board events and at the target's own cell, so a
+        // student who was merely scheduled always read as OPTED and
+        // nothing behind a lecture/report was ever checked.
+        if (!st.onBoard || st.status === 'pending') queue.push({ code: from, depth: node.depth + 1 });
       }
     }
     // Sort: onBoard incomplete first, then onBoard complete, then offboard.
@@ -1694,7 +1991,118 @@ const chain = (() => {
     return items.filter(it => it.onBoard && it.status !== 'complete' && it.status !== 'notreq');
   }
 
-  return { buildChainForStudent, isOpted, missingPrereqs };
+  return { buildChainForStudent, isOpted, missingPrereqs, resetCache };
+})();
+
+/* --------------------------------------------------------
+ * targets.js — v0.6.0 catalog + search behind the Target Event
+ * picker. Pure data; the DOM side is `targetPicker` further down.
+ *
+ * A target can be any of:
+ *   preset     one of MCG_GRAPH.goalEvents (the practicals / comps)
+ *   MCG event  anything else in the MCG — on the board or not
+ *   board-only a Big Board row the MCG doesn't know (BB-only code,
+ *              or an uncoded row keyed by its title — see
+ *              parse.indexPayload). No prereq chain exists for
+ *              these; the view is the event's own roster.
+ *
+ * Pins and recents are per-browser (localStorage), keyed by code.
+ * -------------------------------------------------------- */
+const targets = (() => {
+  const PIN_KEY = 'bbcs::pinnedTargets';
+  const RECENT_KEY = 'bbcs::recentTargets';
+  const LAST_KEY = 'bbcs::lastTarget';
+  const RECENT_MAX = 6;
+
+  function readList(key) {
+    try { const v = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(v) ? v : []; }
+    catch (_) { return []; }
+  }
+  function writeList(key, list) {
+    try { localStorage.setItem(key, JSON.stringify(list)); } catch (_) {}
+  }
+
+  function entry(code, name, extra) {
+    return Object.assign({
+      code, name,
+      // "TF 7503F", "tf7503f" and "TF-7503F" should all find the same event
+      compact: code.toUpperCase().replace(/[\s\-]/g, ''),
+      nameLower: name.toLowerCase(),
+      hay: (code + ' ' + name + ' ' + ((extra && extra.boardTitle) || '')).toLowerCase(),
+    }, extra);
+  }
+
+  function buildCatalog(payload) {
+    const presets = new Set(MCG_GRAPH.goalEvents || []);
+    const byCode = (payload && payload.byCode) || {};
+    const out = [];
+    for (const [code, ev] of Object.entries(MCG_GRAPH.events || {})) {
+      const row = byCode[code];
+      out.push(entry(code, ev.eventName || (row && row.title) || '', {
+        preset: presets.has(code), inMcg: true, onBoard: !!row, uncoded: false,
+        typeName: ev.eventTypeName || null, boardTitle: row ? row.title : '',
+      }));
+    }
+    for (const [code, row] of Object.entries(byCode)) {
+      if (MCG_GRAPH.events[code]) continue;
+      out.push(entry(code, row.title || code, {
+        preset: false, inMcg: false, onBoard: true, uncoded: !!row.uncoded, row: row.row, typeName: null,
+      }));
+    }
+    return out;
+  }
+
+  // Rank: exact code > code prefix > code fragment > every word found in
+  // the name. On-board events edge out off-board ones at equal rank.
+  function search(catalog, q) {
+    const raw = String(q || '').trim();
+    if (!raw) return [];
+    const compact = raw.toUpperCase().replace(/[\s\-]/g, '');
+    const words = raw.toLowerCase().split(/\s+/).filter(Boolean);
+    const scored = [];
+    for (const t of catalog) {
+      let score = 0;
+      if (!t.uncoded && compact) {
+        if (t.compact === compact) score = 100;
+        else if (t.compact.startsWith(compact)) score = 80;
+        else if (compact.length >= 2 && t.compact.includes(compact)) score = 60;
+      }
+      if (!score && words.every(w => t.hay.includes(w))) {
+        score = 40;
+        // every word in the MCG name itself (not just the code / board title)
+        if (words.every(w => t.nameLower.includes(w))) score += 4;
+        if (t.nameLower.startsWith(words[0])) score += 4;
+      }
+      if (!score) continue;
+      if (t.onBoard) score += 3;
+      if (t.preset) score += 1;
+      scored.push([score, t]);
+    }
+    scored.sort((a, b) => b[0] - a[0] || a[1].code.localeCompare(b[1].code));
+    return scored.map(s => s[1]);
+  }
+
+  function pinned() { return readList(PIN_KEY); }
+  function isPinned(code) { return pinned().indexOf(code) !== -1; }
+  function togglePin(code) {
+    const list = pinned();
+    const i = list.indexOf(code);
+    if (i === -1) list.push(code); else list.splice(i, 1);
+    writeList(PIN_KEY, list);
+    return i === -1;
+  }
+  function recents() { return readList(RECENT_KEY); }
+  function noteUsed(code) {
+    writeList(RECENT_KEY, [code].concat(recents().filter(c => c !== code)).slice(0, RECENT_MAX));
+  }
+  function lastTarget() {
+    try { return localStorage.getItem(LAST_KEY) || null; } catch (_) { return null; }
+  }
+  function saveLast(code) {
+    try { localStorage.setItem(LAST_KEY, code); } catch (_) {}
+  }
+
+  return { buildCatalog, search, pinned, isPinned, togglePin, recents, noteUsed, lastTarget, saveLast };
 })();
 
 /* --------------------------------------------------------
@@ -1719,6 +2127,7 @@ const render = (() => {
   let _lastVisibleCodes = null;
   let _lastNodeByCode = null;
   let _focusedCode = null;  // v0.5.1: click-to-focus state
+  let _revealGoal = false;  // v0.6.0: scroll the target into view after the next layout
 
   // Goal-scope filter: students who SHOULD do the goal event.
   //   v0.5.1: MCG applicability is the authority. Board dark-grey is an
@@ -1854,6 +2263,7 @@ const render = (() => {
     const queue = [{ code: goalCode, depth: 0 }];
     const seen = new Set();
     let maxDepth = 0;
+    const inferBlocks = getAppSettings().inferBlockSequence;
 
     while (queue.length) {
       const { code, depth } = queue.shift();
@@ -1875,6 +2285,17 @@ const render = (() => {
       const direct = [];
       for (const p of rawPrereqs) {
         if (!p || !p.code) continue;
+        // v0.6.0 implied block sequence (see dagFilter.impliedBlockPredecessor):
+        // this prereq belongs to an earlier member of the event's own block,
+        // so hang the event off that member instead of off the prereq.
+        const sibling = inferBlocks && edgePassesForViewer(event, p, viewerType, viewerDG)
+          ? dagFilter.impliedBlockPredecessor(event, p, viewerType, viewerDG, MCG_GRAPH.events)
+          : null;
+        if (sibling) {
+          addEdge(sibling, code, { implied: true });
+          if (!seen.has(sibling)) queue.push({ code: sibling, depth: depth + 1 });
+          continue;
+        }
         if (p.group && p.group.id) {
           (byGroup[p.group.id] = byGroup[p.group.id] || []).push(p);
         } else {
@@ -1925,26 +2346,50 @@ const render = (() => {
     // Self-target is a tautology (common extraction artifact) → keep.
     // Non-code targets (sentinels like "all", "P", descriptive phrases)
     // → keep as unconditional (KB open question; conservative behavior).
-    function dropForDownstream() {
-      const reachNodes = new Set(Object.keys(nodesByCode));
-      const removedKeys = new Set();
-      for (const e of edges) {
-        const c = e.condition;
-        if (!c || c.type !== 'forDownstream' || !c.target) continue;
-        const target = c.target;
-        if (target === e.to) continue;                  // tautology — keep
-        if (!/^[A-Z]{2} \d{4}[A-Z]?$/.test(target)) continue;  // sentinel — keep
-        if (!reachNodes.has(target)) removedKeys.add(e.from + '→' + e.to);
+    //
+    // v0.6.0: "reach" is now the set of events that still lead to the goal,
+    // not every event the walk touched, and whatever falls out of that set
+    // is removed. Dropping an edge used to leave its whole upstream subtree
+    // in the DAG with no path to the goal — drawn as a second, unrelated
+    // graph beside the target (SY 7503F: 55 of 56 nodes) — and those
+    // stranded nodes also kept other conditional edges alive.
+    function leadsToGoal() {
+      const preds = {};
+      for (const e of edges) (preds[e.to] = preds[e.to] || []).push(e.from);
+      const reach = new Set([goalCode]);
+      const todo = [goalCode];
+      while (todo.length) {
+        for (const from of preds[todo.pop()] || []) {
+          if (!reach.has(from)) { reach.add(from); todo.push(from); }
+        }
       }
-      if (!removedKeys.size) return false;
-      for (let i = edges.length - 1; i >= 0; i--) {
-        if (removedKeys.has(edges[i].from + '→' + edges[i].to)) edges.splice(i, 1);
-      }
-      return true;
+      return reach;
     }
-    // Iterate until stable (target may have been reached through a dropped edge).
-    let guard = 8;
-    while (dropForDownstream() && guard-- > 0) { /* re-evaluate */ }
+    function failsForDownstream(e, reach) {
+      const c = e.condition;
+      if (!c || c.type !== 'forDownstream' || !c.target) return false;
+      if (c.target === e.to) return false;                           // tautology — keep
+      if (!/^[A-Z]{2} \d{4}[A-Z]?$/.test(c.target)) return false;    // sentinel — keep
+      return !reach.has(c.target);
+    }
+    // Iterate until stable (a target may only have been reached through an
+    // edge that just got dropped).
+    let reach = leadsToGoal();
+    for (let guard = 16; guard > 0; guard--) {
+      let changed = false;
+      for (let i = edges.length - 1; i >= 0; i--) {
+        const e = edges[i];
+        if (!reach.has(e.from) || !reach.has(e.to) || failsForDownstream(e, reach)) {
+          edges.splice(i, 1);
+          changed = true;
+        }
+      }
+      if (!changed) break;
+      reach = leadsToGoal();
+    }
+    for (const c of Object.keys(nodesByCode)) {
+      if (!reach.has(c)) delete nodesByCode[c];
+    }
 
     return { nodesByCode, edges, maxDepth };
   }
@@ -1973,10 +2418,14 @@ const render = (() => {
     const onBoard = !!payload.byCode[code];
     const eventType = mcg && mcg.eventType;
 
-    // Known type the user has hidden → always bridge through.
-    if (eventType && !tracked.has(eventType)) return 'collapse';
+    // A type the user has switched off in Settings → always bridge through.
+    // v0.6.0: only those. This used to bridge every type outside the
+    // "board normally tracks it" list too, which hid CF 6130A (an academic
+    // event that DOES have a board row) from every chain while the chain
+    // walker still counted it as an unmet prerequisite.
+    if (eventType && BB_TRACKED_TYPES_ALL.has(eventType) && !tracked.has(eventType)) return 'collapse';
 
-    // On board AND type is visible → on-board.
+    // On board → shown, whatever its type: the board tracks it.
     if (onBoard) return 'on-board';
 
     // Not on board; type is tracked → missing warning (if user wants those).
@@ -1991,17 +2440,17 @@ const render = (() => {
   }
 
   function collapseOffBoard(dag, payload, goalCode) {
-    let changed = true;
-    let guard = 64;
-    while (changed && guard-- > 0) {
-      changed = false;
-      // Only collapse nodes whose classification is 'collapse'. Keep 'missing'
-      // (tracked type, no BB row) visible so the user sees the gap.
-      const collapseCodes = Object.keys(dag.nodesByCode).filter(c =>
-        classifyNode(c, payload, goalCode) === 'collapse'
-      );
-      if (!collapseCodes.length) break;
-      const code = collapseCodes[0];
+    // Only collapse nodes whose classification is 'collapse'. Keep 'missing'
+    // (tracked type, no BB row) visible so the user sees the gap.
+    // v0.6.0: classify once and collapse every such node. This loop used to
+    // re-classify the whole DAG per pass and stop after 64 passes, which
+    // left dozens of lectures/exams in the comprehensive-exam DAGs
+    // (TF 9102E, TF 9111E) as if they were board events — the class view
+    // then threw on the first one because there is no board row to read.
+    const klass = {};
+    for (const c of Object.keys(dag.nodesByCode)) klass[c] = classifyNode(c, payload, goalCode);
+    for (const code of Object.keys(klass)) {
+      if (klass[code] !== 'collapse') continue;
       const ins = dag.edges.filter(e => e.to === code);
       const outs = dag.edges.filter(e => e.from === code);
       const newEdges = [];
@@ -2013,26 +2462,26 @@ const render = (() => {
           const key = inE.from + '→' + outE.to;
           if (seenNew.has(key)) continue;
           seenNew.add(key);
-          newEdges.push({ from: inE.from, to: outE.to, bridge, condition: null });
+          // v0.6.0: a bridge that crosses an implied (block-sequence) link stays implied
+          newEdges.push({ from: inE.from, to: outE.to, bridge, condition: null, implied: !!(inE.implied || outE.implied) });
         }
       }
       dag.edges = dag.edges.filter(e => e.from !== code && e.to !== code);
       for (const ne of newEdges) {
         const existing = dag.edges.find(e => e.from === ne.from && e.to === ne.to);
         if (!existing) dag.edges.push(ne);
-        else if ((existing.bridge || []).length > ne.bridge.length) existing.bridge = ne.bridge;
+        else {
+          if ((existing.bridge || []).length > ne.bridge.length) existing.bridge = ne.bridge;
+          if (!ne.implied) existing.implied = false;   // an MCG-stated path wins over an implied one
+        }
       }
       delete dag.nodesByCode[code];
-      changed = true;
     }
 
     // Tag any remaining off-board (i.e. 'missing') nodes so renderers can
     // pick up the flag without re-classifying.
     for (const c of Object.keys(dag.nodesByCode)) {
-      const klass = classifyNode(c, payload, goalCode);
-      if (klass === 'missing') {
-        dag.nodesByCode[c].isMissing = true;
-      }
+      if (klass[c] === 'missing') dag.nodesByCode[c].isMissing = true;
     }
 
     // Refresh maxDepth after structure changes.
@@ -2089,8 +2538,11 @@ const render = (() => {
         const k = e.from + '→' + e.to;
         if (!edgeMap[k]) {
           edgeMap[k] = Object.assign({}, e, { bridge: (e.bridge || []).slice() });
-        } else if ((edgeMap[k].bridge || []).length > (e.bridge || []).length) {
-          edgeMap[k].bridge = (e.bridge || []).slice();
+        } else {
+          if ((edgeMap[k].bridge || []).length > (e.bridge || []).length) {
+            edgeMap[k].bridge = (e.bridge || []).slice();
+          }
+          if (!e.implied) edgeMap[k].implied = false;   // MCG-stated for any student → draw it solid
         }
       }
       if (dag.maxDepth > maxDepth) maxDepth = dag.maxDepth;
@@ -2231,6 +2683,37 @@ const render = (() => {
   }
 
   // ------------------------------------------------------------
+  // v0.6.0: shared header pieces + the off-board target node.
+  // ------------------------------------------------------------
+  // Code line of a node header. Uncoded board rows are keyed by their
+  // title, so show "BOARD ROW n" there instead of the title twice. The
+  // target gets a TARGET tag.
+  function headCodeLine(code, boardEvent, isGoal) {
+    const label = (boardEvent && boardEvent.uncoded) ? 'BOARD ROW ' + boardEvent.row : code;
+    const line = el('div', { class: 'node-head-code' }, label);
+    if (isGoal) line.appendChild(el('span', { class: 'node-target-tag' }, 'TARGET'));
+    return line;
+  }
+
+  // Target that exists in the MCG but has no Big Board row (a report, a
+  // lecture, an STC-board event…). There's nothing to aggregate, but the
+  // board-visible chain leading to it is still worth drawing.
+  function renderNodeOffBoardGoal(code, mcgEvent) {
+    const mcg = mcgEvent || {};
+    const node = el('div', { class: 'node goal offboard-goal', 'data-code': code });
+    node.appendChild(el('div', { class: 'node-head' }, [
+      headCodeLine(code, null, true),
+      el('div', { class: 'node-head-title' }, mcg.eventName || '(no MCG name)'),
+    ]));
+    const apps = (mcg.applicabilityDetail && mcg.applicabilityDetail.standardMapping) || mcg.applicability || [];
+    node.appendChild(el('div', { class: 'node-offboard-note' },
+      'Not tracked on this Big Board' + (mcg.eventTypeName ? ` (${mcg.eventTypeName})` : '') +
+      ' — the chain shows the board events that lead to it.' +
+      (apps.length ? ' Applies to: ' + apps.join(', ') + '.' : '')));
+    return node;
+  }
+
+  // ------------------------------------------------------------
   // Node renderer: class view
   // ------------------------------------------------------------
   // scopeStudents = goal-applicability-filtered student list. Aggregation
@@ -2239,16 +2722,21 @@ const render = (() => {
   function renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal) {
     const boardEvent = payload.byCode[code];
     const mcgEvent = MCG_GRAPH.events[code];
+    // v0.6.0: a custom target can be an MCG event with no board row.
+    if (!boardEvent) return renderNodeOffBoardGoal(code, mcgEvent);
     // aggregateEvent uses the (students) argument to decide applicable set
     const perStudent = statusModule.computeEventStatus(boardEvent, scopeStudents, payload.classMeta);
     const agg = statusModule.aggregateEvent(boardEvent, mcgEvent, perStudent, scopeStudents);
 
-    const band = isGoal ? 'goal' : bandForPct(agg.pctComplete, agg.applicable);
+    // v0.6.0: the target is banded, toggled and rostered like any other
+    // node. It used to stop at "TARGET · N applicable", so the one event
+    // the whole view is about was the only one whose status you couldn't
+    // read — and a board-only target (no prereq chain) showed nothing.
+    const band = bandForPct(agg.pctComplete, agg.applicable);
     // v0.5.2: render every MCG-applicable student. Students whose board cell
     // is dark-grey ("excused") are shown but flagged as a mismatch — see
     // KB §0 for source-of-truth ordering.
     const rosterStudents = scopeStudents.filter(s => perStudent[s.col].mcgApplicable);
-    const applicableStudents = scopeStudents.filter(s => perStudent[s.col].applicable);
 
     const crew = rosterStudents.filter(s => roleBucket(s.type) === 'crew');
     const pilots = rosterStudents.filter(s => roleBucket(s.type) === 'pilot');
@@ -2256,40 +2744,30 @@ const render = (() => {
 
     const isExpanded = expanded.has(code);
     const node = el('div', {
-      class: 'node' + (isGoal ? ' goal' : ' ' + band) + (isExpanded ? '' : ' collapsed'),
+      class: 'node ' + (isGoal ? 'goal ' : '') + band + (isExpanded ? '' : ' collapsed'),
       'data-code': code,
     });
 
     // Header with toggle
     const head = el('div', { class: 'node-head' }, [
-      el('div', { class: 'node-head-code' }, code),
+      headCodeLine(code, boardEvent, isGoal),
       el('div', { class: 'node-head-title' }, (mcgEvent && mcgEvent.eventName) || boardEvent.title),
     ]);
-    if (!isGoal) {
-      const toggle = el('button', {
-        class: 'node-toggle',
-        title: isExpanded ? 'Collapse' : 'Expand',
-        onClick: (e) => {
-          e.stopPropagation();
-          if (expanded.has(code)) expanded.delete(code);
-          else expanded.add(code);
-          node.classList.toggle('collapsed');
-          toggle.textContent = expanded.has(code) ? '−' : '+';
-          toggle.title = expanded.has(code) ? 'Collapse' : 'Expand';
-          redrawArrowsSoon();
-        },
-      }, isExpanded ? '−' : '+');
-      head.appendChild(toggle);
-    }
+    const toggle = el('button', {
+      class: 'node-toggle',
+      title: isExpanded ? 'Collapse' : 'Expand',
+      onClick: (e) => {
+        e.stopPropagation();
+        if (expanded.has(code)) expanded.delete(code);
+        else expanded.add(code);
+        node.classList.toggle('collapsed');
+        toggle.textContent = expanded.has(code) ? '−' : '+';
+        toggle.title = expanded.has(code) ? 'Collapse' : 'Expand';
+        redrawArrowsSoon();
+      },
+    }, isExpanded ? '−' : '+');
+    head.appendChild(toggle);
     node.appendChild(head);
-
-    if (isGoal) {
-      node.appendChild(el('div', { class: 'node-progress' }, [
-        el('div', { class: 'node-pct', style: 'font-size:12px;font-weight:600;color:#777' },
-          `TARGET · ${applicableStudents.length} applicable`),
-      ]));
-      return node;
-    }
 
     // Progress bar
     node.appendChild(el('div', { class: 'node-progress' }, [
@@ -2401,18 +2879,33 @@ const render = (() => {
     return null;
   }
 
-  // v0.5.2 (paired events): two students paired on the same event share a
-  // bgHex on the board. Look up the partner so the roster can show "& <name>"
-  // instead of the unhelpful "paired (partner incomplete)" tooltip.
-  function findPairedPartner(ps, perStudent) {
-    if (!ps || !ps.cell || ps.cell.rgbFamily !== 'paired' || !ps.cell.bgHex) return null;
-    const myHex = ps.cell.bgHex.toUpperCase();
-    for (const other of Object.values(perStudent)) {
-      if (!other || other === ps || !other.cell) continue;
-      if (other.cell.rgbFamily !== 'paired') continue;
-      if ((other.cell.bgHex || '').toUpperCase() === myHex) return other;
+  // v0.5.2 (paired events): students working an event together share a
+  // bgHex on the board. Look them up so the roster can name them instead of
+  // the unhelpful "paired (partner incomplete)" tooltip.
+  // v0.6.0: a color marks a GROUP, not only a pair — data-group events put
+  // 3–8 students on one color, and the old lookup returned whichever one it
+  // met first. Returns the names of everyone else on this row sharing the
+  // student's color, searched across the whole roster (a mate can sit
+  // outside the target's scope).
+  function findGroupMates(boardEvent, payload, studentCol) {
+    if (!boardEvent || !boardEvent.cells) return [];
+    const mine = boardEvent.cells.find(c => c.col === studentCol);
+    if (!mine || mine.rgbFamily !== 'paired' || !mine.bgHex) return [];
+    const myHex = mine.bgHex.toUpperCase();
+    const mates = [];
+    for (const c of boardEvent.cells) {
+      if (c.col === studentCol || c.rgbFamily !== 'paired') continue;
+      if ((c.bgHex || '').toUpperCase() !== myHex) continue;
+      const s = payload.students.find(x => x.col === c.col);
+      if (s) mates.push(s.name);
     }
-    return null;
+    return mates;
+  }
+  function groupSuffix(mates) {
+    if (!mates.length) return ' (paired)';
+    if (mates.length === 1) return ` (paired w/ ${mates[0]})`;
+    if (mates.length === 2) return ` (group w/ ${mates.join(', ')})`;
+    return ` (group of ${mates.length + 1})`;
   }
 
   function renderRoleCol(label, students, perStudent, isSingle, optedByCol, code, payload) {
@@ -2427,15 +2920,14 @@ const render = (() => {
       const isScheduled = ps.completion === 'scheduled';
       const isPaired = ps.completion === 'paired-opted';
       const isExcused = !!ps.excused;
-      const partner = isPaired ? findPairedPartner(ps, perStudent) : null;
+      const mates = isPaired ? findGroupMates(payload && payload.byCode[code], payload, s.col) : [];
 
       // v0.5.2 (paired events): paired-opted is a real status — the student
       // has been scheduled with a partner. Show it like SCHEDULED if there's
       // a date, otherwise like OPTED, with a partner suffix appended to the
       // name. Replaces the misleading "paired (partner incomplete)" copy.
-      const pairedSuffix = isPaired
-        ? (partner ? ` (paired w/ ${partner.name})` : ' (paired)')
-        : '';
+      const pairedSuffix = isPaired ? groupSuffix(mates) : '';
+      const matesLine = mates.length ? (mates.length === 1 ? 'Paired w/ ' : 'Group: ') + mates.join(', ') : '';
 
       // v0.5.2d: categorize the prereq situation (hard hole vs soft-past
       // awaiting-update vs soft-future already-planned). Used both for
@@ -2499,7 +2991,7 @@ const render = (() => {
           'Earlier prereqs scheduled';
         const lines = [header];
         if (ps.dateText) lines.push(`Sched - ${ps.dateText}`);
-        else if (isPaired && partner) lines.push(`Paired w/ ${partner.name}`);
+        if (matesLine) lines.push(matesLine);
         if (missing.length) {
           lines.push(warnCategory === 'hard' ? 'Missing:' : 'Awaiting:');
           for (const m of missing.slice(0, 12)) {
@@ -2516,6 +3008,8 @@ const render = (() => {
         tooltip = lines.join('\n');
       } else {
         tooltip = `${s.name} — ${stateText}${dateSuffix}`;
+        // the name suffix only says "group of N" past three; list them here
+        if (mates.length > 2) tooltip += '\n' + matesLine;
       }
 
       // v0.5.2d: dot class picks hard vs soft warn variants.
@@ -2564,6 +3058,8 @@ const render = (() => {
   function renderNodeStudent(code, payload, student, isGoal) {
     const boardEvent = payload.byCode[code];
     const mcgEvent = MCG_GRAPH.events[code];
+    // v0.6.0: a custom target can be an MCG event with no board row.
+    if (!boardEvent) return renderNodeOffBoardGoal(code, mcgEvent);
     const info = computeNodeForStudent(code, payload, student);
     const isPaired = info.completion === 'paired-opted';
     // v0.5.2d: categorize the prereq-not-met situation so we can pick a
@@ -2571,8 +3067,10 @@ const render = (() => {
     // there's an actual gap). Avoids the over-aggressive WARN that fired
     // on, e.g., Morrison sched 5/4 when his 5/1 prereq just hadn't been
     // marked complete yet.
+    // v0.6.0: the target is evaluated like every other node — its chip now
+    // says where this student stands on it (was a bare "TARGET · name").
     let warnCategory = null;
-    if (!isGoal && info.applicable && !info.isComplete && !info.opted) {
+    if (info.applicable && !info.isComplete && !info.opted) {
       warnCategory = categorizeMissing(chain.missingPrereqs(code, payload, student));
     }
     const isHardWarn = warnCategory === 'hard';
@@ -2580,8 +3078,8 @@ const render = (() => {
     // flag='past-date-unchecked'. Visual stays SCHEDULED yellow; label
     // gains "· VERIFY" so the user knows to check completion.
     const isPastSched = info.flag === 'past-date-unchecked';
-    let band = 'goal', label = 'TARGET';
-    if (!isGoal) {
+    let band = 's-notopted', label = 'NOT OPTED';
+    if (info.applicable) {
       if (info.isComplete) { band = 's-done'; label = 'DONE'; }
       else if (info.completion === 'scheduled' && info.opted) { band = 's-scheduled'; label = isPastSched ? 'SCHEDULED · VERIFY' : 'SCHEDULED'; }
       else if (info.completion === 'scheduled' && isHardWarn) { band = 's-warn'; label = '⚠ SCHEDULED · NOT OPTED'; }
@@ -2601,57 +3099,57 @@ const render = (() => {
       else { band = 's-notopted'; label = 'NOT OPTED'; }
     }
     const node = el('div', {
-      class: 'node' + (isGoal ? ' goal' : ' ' + band),
+      class: 'node ' + (isGoal ? 'goal ' : '') + band,
       'data-code': code,
     });
     node.appendChild(el('div', { class: 'node-head' }, [
-      el('div', { class: 'node-head-code' }, code),
+      headCodeLine(code, boardEvent, isGoal),
       el('div', { class: 'node-head-title' }, (mcgEvent && mcgEvent.eventName) || boardEvent.title),
     ]));
-    if (isGoal) {
-      node.appendChild(el('div', { class: 'node-student-chip' },
-        el('span', { class: 'chip-pill' }, `TARGET · ${student.name}`)));
-    } else {
-      // Chip + optional date sub-line. If there's a date on the cell, show it
-      // even when the primary state is OPTED or NOT OPTED — per user feedback
-      // "should also show 'Scheduled 4/14' in addition to Opted".
-      const chipWrap = el('div', { class: 'node-student-chip' });
-      chipWrap.appendChild(el('span', { class: 'chip-pill' }, label));
-      if (info.dateText && !info.isComplete) {
-        chipWrap.appendChild(el('div', {
-          class: 'node-date',
-          title: 'Date recorded on the big board for this student',
-        }, info.dateText));
-      }
-      node.appendChild(chipWrap);
+    // Chip + optional date sub-line. If there's a date on the cell, show it
+    // even when the primary state is OPTED or NOT OPTED — per user feedback
+    // "should also show 'Scheduled 4/14' in addition to Opted".
+    const chipWrap = el('div', { class: 'node-student-chip' });
+    chipWrap.appendChild(el('span', { class: 'chip-pill' }, label));
+    if (info.dateText && !info.isComplete) {
+      chipWrap.appendChild(el('div', {
+        class: 'node-date',
+        title: 'Date recorded on the big board for this student',
+      }, info.dateText));
+    }
+    // v0.6.0: name who the student is grouped with (shared cell color).
+    if (isPaired) {
+      const mates = findGroupMates(boardEvent, payload, student.col);
+      if (mates.length) chipWrap.appendChild(el('div', { class: 'node-date' }, 'w/ ' + mates.join(', ')));
+    }
+    node.appendChild(chipWrap);
 
-      // v0.5.1: when prereqs aren't satisfied, surface which ones — helps
-      // the user understand why the chip says what it says.
-      // v0.5.2d: now also fires for the soft bands (s-soft) and labels
-      // each missing prereq with its sched date when present so the user
-      // can see "scheduled 5/1, just check the board" at a glance.
-      if ((band === 's-notopted' || band === 's-warn' || band === 's-soft') && !info.isComplete) {
-        const missing = chain.missingPrereqs(code, payload, student);
-        if (missing.length) {
-          const list = el('div', { class: 'node-missing' });
-          const labelText =
-            band === 's-warn' ? `Missing prereq${missing.length > 1 ? 's' : ''} (${missing.length}):` :
-            band === 's-soft' ? (warnCategory === 'soft-past' ? 'Awaiting board update on:' : 'Earlier scheduled:') :
-            `Missing prereq${missing.length > 1 ? 's' : ''} (${missing.length}):`;
-          list.appendChild(el('div', { class: 'node-missing-label' }, labelText));
-          const ul = el('ul');
-          for (const m of missing.slice(0, 8)) {
-            // v0.5.2e: past-dated → 'scheduled' + flag='past-date-unchecked'.
-            let detail = '';
-            if (m.status === 'scheduled' && m.flag === 'past-date-unchecked' && m.dateText) detail = ` (sched ${m.dateText} — verify)`;
-            else if (m.status === 'scheduled' && m.dateText) detail = ` (sched ${m.dateText})`;
-            else if (m.status === 'scheduled') detail = ' (scheduled)';
-            ul.appendChild(el('li', { title: m.title || m.code }, m.code + detail));
-          }
-          if (missing.length > 8) ul.appendChild(el('li', { class: 'more' }, '+ ' + (missing.length - 8) + ' more'));
-          list.appendChild(ul);
-          node.appendChild(list);
+    // v0.5.1: when prereqs aren't satisfied, surface which ones — helps
+    // the user understand why the chip says what it says.
+    // v0.5.2d: now also fires for the soft bands (s-soft) and labels
+    // each missing prereq with its sched date when present so the user
+    // can see "scheduled 5/1, just check the board" at a glance.
+    if ((band === 's-notopted' || band === 's-warn' || band === 's-soft') && !info.isComplete) {
+      const missing = chain.missingPrereqs(code, payload, student);
+      if (missing.length) {
+        const list = el('div', { class: 'node-missing' });
+        const labelText =
+          band === 's-warn' ? `Missing prereq${missing.length > 1 ? 's' : ''} (${missing.length}):` :
+          band === 's-soft' ? (warnCategory === 'soft-past' ? 'Awaiting board update on:' : 'Earlier scheduled:') :
+          `Missing prereq${missing.length > 1 ? 's' : ''} (${missing.length}):`;
+        list.appendChild(el('div', { class: 'node-missing-label' }, labelText));
+        const ul = el('ul');
+        for (const m of missing.slice(0, 8)) {
+          // v0.5.2e: past-dated → 'scheduled' + flag='past-date-unchecked'.
+          let detail = '';
+          if (m.status === 'scheduled' && m.flag === 'past-date-unchecked' && m.dateText) detail = ` (sched ${m.dateText} — verify)`;
+          else if (m.status === 'scheduled' && m.dateText) detail = ` (sched ${m.dateText})`;
+          else if (m.status === 'scheduled') detail = ' (scheduled)';
+          ul.appendChild(el('li', { title: m.title || m.code }, m.code + detail));
         }
+        if (missing.length > 8) ul.appendChild(el('li', { class: 'more' }, '+ ' + (missing.length - 8) + ' more'));
+        list.appendChild(ul);
+        node.appendChild(list);
       }
     }
     return node;
@@ -2813,12 +3311,16 @@ const render = (() => {
       $('#goal-summary').style.display = 'none';
       return;
     }
-    if (!payload.byCode[goalCode]) {
+    // v0.6.0: any event can be the target. An MCG event with no board row
+    // still gets its chain drawn (it used to be refused outright); only a
+    // code that is on neither the board nor in the MCG has nothing to show
+    // — typically a board-only target carried over to a different tab.
+    const mcgGoal = MCG_GRAPH.events[goalCode];
+    const goalEvt = payload.byCode[goalCode];
+    if (!goalEvt && !mcgGoal) {
       main.appendChild(el('div', { class: 'dag-empty' }, [
-        el('h2', null, `${goalCode} is not on this board.`),
-        el('p', null, goalCode === 'SY 7521O'
-          ? 'Try a STC tab in the Board picker above — SY 7521O lives on the STC board.'
-          : 'This goal event exists in the MCG but isn\'t on the currently loaded tab.'),
+        el('h2', null, `"${goalCode}" is not on this board.`),
+        el('p', null, 'It isn\'t in the MCG either, so there is no chain to draw. Pick another target, or load the board tab it lives on.'),
       ]));
       $('#goal-summary').style.display = 'none';
       return;
@@ -2827,24 +3329,32 @@ const render = (() => {
     // v0.3.2: Student view — if the selected student isn't applicable to
     // the chosen goal, don't render a DAG at all. Show an explicit Not
     // Applicable screen per issue feedback.
+    // v0.6.0: also when the MCG excludes the student's type/DG. Only the
+    // dark-grey cell was checked, so an un-greyed cell produced a lone
+    // target node with no explanation.
     if (mode === 'student' && student) {
-      const goalEvt = payload.byCode[goalCode];
       const goalCell = goalEvt && goalEvt.cells.find(c => c.col === student.col);
       const notRequired = goalCell && goalCell.rgbFamily === 'darkGrey';
-      if (notRequired) {
-        const mcg = MCG_GRAPH.events[goalCode] || {};
+      const mcgExcludes = !statusModule.isStudentApplicablePerMcg(mcgGoal, student);
+      if (notRequired || mcgExcludes) {
+        const name = (mcgGoal && mcgGoal.eventName) || (goalEvt && goalEvt.title) || '';
+        const apps = (mcgGoal && mcgGoal.applicability) || [];
         main.appendChild(el('div', { class: 'dag-empty' }, [
           el('h2', null, 'Not Applicable'),
-          el('p', null, `${goalCode} (${mcg.eventName || ''}) is not required for ${student.name}.`),
-          el('p', null, `${student.name} (${student.type}) has a dark-grey cell — the scheduler does not require this event.`),
+          el('p', null, `${goalEvt && goalEvt.uncoded ? '' : goalCode + ' '}(${name}) is not required for ${student.name}.`),
+          el('p', null, mcgExcludes
+            ? `The MCG lists this event for ${apps.join(', ') || '—'}; ${student.name} is ${student.type}${student.dataGroup ? ' / ' + student.dataGroup : ''}.`
+            : `${student.name} (${student.type}) has a dark-grey cell — the scheduler does not require this event.`),
           el('p', { style: 'margin-top:10px;font-size:12px;color:var(--ink-faint)' },
-            'Pick a different goal or switch to Class view.'),
+            'Pick a different target or switch to Class view.'),
         ]));
         $('#goal-summary').style.display = 'none';
         return;
       }
     }
 
+    // The target starts expanded so its roster is the first thing read.
+    if (_lastGoalCode !== goalCode) expanded.add(goalCode);
     _lastGoalCode = goalCode;
     const scopeStudents = goalScopeStudents(payload, goalCode);
 
@@ -2854,7 +3364,6 @@ const render = (() => {
     const dag = buildDag(goalCode, payload, { mode, student });
     const layout = layoutDag(dag, payload, { mode, student, scopeStudents });
 
-    const mcgGoal = MCG_GRAPH.events[goalCode];
     const dagreAvailable = typeof dagre !== 'undefined';
     const canvas = el('div', {
       class: 'dag-canvas' + (dagreAvailable ? '' : ' fallback'),
@@ -2868,20 +3377,18 @@ const render = (() => {
     // Build all node DOM elements first — we need them in the DOM to measure
     // their size before running dagre. Nodes are rendered invisible until
     // layout completes so we don't flash the pre-layout positions.
-    const nodeByCode = {};
-    for (const code of visibleCodes) {
+    const makeNode = (code) => {
       const isGoal = code === goalCode;
       const meta = dag.nodesByCode[code];
-      let node;
-      if (meta && meta.isGroup) {
-        node = renderNodeGroup(code, meta, payload, student, mode);
-      } else if (meta && meta.isMissing) {
-        node = renderNodeMissing(code, meta, payload);
-      } else {
-        node = mode === 'student'
-          ? renderNodeStudent(code, payload, student, isGoal)
-          : renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal);
-      }
+      if (meta && meta.isGroup) return renderNodeGroup(code, meta, payload, student, mode);
+      if (meta && meta.isMissing) return renderNodeMissing(code, meta, payload);
+      return mode === 'student'
+        ? renderNodeStudent(code, payload, student, isGoal)
+        : renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal);
+    };
+    const nodeByCode = {};
+    for (const code of visibleCodes) {
+      const node = makeNode(code);
       if (dagreAvailable) {
         node.style.visibility = 'hidden';
         node.style.left = '0px';
@@ -2908,6 +3415,7 @@ const render = (() => {
     _lastStudent = student;
     _lastVisibleCodes = visibleCodes;
     _lastNodeByCode = nodeByCode;
+    _revealGoal = true;
 
     if (dagreAvailable) {
       // Wait for DOM to compute sizes, then layout.
@@ -2922,13 +3430,7 @@ const render = (() => {
         if (!codes.length) continue;
         const col = el('div', { class: 'dag-col' });
         col.appendChild(el('div', { class: 'dag-col-label' }, d === 0 ? 'GOAL' : `TIER −${d}`));
-        for (const code of codes) {
-          const isGoal = d === 0;
-          const n = mode === 'student'
-            ? renderNodeStudent(code, payload, student, isGoal)
-            : renderNodeClass(code, payload, isGoal, scopeStudents, mcgGoal);
-          col.appendChild(n);
-        }
+        for (const code of codes) col.appendChild(makeNode(code));
         canvasFb.appendChild(col);
       }
       main.appendChild(canvasFb);
@@ -2982,7 +3484,7 @@ const render = (() => {
     const goalCode = _lastGoalCode;
     for (const e of edges) {
       if (g.hasNode(e.from) && g.hasNode(e.to)) {
-        const attrs = { code_from: e.from, code_to: e.to, bridge: e.bridge || [] };
+        const attrs = { code_from: e.from, code_to: e.to, bridge: e.bridge || [], implied: !!e.implied };
         if (settings.goalEdgeWeight > 1 && e.to === goalCode) {
           attrs.weight = settings.goalEdgeWeight;
         }
@@ -3019,15 +3521,28 @@ const render = (() => {
     drawArrowsDagre(canvas, g, _lastPayload, { mode: _lastMode, student: _lastStudent });
     // v0.5.1: re-apply click-to-focus state if any (re-layout wipes the SVG)
     if (_focusedCode) setFocus(_focusedCode);
+    // v0.6.0: a fresh render opens on the target. The chain reads left to
+    // right and the target sits at the far end, off-screen on any chain
+    // wider than the window. Only on a new render — not when a node is
+    // toggled, which would yank the view away from what was just clicked.
+    if (_revealGoal) {
+      _revealGoal = false;
+      const goalEl = nodeByCode[goalCode];
+      const scroller = $('#main');
+      if (goalEl && scroller) {
+        scroller.scrollLeft = Math.max(0, goalEl.offsetLeft + goalEl.offsetWidth - scroller.clientWidth + 40);
+      }
+    }
   }
 
   // Expand/collapse all nodes in the current canvas.
   function setAllExpanded(shouldExpand) {
     if (!_lastCanvas) return;
-    const nodes = _lastCanvas.querySelectorAll('.node:not(.goal)');
+    const nodes = _lastCanvas.querySelectorAll('.node');
     nodes.forEach(n => {
       const code = n.getAttribute('data-code');
-      if (!code) return;
+      // only nodes that can actually toggle (not group / missing / off-board)
+      if (!code || !n.querySelector('.node-toggle')) return;
       if (shouldExpand) {
         expanded.add(code);
         n.classList.remove('collapsed');
@@ -3164,10 +3679,17 @@ const render = (() => {
       path.setAttribute('class', cls);
       path.setAttribute('marker-end', `url(#mk-${cls})`);
       path.setAttribute('data-edge-key', e.v + '→' + e.w);  // v0.5.1: focus targeting
-      // Bridge tooltip — surfaces off-board prereqs traversed on this edge
-      if (edge.bridge && edge.bridge.length) {
+      // Edge tooltip — off-board prereqs traversed on this edge, and/or a
+      // note that the link is an implied block sequence (v0.6.0, dashed).
+      const tips = [];
+      if (edge.implied) {
+        path.classList.add('implied');
+        tips.push('Implied sequence — same MCG block; the MCG lists the prerequisites against the earlier event');
+      }
+      if (edge.bridge && edge.bridge.length) tips.push('via off-board: ' + edge.bridge.join(' → '));
+      if (tips.length) {
         const titleEl = document.createElementNS(svgNS, 'title');
-        titleEl.textContent = 'via off-board: ' + edge.bridge.join(' → ');
+        titleEl.textContent = tips.join('\n');
         path.appendChild(titleEl);
         path.style.pointerEvents = 'stroke';  // so hover works on the line
       }
@@ -3229,23 +3751,29 @@ const render = (() => {
     const wrap = $('#goal-summary');
     wrap.style.display = 'flex';
     wrap.innerHTML = '';
-    const mcg = MCG_GRAPH.events[goalCode] || {};
+    const mcg = MCG_GRAPH.events[goalCode];
+    const boardEvt = payload.byCode[goalCode];
+    const name = (mcg && mcg.eventName) || (boardEvt && boardEvt.title) || '';
     const totalNodes = Object.keys(dag.nodesByCode).length;
-    const visible = layout.tiers.reduce((n, t) => n + t.length, 0);
-    const hidden = totalNodes - visible;
+    const shown = new Set();
+    for (const t of layout.tiers) for (const c of t) shown.add(c);
+    // v0.6.0: name the hidden nodes (events the chain reaches but that
+    // ended up with no drawn connection) instead of only counting them.
+    const hiddenCodes = Object.keys(dag.nodesByCode).filter(c => !shown.has(c));
     const parts = [
-      ['Target', `${goalCode} — ${mcg.eventName || ''}`],
-      ['Applicability', (mcg.applicability || []).join(', ') || 'unrestricted'],
+      ['Target', (boardEvt && boardEvt.uncoded) ? `${name} (board row ${boardEvt.row})` : `${goalCode} — ${name}`],
+      ['Applicability', mcg ? ((mcg.applicability || []).join(', ') || 'unrestricted') : 'not in the MCG — board cells only'],
       ['View', mode === 'student' ? `Student — ${student.name} (${student.type})` : `Class aggregate (${(scopeStudents || payload.students).length} in scope)`],
-      ['Board', payload.sheetName],
-      ['Nodes shown', `${visible} of ${totalNodes}${hidden ? ` (${hidden} hidden)` : ''}`],
+      ['Board', payload.sheetName + (boardEvt ? '' : ' — target not tracked on this board')],
+      ['Nodes shown', `${shown.size} of ${totalNodes}` + (hiddenCodes.length ? ` (hidden: ${hiddenCodes.join(', ')})` : '')],
     ];
+    if (!mcg) parts.push(['Chain', 'none — the MCG has no prerequisites for a board-only event']);
     for (const [k, v] of parts) {
       wrap.appendChild(el('div', null, [el('span', null, k + ': '), el('strong', null, v)]));
     }
   }
 
-  return { renderAll, setAllExpanded, buildDag };
+  return { renderAll, setAllExpanded, buildDag, buildDagForViewer };
 })();
 
 /* --------------------------------------------------------
@@ -3330,6 +3858,7 @@ const APP_SETTINGS_DEFAULTS = Object.freeze({
   showGround: false,            // G-type nodes (ground school — same)
   showMissingFromBB: true,      // render MCG-required-but-missing as warning nodes
   showUntrackedOffBoard: false, // show A/R/Y/Z/W/O as ghost nodes (default: hide/bridge)
+  inferBlockSequence: true,     // v0.6.0: implied order inside an MCG block (KB Rule M, proposed)
   duplicates: {},               // { code: { mode: 'any'|'all'|'one', selected: [rowNumbers] } }
 });
 let _appSettings = null;
@@ -3349,10 +3878,12 @@ function setAppSetting(key, value) {
   getAppSettings();
   _appSettings[key] = value;
   saveAppSettings();
+  chain.resetCache();   // prereq graphs depend on inferBlockSequence
 }
 function resetAppSettings() {
   _appSettings = JSON.parse(JSON.stringify(APP_SETTINGS_DEFAULTS));
   saveAppSettings();
+  chain.resetCache();
 }
 
 // Effective BB-tracked types given user toggles. An event type in this set
@@ -3564,6 +4095,14 @@ function settingsPanel() {
     </div>
 
     <div class="settings-section">
+      <h4>Prerequisite interpretation</h4>
+      <div class="toggle-list">
+        <label><input type="checkbox" data-setting="inferBlockSequence" ${s.inferBlockSequence?'checked':''}> <strong>Infer the order inside an MCG block</strong> <span class="muted">(dashed arrows)</span></label>
+      </div>
+      <p class="small muted" style="margin-top:6px">The MCG describes an exercise as one block (MIB, sim, flight, report) with one prerequisite list, and tags entries "req'd for" a specific member. It never says the report needs its flight, or the exam flight its exam sim. With this on, an event whose prerequisite is tagged for an <em>earlier</em> member of its own block is drawn after that member. Off = literal MCG only; such events then show no chain (e.g. SY 7503F, TF 7503F).</p>
+    </div>
+
+    <div class="settings-section">
       <h4>Big Board duplicates ${duplicates.length ? '<span class="badge-count">' + duplicates.length + '</span>' : ''}</h4>
       <p class="small muted" style="margin-bottom:8px">When the board has 2+ rows with the same event code, tell the app how to use them. Choices persist across reloads.</p>
       ${duplicates.length ? dupBlocks : '<p class="muted small">No duplicates on the loaded board.</p>'}
@@ -3710,6 +4249,7 @@ function mergeDupRowsBestStatus(code, rows, mode) {
     if (c.rgbFamily === 'lightGrey') return 100;
     if (c.rgbFamily === 'paired' && c.strikethrough) return 100;
     if (c.rgbFamily === 'paired') return 60;
+    if (c.rgbFamily === 'white' && c.value && c.strikethrough) return 100;  // v0.6.0: struck date = complete
     if (c.rgbFamily === 'white' && c.value) return 70;  // dated (sched or past-sched)
     if (c.rgbFamily === 'darkGrey') return 10;
     return 0;  // blank pending
@@ -3748,11 +4288,19 @@ function renderValidationSummary(payload, goalCode) {
 
   // BB codes not in MCG (informational — the app won't render them anyway)
   const mcgCodes = (MCG_GRAPH && MCG_GRAPH.events) ? new Set(Object.keys(MCG_GRAPH.events)) : new Set();
-  const bbOnly = Object.keys(payload.byCode || {}).filter(c => !mcgCodes.has(c));
-  out.push(`<div><strong>BB codes not in MCG:</strong> ${bbOnly.length}${bbOnly.length ? ' <span class="muted small">(won\'t appear in any DAG — visible in the debug Events view)</span>' : ''}</div>`);
-  if (bbOnly.length) {
-    out.push('<ul class="small mono">' + bbOnly.map(c => '<li>' + escHtml(c) + '</li>').join('') + '</ul>');
+  // v0.6.0: uncoded rows are indexed too (keyed by title) — count them apart
+  // from rows that carry a code the MCG doesn't know.
+  const notInMcg = Object.keys(payload.byCode || {}).filter(c => !mcgCodes.has(c));
+  const bbOnly = notInMcg.filter(c => !payload.byCode[c].uncoded);
+  const uncoded = notInMcg.filter(c => payload.byCode[c].uncoded);
+  if (payload.layoutNote) {
+    out.push(`<div style="color:#7a4500"><strong>Layout:</strong> ${escHtml(payload.layoutNote)}</div>`);
   }
+  out.push(`<div><strong>BB codes not in MCG:</strong> ${bbOnly.length}${bbOnly.length ? ' <span class="muted small">(no prereq chain — can still be picked as a target)</span>' : ''}</div>`);
+  if (bbOnly.length) {
+    out.push('<ul class="small mono">' + bbOnly.map(c => '<li>' + escHtml(c) + ' — ' + escHtml(payload.byCode[c].title || '') + '</li>').join('') + '</ul>');
+  }
+  out.push(`<div><strong>BB rows with no event code:</strong> ${uncoded.length}${uncoded.length ? ' <span class="muted small">(board-only; find them by name in the Target Event search)</span>' : ''}</div>`);
 
   // MCG-required for current goal but missing from BB
   if (goalCode && render && render.buildDag) {
@@ -3802,45 +4350,62 @@ function legendPanel() {
       <div class="legend-swatch" style="background:#e4f5dc;border-color:#3d8b29"></div><div><strong>Green</strong> — 75%+ complete</div>
       <div class="legend-swatch" style="background:#fff4cc;border-color:#b58700"></div><div><strong>Yellow</strong> — 1–74% complete</div>
       <div class="legend-swatch" style="background:#fdecea;border-color:#c62828"></div><div><strong>Red</strong> — 0% complete / not started</div>
-      <div class="legend-swatch" style="background:#f0f0f0;border-style:dashed;border-color:#999"></div><div><strong>Grey dashed</strong> — the target goal event</div>
     </div>
 
-    <h4>Student dots (inside each node)</h4>
+    <h4>Special nodes</h4>
+    <div class="legend-grid">
+      <div class="legend-swatch" style="background:#fafafa;border-style:dashed;border-color:#999;border-width:2px"></div><div><strong>Dashed border + TARGET tag</strong> — the target event. Colored and rostered like any other node; grey if the target isn't tracked on this board.</div>
+      <div class="legend-swatch" style="background:#ffe6c0;border-style:dashed;border-color:#c97a0f"></div><div><strong>Dashed orange ⚠</strong> — the MCG requires this event but the board has no row for it.</div>
+      <div class="legend-swatch" style="background:#ece0ff;border-style:dashed;border-color:#8a56d6"></div><div><strong>Dashed purple "Any 1 of"</strong> — the MCG accepts any one of the events feeding this box.</div>
+    </div>
+
+    <h4>Student dots (Class view, inside each node)</h4>
     <div class="legend-grid">
       <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#2e7d32;border:1px solid #1c5a24"></span></div><div>Complete</div>
-      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#b88600;border:1px solid #8a6700"></span></div><div>Scheduled (future date)</div>
-      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#fff;border:1.5px solid #c62828"></span></div><div>Pending</div>
-      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#8a56d6;border:1px solid #5a3b8f"></span></div><div>Paired (partner incomplete)</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#b88600;border:1px solid #8a6700"></span></div><div>Scheduled — a date is on the board. "verify" in the tooltip means the date has passed and the cell hasn't been marked complete.</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#8a56d6;border:1px solid #5a3b8f"></span></div><div>Paired / grouped — assigned a color with other students, not yet struck through. The name shows who they're with.</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#fff;border:1.5px solid #c62828"></span></div><div>Pending — nothing on the board yet</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#ff8c00;border:2px solid #c62828"></span></div><div><strong>⚠ Hard warning</strong> — a prerequisite has no date at all. Hover for the list.</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#f5d76e;border:1.5px solid #b58700"></span></div><div>Soft monitor — every missing prerequisite is at least scheduled (verify the past ones).</div>
+      <div style="display:flex;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:repeating-linear-gradient(45deg,#bbb 0,#bbb 2px,#fff 2px,#fff 4px);border:1px solid #888"></span></div><div>Excused on the board (dark-grey) although the MCG says required — check the board.</div>
     </div>
 
     <h4>Node header (Student view)</h4>
     <div class="legend-grid">
       <div class="legend-swatch" style="background:#2e7d32;border-color:#1f5313"></div><div><strong>DONE</strong> — student has completed this event</div>
       <div class="legend-swatch" style="background:#d7e8f5;border-color:#5c8dba"></div><div><strong>OPTED</strong> — prereqs met, student can do this event</div>
-      <div class="legend-swatch" style="background:#fff4cc;border-color:#b58700"></div><div><strong>SCHEDULED</strong> — future date listed on the sheet</div>
-      <div class="legend-swatch" style="background:#fdecea;border-color:#c62828"></div><div><strong>NOT OPTED</strong> — at least one on-board prereq pending</div>
-      <div class="legend-swatch" style="background:#ff8c00;border-color:#c62828"></div><div><strong>⚠ SCHEDULED · NOT OPTED</strong> — planning error: student is on the schedule but prereqs aren't met</div>
+      <div class="legend-swatch" style="background:#fff4cc;border-color:#b58700"></div><div><strong>SCHEDULED</strong> — date on the board ("· VERIFY" once it has passed). <strong>PAIRED ·</strong> prefix when the cell is colored.</div>
+      <div class="legend-swatch" style="background:#fff8d6;border-color:#d4a017"></div><div><strong>… · VERIFY EARLIER / PREREQS PLANNED</strong> — prereqs not marked complete, but all of them are scheduled</div>
+      <div class="legend-swatch" style="background:#fdecea;border-color:#c62828"></div><div><strong>NOT OPTED</strong> — at least one on-board prereq has no plan</div>
+      <div class="legend-swatch" style="background:#ff8c00;border-color:#c62828"></div><div><strong>⚠ SCHEDULED · NOT OPTED</strong> — planning error: student is on the schedule but a prereq has no plan</div>
     </div>
 
     <h4>Arrows</h4>
     <p style="font-size:12px; color:var(--ink-soft)">
       Arrow color matches the <em>source</em> node's status.
       Green flows from complete/advanced nodes; red flows from blocking ones.
+      Hover a line to see off-board events it passes through.
+    </p>
+
+    <h4>Target event</h4>
+    <p style="font-size:12px; color:var(--ink-soft)">
+      Any event can be the target: open <strong>Target Event</strong> (or press <strong>/</strong>) and type part of a code or name.
+      Events that are on the board but not in the MCG have no prerequisite chain — the view is that event's own roster.
+      Pin (★) the ones you come back to. The address bar tracks the target, so a view can be bookmarked.
     </p>
 
     <h4>What's hidden / dimmed</h4>
     <ul>
-      <li><strong>Off-board prereqs</strong> (academic lectures, etc.) never shown.</li>
-      <li><strong>Non-goal-scope students:</strong> a PF 8332F (ABM/FTE/P) view never shows CSO/RPA, even on prereq nodes.</li>
-      <li><strong>Class view:</strong> nodes with zero goal-scope applicable students are hidden.</li>
-      <li><strong>Student view:</strong> nodes not applicable to the selected student are hidden; if the goal itself doesn't apply, a Not Applicable screen is shown.</li>
-      <li><strong>"Not required" cells</strong> (dark-grey on the big board) drop the student from that node's applicable set.</li>
-      <li><strong>Dimmed names:</strong> a student name is greyed when their on-board prereqs for that specific node aren't met yet — still visible, just faded.</li>
+      <li><strong>Off-board prereqs</strong> (lectures, reports, debriefs) are bridged through, not drawn. Settings can also hide MIBs, exams, ground school.</li>
+      <li><strong>Students outside the target's scope:</strong> a PF 8332F (ABM/FTE/P) view never shows CSO/RPA, even on prereq nodes.</li>
+      <li><strong>Student view:</strong> only that student's chain is drawn; if the target doesn't apply to them, a Not Applicable screen is shown.</li>
+      <li><strong>Dimmed names:</strong> on-board prereqs for that node aren't met yet.</li>
+      <li><strong>Click a node</strong> to spotlight it and its direct prerequisites; click again or click empty space to clear.</li>
     </ul>
 
     <h4>Collapsed nodes</h4>
     <p style="font-size:12px; color:var(--ink-soft)">
-      Nodes default to collapsed (just code + status color) to reduce clutter. Click (+) on any node to expand, or use the
+      Nodes default to collapsed (just code + status color) to reduce clutter; the target starts expanded. Click (+) on any node to expand, or use the
       <strong>Expand all</strong> / <strong>Collapse all</strong> buttons in the sub-bar.
     </p>
   `;
@@ -3889,6 +4454,10 @@ function renderDebugStudents() {
 
   // Collect on-board events for column headers — show goal events + let user filter
   const goalEvents = MCG_GRAPH.goalEvents.filter(g => payload.byCode[g]);
+  // v0.6.0: a custom target gets a column too
+  if (state.goalCode && payload.byCode[state.goalCode] && goalEvents.indexOf(state.goalCode) === -1) {
+    goalEvents.push(state.goalCode);
+  }
 
   // Filter
   const filterDiv = el('div', { class: 'debug-filter' });
@@ -4037,13 +4606,13 @@ function renderDebugEvents() {
       const row = el('tr', { style: 'cursor:pointer' });
 
       // Code
-      row.appendChild(el('td', { style: 'font-weight:700' }, code));
+      row.appendChild(el('td', { style: 'font-weight:700' }, evt.uncoded ? '(row ' + evt.row + ')' : code));
 
       // Title
       row.appendChild(el('td', null, title));
 
       // Phase
-      row.appendChild(el('td', null, mcg ? mcg.phase : code.substring(0, 2)));
+      row.appendChild(el('td', null, mcg ? mcg.phase : (evt.uncoded ? '—' : code.substring(0, 2))));
 
       // MCG Applicability
       const apps = mcg ? (mcg.applicability || []) : [];
@@ -4190,35 +4759,207 @@ function renderCurrent() {
   });
 }
 
-// Populate #goal-picker based on which goal events exist on the loaded board.
-// Goals not on this sheet still appear but are disabled / flagged.
-function repopulateGoalPicker() {
-  const picker = $('#goal-picker');
-  picker.innerHTML = '';
-  if (!state.payload) {
-    picker.appendChild(el('option', { value: '' }, '— load a board first —'));
-    picker.disabled = true;
-    return;
-  }
-  const seen = new Set();
-  for (const code of MCG_GRAPH.goalEvents) {
-    const mcg = MCG_GRAPH.events[code] || {};
-    const onBoard = !!state.payload.byCode[code];
-    const label = `${code} — ${mcg.eventName || '?'}${onBoard ? '' : '  (not on this board)'}`;
-    const opt = el('option', { value: code }, label);
-    if (!onBoard) opt.disabled = true;
-    picker.appendChild(opt);
-    seen.add(code);
-  }
-  picker.disabled = false;
+/* --------------------------------------------------------
+ * v0.6.0 — Target Event picker (DOM side of `targets`).
+ *
+ * A button showing the current target; clicking it (or pressing
+ * "/") opens a search box over a list. With an empty query the
+ * list is the preset goal events, then pinned, then recent custom
+ * targets. Typing searches every MCG event and every board row
+ * by code fragment or by words in the name.
+ *
+ * The chosen target is kept in state.goalCode, remembered in
+ * localStorage, and mirrored to the URL as #target=<code> so a
+ * view can be bookmarked or sent to someone.
+ * -------------------------------------------------------- */
+const targetPicker = (() => {
+  const MAX_SHOWN = 60;
+  let catalog = [];
+  let byCode = {};
+  let rows = [];     // entries currently listed, in display order
+  let active = -1;   // index into rows of the keyboard-highlighted one
 
-  // Default selection: first board-visible goal, or keep existing if still valid.
-  if (!state.goalCode || !state.payload.byCode[state.goalCode]) {
-    const firstOnBoard = MCG_GRAPH.goalEvents.find(c => state.payload.byCode[c]);
-    state.goalCode = firstOnBoard || null;
+  // Uncoded board rows are keyed by title; show "row N" in the code slot.
+  function codeLabel(t) { return t.uncoded ? 'row ' + t.row : t.code; }
+
+  function hashTarget() {
+    let raw = null;
+    try { raw = new URLSearchParams(String(location.hash || '').replace(/^#/, '')).get('target'); } catch (_) {}
+    if (!raw) return null;
+    const norm = parse.normalizeCode(raw.toUpperCase());   // accepts "tf7503f" too
+    return byCode[norm] ? norm : raw;
   }
-  if (state.goalCode) picker.value = state.goalCode;
-}
+  function writeHash(code) {
+    try { history.replaceState(null, '', '#target=' + encodeURIComponent(code)); } catch (_) {}
+  }
+
+  function setButton(t) {
+    $('#target-btn-code').textContent = t ? codeLabel(t) : '—';
+    $('#target-btn-name').textContent = t ? t.name
+      : (state.payload ? 'pick a target event' : 'load a board first');
+  }
+
+  // Rebuild the catalog for the loaded board and settle on a target:
+  // the current one if it still exists here, else the URL's, else the
+  // last one used, else the first preset that's on this board.
+  function refresh() {
+    const btn = $('#target-btn');
+    if (!state.payload) { btn.disabled = true; setButton(null); return; }
+    catalog = targets.buildCatalog(state.payload);
+    byCode = {};
+    for (const t of catalog) byCode[t.code] = t;
+    btn.disabled = false;
+    let pick = [state.goalCode, hashTarget(), targets.lastTarget()].find(c => c && byCode[c]);
+    if (!pick) pick = (MCG_GRAPH.goalEvents || []).find(c => state.payload.byCode[c]) || null;
+    state.goalCode = pick;
+    setButton(pick ? byCode[pick] : null);
+  }
+
+  function select(code) {
+    const t = byCode[code];
+    if (!t) return;
+    state.goalCode = code;
+    targets.saveLast(code);
+    if (!t.preset) targets.noteUsed(code);
+    setButton(t);
+    writeHash(code);
+    close();
+    renderCurrent();
+  }
+
+  function isOpen() { return !$('#target-pop').hidden; }
+  function open() {
+    if ($('#target-btn').disabled) return;
+    $('#target-pop').hidden = false;
+    $('#target-btn').setAttribute('aria-expanded', 'true');
+    const input = $('#target-search');
+    input.value = '';
+    renderList('');
+    input.focus();
+  }
+  function close() {
+    $('#target-pop').hidden = true;
+    $('#target-btn').setAttribute('aria-expanded', 'false');
+  }
+
+  function rowEl(t, idx) {
+    const row = el('div', {
+      class: 'target-row' + (t.onBoard ? '' : ' off-board') + (t.code === state.goalCode ? ' current' : ''),
+      role: 'option',
+    });
+    row.appendChild(el('span', { class: 'target-row-code' }, codeLabel(t)));
+    row.appendChild(el('span', { class: 'target-row-name', title: t.name }, t.name));
+    if (t.typeName) row.appendChild(el('span', { class: 'target-tag' }, t.typeName));
+    if (!t.inMcg) {
+      row.appendChild(el('span', {
+        class: 'target-tag t-board',
+        title: 'On the Big Board but not in the MCG — no prerequisite chain is known. The view shows who has done it.',
+      }, 'board only'));
+    } else if (!t.onBoard) {
+      row.appendChild(el('span', {
+        class: 'target-tag t-off',
+        title: 'In the MCG but not tracked on this board. The view shows the board events that lead to it.',
+      }, 'not on board'));
+    }
+    if (!t.preset) {
+      const on = targets.isPinned(t.code);
+      const pin = el('button', {
+        type: 'button', class: 'target-pin' + (on ? ' on' : ''),
+        title: on ? 'Unpin' : 'Pin — keep this target in the short list',
+      }, on ? '★' : '☆');
+      pin.addEventListener('click', (e) => {
+        e.stopPropagation();
+        targets.togglePin(t.code);
+        renderList($('#target-search').value);
+        $('#target-search').focus();
+      });
+      row.appendChild(pin);
+    }
+    row.addEventListener('click', () => select(t.code));
+    row.addEventListener('mousemove', () => { if (active !== idx) { active = idx; paintActive(false); } });
+    return row;
+  }
+
+  function renderList(q) {
+    const list = $('#target-list');
+    list.innerHTML = '';
+    rows = [];
+    const section = (title, entries) => {
+      if (!entries.length) return;
+      list.appendChild(el('div', { class: 'target-sec' }, title));
+      for (const t of entries) { rows.push(t); list.appendChild(rowEl(t, rows.length - 1)); }
+    };
+    const query = String(q || '').trim();
+    if (!query) {
+      const pins = targets.pinned().map(c => byCode[c]).filter(Boolean);
+      section('Practical & comprehensive exams', (MCG_GRAPH.goalEvents || []).map(c => byCode[c]).filter(Boolean));
+      section('Pinned', pins);
+      section('Recent custom targets', targets.recents().map(c => byCode[c]).filter(t => t && pins.indexOf(t) === -1));
+      list.appendChild(el('div', { class: 'target-empty' },
+        `Type to search all ${catalog.length} events — part of a code ("7503", "sy 75") or of a name ("capstone", "qual eval").`));
+      active = rows.findIndex(t => t.code === state.goalCode);
+    } else {
+      const hits = targets.search(catalog, query);
+      const shown = hits.slice(0, MAX_SHOWN);
+      section(`${hits.length} match${hits.length === 1 ? '' : 'es'}` +
+        (hits.length > shown.length ? ` — showing the first ${shown.length}, keep typing to narrow` : ''), shown);
+      if (!hits.length) {
+        list.appendChild(el('div', { class: 'target-empty' },
+          `No event matches "${query}". Try fewer letters, or just the digits of the code.`));
+      }
+      active = hits.length ? 0 : -1;
+    }
+    paintActive(true);
+  }
+
+  function paintActive(scroll) {
+    const els = $('#target-list').querySelectorAll('.target-row');
+    els.forEach((r, i) => r.classList.toggle('active', i === active));
+    if (scroll && els[active]) els[active].scrollIntoView({ block: 'nearest' });
+  }
+
+  function onSearchKey(e) {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!rows.length) return;
+      const step = e.key === 'ArrowDown' ? 1 : -1;
+      active = active < 0 ? (step > 0 ? 0 : rows.length - 1) : (active + step + rows.length) % rows.length;
+      paintActive(true);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (rows[active]) select(rows[active].code);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      close();
+      $('#target-btn').focus();
+    }
+  }
+
+  function init() {
+    $('#target-btn').addEventListener('click', () => { if (isOpen()) close(); else open(); });
+    $('#target-search').addEventListener('input', (e) => renderList(e.target.value));
+    $('#target-search').addEventListener('keydown', onSearchKey);
+    // click anywhere else closes the list
+    document.addEventListener('mousedown', (e) => {
+      if (isOpen() && !$('#target-picker').contains(e.target)) close();
+    });
+    // "/" opens the search from anywhere outside a text field
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      e.preventDefault();
+      open();
+    });
+    // an edited / pasted #target= link switches the view
+    window.addEventListener('hashchange', () => {
+      const code = hashTarget();
+      if (code && byCode[code] && code !== state.goalCode) select(code);
+    });
+  }
+
+  return { init, refresh };
+})();
 
 // Populate #student-picker with the roster.
 function repopulateStudentPicker() {
@@ -4309,20 +5050,7 @@ async function boot() {
     btn.disabled = true; btn.textContent = '⟳ …';
     try {
       const list = await api.sheetsAvail();
-      const picker = $('#sheet-picker');
-      const current = picker.value;
-      picker.innerHTML = '';
-      const sorted = list.sheets.slice().sort((a, b) => {
-        const ap = /\d\d[AB]\s.*Big Board/i.test(a.name) ? 0 : 1;
-        const bp = /\d\d[AB]\s.*Big Board/i.test(b.name) ? 0 : 1;
-        if (ap !== bp) return ap - bp;
-        return a.name.localeCompare(b.name);
-      });
-      for (const s of sorted) {
-        picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
-      }
-      picker.disabled = false;
-      if (current && sorted.find(s => s.name === current)) picker.value = current;
+      fillSheetPicker(list.sheets);
       banner(`Tab list refreshed — ${list.sheets.length} tabs.`);
     } catch (e) {
       banner('Could not list sheets: ' + e.message, true);
@@ -4366,7 +5094,10 @@ async function boot() {
     window.bbcsLineStyle = savedStyle;
     $('#line-style').value = savedStyle;
   } else {
-    window.bbcsLineStyle = 'polyline';
+    // v0.6.0: follow whichever <option> is marked selected. This was a
+    // hard-coded 'polyline', so after the dropdown default became
+    // Straight the control said one thing and the canvas drew another.
+    window.bbcsLineStyle = $('#line-style').value;
   }
   $('#line-style').addEventListener('change', (e) => {
     window.bbcsLineStyle = e.target.value;
@@ -4374,11 +5105,8 @@ async function boot() {
     renderCurrent();
   });
 
-  // Goal + student picker wiring
-  $('#goal-picker').addEventListener('change', (e) => {
-    state.goalCode = e.target.value || null;
-    renderCurrent();
-  });
+  // Target + student picker wiring
+  targetPicker.init();
   $('#student-picker').addEventListener('change', (e) => {
     const col = parseInt(e.target.value, 10);
     state.studentCol = Number.isFinite(col) ? col : null;
@@ -4386,7 +5114,7 @@ async function boot() {
   });
 
   if (!CONFIG.GAS_ENDPOINT) {
-    banner('CONFIG.GAS_ENDPOINT is empty. Edit index.html (line ~190) and paste your GAS /exec URL.', true);
+    banner('CONFIG.GAS_ENDPOINT is empty. Edit the <script id="config"> block in index.html and paste your GAS /exec URL.', true);
     return;
   }
 
@@ -4395,11 +5123,63 @@ async function boot() {
   //   1. If we have cached sheets + a cached sheet-list, use those.
   //   2. If no cached sheet-list but cached payloads exist, build the
   //      picker from cache entries.
-  //   3. If nothing cached, leave the picker empty and require the user
-  //      to click "Load sheet list" (which calls GAS).
-  // Auto-load the most recent cached sheet on boot so the DAG shows up
+  //   3. If nothing is cached (first visit), fetch the tab list and load
+  //      the default board — v0.6.0; this used to leave an empty,
+  //      disabled picker and a Load button that did nothing.
+  // Auto-load the last-used cached sheet on boot so the DAG shows up
   // with zero clicks.
+  setInterval(updateDataAge, 60000);
   await bootFromCache();
+}
+
+// Fill #sheet-picker from a sheets_avail list: class big boards first,
+// newest class on top ("26B FTC…" above "26A FTC…", each ahead of its
+// STC / Backup variants); every other tab alphabetical after them.
+function fillSheetPicker(sheets) {
+  const picker = $('#sheet-picker');
+  const current = picker.value;
+  picker.innerHTML = '';
+  const classOf = n => (n.match(/(\d\d[AB])\s.*Big\s?Board/i) || [])[1] || '';
+  const sorted = sheets.slice().sort((a, b) => {
+    const ca = classOf(a.name), cb = classOf(b.name);
+    if (!!ca !== !!cb) return ca ? -1 : 1;
+    if (ca !== cb) return cb.localeCompare(ca);
+    const da = /^\d/.test(a.name) ? 0 : 1, db = /^\d/.test(b.name) ? 0 : 1;
+    if (da !== db) return da - db;
+    return a.name.localeCompare(b.name);
+  });
+  for (const s of sorted) {
+    picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
+  }
+  picker.disabled = false;
+  if (current && sorted.find(s => s.name === current)) picker.value = current;
+}
+
+// Which board to open with no instruction from the user: the one they
+// had open last, else CONFIG.DEFAULT_SHEET, else `fallback`.
+function defaultSheet(names, fallback) {
+  let last = null;
+  try { last = localStorage.getItem('bbcs::lastSheet'); } catch (_) {}
+  return [last, CONFIG.DEFAULT_SHEET].find(n => n && names.indexOf(n) !== -1) || fallback || null;
+}
+
+// v0.6.0: the app boots from a saved copy of the board, so say how old
+// that copy is and flag it once it's a day old.
+function updateDataAge() {
+  const chip = $('#data-age');
+  const fetchedAt = state.payload && state.payload.fetchedAt;
+  if (!fetchedAt) { chip.textContent = ''; chip.className = 'data-age'; return; }
+  const t = new Date(fetchedAt);
+  const hrs = (Date.now() - t.getTime()) / 3600000;
+  const age = hrs < 1 ? `${Math.max(1, Math.round(hrs * 60))} min ago`
+    : hrs < 48 ? `${Math.round(hrs)} h ago`
+    : `${Math.round(hrs / 24)} days ago`;
+  const stale = hrs >= 24;
+  chip.textContent = 'Board data: '
+    + t.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    + ` (${age})` + (stale ? ' — press Refresh' : '');
+  chip.className = 'data-age' + (stale ? ' stale' : '');
+  chip.title = 'When this board was last pulled from the Google Sheet. Load reuses the saved copy; Refresh pulls it again.';
 }
 
 async function bootFromCache() {
@@ -4411,16 +5191,7 @@ async function bootFromCache() {
 
   if (cachedList && cachedList.length) {
     // Use cached sheet list for the dropdown
-    const sorted = cachedList.slice().sort((a, b) => {
-      const ap = /\d\d[AB]\s.*Big Board/i.test(a.name) ? 0 : 1;
-      const bp = /\d\d[AB]\s.*Big Board/i.test(b.name) ? 0 : 1;
-      if (ap !== bp) return ap - bp;
-      return a.name.localeCompare(b.name);
-    });
-    for (const s of sorted) {
-      picker.appendChild(el('option', { value: s.name }, `${s.name}  (${s.rows}r × ${s.cols}c)`));
-    }
-    picker.disabled = false;
+    fillSheetPicker(cachedList);
   } else if (cachedSheets.length) {
     // Fallback: at least list sheets we've cached payloads for
     for (const s of cachedSheets) {
@@ -4428,7 +5199,7 @@ async function bootFromCache() {
     }
     picker.disabled = false;
   } else {
-    picker.appendChild(el('option', { value: '' }, '— click Load sheet list —'));
+    picker.appendChild(el('option', { value: '' }, '— fetching board list… —'));
     picker.disabled = true;
   }
   $('#btn-load').disabled = false;
@@ -4436,15 +5207,30 @@ async function bootFromCache() {
 
   // Auto-load a sensible default sheet if we have any cached payloads.
   if (cachedSheets.length) {
-    // Prefer 26A FTC Big Board, else most-recently-cached
-    const preferred = cachedSheets.find(s => /^26A FTC Big Board/i.test(s.name));
-    const target = preferred
-      ? preferred.name
-      : cachedSheets.slice().sort((a, b) => (b.cachedAt || '').localeCompare(a.cachedAt || ''))[0].name;
-    picker.value = target;
+    // Last-used board, else the configured default, else most-recently-cached
+    const newest = cachedSheets.slice().sort((a, b) => (b.cachedAt || '').localeCompare(a.cachedAt || ''))[0].name;
+    picker.value = defaultSheet(cachedSheets.map(s => s.name), newest);
     await loadCurrentSheet({ force: false, source: 'auto' });
-  } else {
-    banner('No cached data yet. Pick a board and press Load (or Refresh sheet list to hit GAS).');
+    return;
+  }
+
+  // v0.6.0: nothing cached — first visit, or the cache was cleared. Get
+  // the tab list and the default board without making the user find
+  // "⟳ Tabs" first.
+  banner('First visit on this browser — fetching the board list…');
+  try {
+    const list = await api.sheetsAvail();
+    fillSheetPicker(list.sheets);
+    const names = list.sheets.map(s => s.name);
+    const target = defaultSheet(names, names.find(n => /FTC Big Board/i.test(n)) || names[0]);
+    if (target) {
+      picker.value = target;
+      await loadCurrentSheet({ force: false, source: 'auto' });
+    }
+  } catch (e) {
+    picker.innerHTML = '';
+    picker.appendChild(el('option', { value: '' }, '— press ⟳ Tabs —'));
+    banner('Could not reach the Big Board backend (' + e.message + '). Press ⟳ Tabs to try again.', true);
   }
 }
 
@@ -4460,6 +5246,7 @@ async function loadCurrentSheet({ force, source }) {
     const raw = await api.fetchSheet(name, { force });
     const payload = parse.indexPayload(raw);
     state.payload = payload;
+    chain.resetCache();
     // v0.5.2f: apply persisted duplicate-resolution settings before first
     // render. Without this, byCode is locked to first-row-wins and any
     // saved 'any'/'one' choices don't take effect until the user opens
@@ -4471,18 +5258,20 @@ async function loadCurrentSheet({ force, source }) {
     }
     $('#view-bar').style.display = 'flex';
     $('#expand-group').style.display = (state.mode === 'class') ? 'flex' : 'none';
-    repopulateGoalPicker();
+    try { localStorage.setItem('bbcs::lastSheet', name); } catch (_) {}
+    targetPicker.refresh();
     repopulateStudentPicker();
     renderCurrent();
+    updateDataAge();
     const src = wasCached ? `cache (${new Date(preInfo.cachedAt).toLocaleTimeString()})` : 'live fetch';
     const msg = `Loaded "${name}" from ${src} — ${payload.students.length} students, ${payload.events.length} events`;
+    const warns = [];
     if (payload.duplicates && payload.duplicates.length) {
-      bannerWithAction(
-        `${msg}. ⚠ ${payload.duplicates.length} duplicate code${payload.duplicates.length>1?'s':''} on this board.`,
-        'Open Settings',
-        settingsPanel,
-        true,
-      );
+      warns.push(`${payload.duplicates.length} duplicate code${payload.duplicates.length>1?'s':''} on this board.`);
+    }
+    if (payload.layoutNote) warns.push(payload.layoutNote);
+    if (warns.length) {
+      bannerWithAction(`${msg}. ⚠ ${warns.join(' ⚠ ')}`, 'Open Settings', settingsPanel, true);
     } else {
       banner(msg);
     }

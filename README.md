@@ -4,7 +4,7 @@ A curriculum status tracker for USAF Test Pilot School (TPS). Renders a per-stud
 
 ## What it does
 
-For a given goal event (e.g., `PF 8332F` Multi-Engine Performance Practical), the tracker:
+For a target event — one of the 11 practical / comprehensive presets, or any other event found by code or name in the Target Event search — the tracker:
 
 1. Walks the MCG prereq graph backwards from the goal.
 2. Filters edges per the viewing audience (single student vs. class) using MCG Rules A, D, E, G, I + condition types (`forDownstream`, `datagroup`) + `oneOf` groups.
@@ -18,7 +18,7 @@ For a given goal event (e.g., `PF 8332F` Multi-Engine Performance Practical), th
 - **`data/`** — canonical MCG curriculum data as structured JSON.
 - **`extraction/`** — pipeline that produces the curriculum data from the MCG PDF.
 - **`docs/`** — the rules, requirements, knowledge base, and data contract (developer notes, not served by Pages).
-- **`dev/`** — inspection and test harnesses.
+- **`dev/`** — inspection and test harnesses. `node dev/app-harness.cjs` runs the real app code against saved board payloads and checks its invariants; run it before publishing.
 - **`.github/workflows/pages.yml`** — deploys `site/` to GitHub Pages on push to `main`.
 
 See `CLAUDE.md` for session start order. See `docs/00-state.md` for current status.
@@ -48,6 +48,7 @@ This repo currently tracks **MCG 26A**. To roll to a new class:
 The Pages workflow deploys whatever is in `site/` whenever it changes on `main`. To ship a new version:
 
 ```
+node dev/app-harness.cjs   # must end with "All invariants hold"
 cp tracker/index.html      site/index.html
 cp tracker/mcg-26a.json    site/mcg-26a.json
 cp tracker/dagre.min.js    site/dagre.min.js

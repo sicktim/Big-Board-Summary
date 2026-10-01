@@ -33,6 +33,8 @@
    │     │            + condition types (forDownstream,     │
    │     │              datagroup) + oneOf groups           │
    │     ├── status engine (7-state model)                  │
+   │     ├── targets + targetPicker (any event as target)   │
+   │     ├── chain (opted / missing — reads the DAG)        │
    │     ├── dagre layout (vendored: dagre.min.js)          │
    │     └── two views: per-student | class-union           │
    │                                                        │
@@ -82,9 +84,25 @@ These are applied in order. An event filtered out by Rule A is **gone** for that
 5. DAG builder runs the viewer-aware traversal from the chosen goal event.
 6. Dagre lays out the graph; renderer draws nodes and edges.
 
+## Target events (v0.6.0)
+
+The target is any entry in the catalog `targets.buildCatalog(payload)`: every MCG event plus every board row (rows without an event code are keyed by title). Presets are `MCG_GRAPH.goalEvents`. Three cases:
+
+| Target | Chain | Target node |
+|---|---|---|
+| In MCG, on board | full | progress + roster |
+| In MCG, not on board | full (board-visible part) | neutral "not tracked on this board" |
+| Board-only (not in MCG) | none — no prerequisites are known | progress + roster |
+
+State lives in `state.goalCode`, `localStorage` (`bbcs::lastTarget`, `bbcs::pinnedTargets`, `bbcs::recentTargets`) and the URL (`#target=<code>`).
+
+## One prerequisite graph
+
+`render.buildDagForViewer(code, payload, viewerType, viewerDG)` is the only place MCG prerequisites are interpreted (Rules A / D / E / G, conditions, oneOf, implied block sequence). The canvas collapses off-board nodes out of it; `chain` (opted / missing prereqs) walks it uncollapsed, cached per (event, type, DG). Do not add a second walker.
+
 ## Caching
 
-- `SheetPayload` is cached in `sessionStorage` keyed by tab name + content hash. `?force=1` URL param bypasses.
+- `SheetPayload` is cached in `localStorage` per tab (`bbcs::sheet::<tab>`); **Refresh** re-fetches. The header shows the payload's `fetchedAt` and flags it after 24 h. A first visit (nothing cached) fetches the tab list and the default board (`CONFIG.DEFAULT_SHEET`) on its own.
 - The MCG JSON itself is fetched once per page load — it's static for the class version.
 
 ## Versioning
