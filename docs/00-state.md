@@ -1,9 +1,9 @@
 # Project State
 
-**Last updated:** 2026-10-01 (v0.6.0 — custom target events + live-board audit)
-**Current version:** v0.6.0 (`tracker/index.html` APP_VERSION) · backend `tracker/Code.gs` 0.3.0 (**not yet deployed** — the live endpoint still reports 0.1.0)
+**Last updated:** 2026-10-01 (v0.6.1 — custom target events + live-board audit)
+**Current version:** v0.6.1 (`tracker/index.html` APP_VERSION) · backend `tracker/Code.gs` 0.3.0 (**not yet deployed** — the live endpoint still reports 0.1.0)
 **Active classes:** 26A (graduates Dec 2026), 26B (MCG 26B is a verbatim re-issue of 26A — same curriculum JSON)
-**Published:** v0.6.0 pushed to `main` 2026-10-01 → GitHub Pages. User is testing it online.
+**Published:** v0.6.1 pushed to `main` 2026-10-01 → GitHub Pages. User is testing it online.
 
 ---
 
@@ -28,7 +28,7 @@ v0.6.0 (2026-10-01):
 
 ## Waiting on the user
 
-1. **Test v0.6.0 online** (published 2026-10-01) and report anything off.
+1. **Test v0.6.1 online** (published 2026-10-01) and report anything off.
 2. **Redeploy `Code.gs`** (Apps Script editor → paste → Deploy → Manage deployments → edit → New version). Gets the getFontLines speed-up (0.2.0) and layout detection (0.3.0). Until then the browser-side repair keeps 26B working.
 3. **Rule on KB Rule M** (implied block sequence).
 4. **Either-or mismatch banners** (SY 7304F / SY 7305C) — treat a grey half of a flight / control-room pair as "does the other half"?

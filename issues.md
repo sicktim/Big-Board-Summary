@@ -5,6 +5,16 @@
 > triage and propose fixes; version bumps in code headers should reference
 > the issue date/title.
 
+v0.6.1 (2026-10-01)
+- Comprehensive Written Exam showed five STC-only AS lectures as
+  prerequisites for the FTC class (visible with "Show untracked off-board
+  events" on). The MCG cites them under TF 9102E with no audience tag and
+  the edge filter only read that tag.
+    - **RESOLVED v0.6.1**: a prerequisite must also apply to the viewer by
+      its own MCG applicability ("select P / select FTE" excepted). The 11
+      preset graphs are unchanged for every 26A student; only what is
+      bridged through off-board differs.
+
 v0.6.0 — custom target events + audit of the 2026-10-01 live board (2026-10-01)
 
 Request: keep the 11 practical/comprehensive targets, but let the user make

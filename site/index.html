@@ -3,10 +3,21 @@
 ============================================================
  File:       index.html
  Module:     big-board-curriculum-status / client
- Version:    0.6.0
+ Version:    0.6.1
  MCG Target: 26A
  Updated:    2026-10-01
  Changelog:
+   0.6.1 - STC-only events no longer enter FTC chains (2026-10-01).
+           Seen on the published v0.6.0 with "Show untracked off-board
+           events" on: the Comprehensive Written Exam drew five AS
+           lectures (STC) as prerequisites for the FTC class. The MCG
+           cites them under TF 9102E with no audience tag, and the edge
+           filter looked only at that tag. edgePassesForViewer now also
+           requires the prerequisite event's own applicability to include
+           the viewer ("select P / select FTE" events excepted — their
+           mapping leaves the selected audience out by design). All 11
+           preset graphs are unchanged for every student on 26A; the
+           difference is in what gets bridged through off-board.
    0.6.0 - Custom target events + live-board audit fixes (2026-10-01).
            Feature:
            - Target Event is now a searchable picker instead of a fixed
@@ -1165,7 +1176,7 @@ const CONFIG = (() => {
   catch (e) { return { GAS_ENDPOINT: '', ENABLE_CACHE: true, DEBUG: false }; }
 })();
 
-const APP_VERSION = '0.6.0';
+const APP_VERSION = '0.6.1';
 const MCG_VERSION = '26A';
 const MCG_JSON_URL = './mcg-26a.json';
 
@@ -1548,6 +1559,20 @@ const dagFilter = (() => {
       || mainEvent.applicability || [];
     if (mainMap.length && !mainMap.includes(viewerType)) return false;
     if (prereq.nameTag && prereq.nameTag.length && !prereq.nameTag.includes(viewerType)) return false;
+    // v0.6.1: the prerequisite event's OWN applicability counts too. The MCG
+    // lists some prereqs with no audience tag even though the event itself
+    // is restricted — TF 9102E cites five STC-only AS lectures untagged — so
+    // the name tag alone let them (and everything upstream of them) into
+    // every FTC student's chain. An event that doesn't apply to the viewer
+    // is not their prerequisite (KB §0: MCG applicability is authoritative).
+    // "select P" / "select FTE" events stay in: their mapping leaves the
+    // selected audience out on purpose (the board's grey cells say who).
+    const prereqEvent = MCG_GRAPH.events[prereq.code];
+    if (prereqEvent && !eventAppliesToViewer(prereqEvent, viewerType, viewerDG)) {
+      const selectable = (prereqEvent.applicability || []).some(a =>
+        /select/i.test(a) && new RegExp('\\b' + viewerType + '\\b').test(a));
+      if (!selectable) return false;
+    }
     if (viewerType === 'P' && prereq.nameTagRole === 'crew-solo' && prereq.nameTagAircraft) {
       if (viewerDG !== prereq.nameTagAircraft) return false;
     }

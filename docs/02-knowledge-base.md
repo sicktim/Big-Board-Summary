@@ -148,6 +148,8 @@ The main event's `applicability` defines the audience. A prereq's parenthetical 
 
 **Implementation**: for each prereq edge, compute `viewer ∈ (main_event.applicability ∩ prereq.nameTag)`. Include if true, prune if false.
 
+**Addendum (v0.6.1):** the prerequisite event's own applicability must include the viewer as well. The MCG cites some prereqs without an audience tag although the event is restricted (TF 9102E lists five STC-only AS lectures untagged), so the name tag alone is not enough. Exception: `select P` / `select FTE` events, whose mapping omits the selected audience by design.
+
 ### Rule B — "Data Group Level" in an event name is NOT a DG filter
 Events like `PF 8240F / 8241F / 8242F` "Data Group Level Accel/Turn Perf Data Flights 1/2/3" are flown by **every** data group at their respective DG level. The numbering is flight-number-in-series, not DG assignment. Do not treat "Data Group Level" naming as varying-by-DG.
 
